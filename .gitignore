@@ -1,0 +1,105 @@
+# --- Secrets & local configuration (never commit) ---
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+*.key
+.netrc
+**/credentials.json
+**/client_secret*.json
+**/service-account*.json
+**/google-credentials*.json
+**/token.json
+**/refresh_token*
+.secrets
+secrets.yaml
+secrets.yml
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual environments (anywhere in the tree)
+.venv/
+venv/
+ENV/
+env/
+.envrc
+
+# Tooling / test caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+*.cover
+.hypothesis/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# --- LaTeX (report latex/) ---
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.nav
+*.out
+*.run.xml
+*.snm
+*.synctex.gz
+*.toc
+*.vrb
+*.xdv
+
+# --- ML / experiment tooling (if added later) ---
+wandb/
+.wandb/
+mlruns/
+.dvc/tmp/
+
+# --- OS & editors ---
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*~
+*.swp
+*.swo
+.idea/
+*.sublime-workspace
+
+# --- Local-only editor / agent state (optional noise) ---
+.vscode/*.local.*

@@ -1,0 +1,172 @@
+
+######################################################################
+# Run started: 2026-03-09T19:11:23.057615
+######################################################################
+
+######################################################################
+# PROMPT 1
+# Generate AVD YAML to configure BGP router-id using Loopback0 with IP 10.10.10.1/32 on a leaf switch
+######################################################################
+
+============================================================
+Timestamp : 2026-03-09T19:11:31.468431
+Model     : openai/gpt-4o-mini
+------------------------------------------------------------
+User prompt sent:
+  Generate AVD YAML to configure BGP router-id using Loopback0 with IP 10.10.10.1/32 on a leaf switch
+------------------------------------------------------------
+Response:
+Here is an AVD YAML configuration to set the BGP router ID using Loopback0 with the IP address 10.10.10.1/32 on a leaf switch:
+
+```yaml
+aaa_settings:
+  enable_password:
+    password: "<SHA512_Hash>"
+    cleartext_password: "<YourClearTextPassword>"
+    password_type: sha512
+
+vrfs:
+  - name: default
+    description: "Default VRF"
+    address_families:
+      - evpn
+    bgp_peers:
+      - ip_address: "192.0.2.2"
+        remote_as: "65000"
+        description: "BGP Peer"
+        router_id: "10.10.10.1"  # Setting BGP router ID to use the Loopback0 IP
+        next_hop_self: true
+       
+    svis:
+      - id: 1
+        name: "VLAN1"
+        address_locking:
+          address_family:
+            ipv4:
+              enabled: false
+        nodes:
+          - node: "leaf-switch"
+            tags:
+              - all
+```
+
+### Note:
+- Replace `"<SHA512_Hash>"` and `"<YourClearTextPassword>"` with your actual password values.
+- The `bgp_peers` entry includes the IP address of the peer and sets the router ID to the Loopback0 address as specified in your requirement. Adjust the `ip_address` field as necessary based on your network architecture.
+- Ensure that the device names, IP addresses, and any other settings match your actual network requirements.
+============================================================
+
+######################################################################
+# PROMPT 2
+# Generate AVD YAML to configure VXLAN source interface Loopback1
+######################################################################
+
+============================================================
+Timestamp : 2026-03-09T19:11:38.564456
+Model     : openai/gpt-4o-mini
+------------------------------------------------------------
+User prompt sent:
+  Generate AVD YAML to configure VXLAN source interface Loopback1
+------------------------------------------------------------
+Response:
+To configure VXLAN source interface Loopback1 in an Arista EOS environment using AVD, you'll want to specify the loopback interface in the appropriate structure. Here’s a basic example of an AVD YAML configuration that includes the necessary settings under the `node_type` specification.
+
+```yaml
+# AVD YAML Configuration for VXLAN Source Interface Loopback1
+---
+aaa_settings:
+  enable_password:
+    password: "<your_hashed_password>"
+    cleartext_password: "<your_cleartext_password>"
+    password_type: sha512
+
+l2vlans:
+  - vni_override: 10000
+    vxlan: true
+    address_locking:
+      ipv4: true
+
+vrfs:
+  - name: "default"
+    vrf_vni: 10000
+    description: "Default VRF for VXLAN"
+    svis:
+      - id: 10
+        name: "Tenants"
+        nodes:
+          - "Leaf1"
+          - "Leaf2"
+
+uplink_interfaces:
+  - Loopback1  # <-- Configure Loopback1 as the source interface for VXLAN
+```
+
+### Key Parts of this YAML Configuration:
+- **aaa_settings:** Contains configuration for secure passwords.
+- **l2vlans:** Defines the Layer 2 VLANs that are using VXLAN, including the VNI (Virtual Network Identifier).
+- **vrfs:** Configures the Virtual Routing and Forwarding instances. Here, the `default` VRF is created with a specified VNI.
+- **uplink_interfaces:** Specifies `Loopback1` as the source interface to be used for VXLAN tunneling.
+
+Make sure to replace placeholder values such as `<your_hashed_password>` and `<your_cleartext_password>` with actual secure values before applying the configuration.
+============================================================
+
+######################################################################
+# PROMPT 3
+# Generate minimal AVD YAML to configure VLAN 30 with VNI 1030 and override the EVPN route-target to 65000:1030
+######################################################################
+
+============================================================
+Timestamp : 2026-03-09T19:11:42.324181
+Model     : openai/gpt-4o-mini
+------------------------------------------------------------
+User prompt sent:
+  Generate minimal AVD YAML to configure VLAN 30 with VNI 1030 and override the EVPN route-target to 65000:1030
+------------------------------------------------------------
+Response:
+Below is a minimal AVD YAML configuration to configure VLAN 30 with VNI 1030 and override the EVPN route-target to 65000:1030.
+
+```yaml
+aaa_settings:
+  enable_password:
+    password: "<your_sha512_hashed_password>"
+l2vlans:
+  - vni_override: 1030
+    rt_override: 65000:1030
+    vxlan: true
+    address_locking:
+      ipv4:
+        enabled: false
+```
+
+### Notes:
+- Replace `<your_sha512_hashed_password>` with your actual hashed password.
+- The `address_locking` configuration is set to false for this minimal example but can be further configured according to your network requirements.
+============================================================
+
+######################################################################
+# PROMPT 4
+# Generate minimal AVD YAML to configure BGP peering with neighbor 10.0.0.2 remote-as 65100
+######################################################################
+
+============================================================
+Timestamp : 2026-03-09T19:11:44.644633
+Model     : openai/gpt-4o-mini
+------------------------------------------------------------
+User prompt sent:
+  Generate minimal AVD YAML to configure BGP peering with neighbor 10.0.0.2 remote-as 65100
+------------------------------------------------------------
+Response:
+Here is a minimal AVD YAML configuration to set up BGP peering with the neighbor 10.0.0.2 and remote-as 65100:
+
+```yaml
+aaa_settings:
+  enable_password:
+    password: "$6$<hashed_password>"
+bgp_peers:
+  - ip_address: "10.0.0.2"
+    remote_as: 65100
+```
+
+Make sure to replace `<hashed_password>` with the actual SHA512 hashed password when using this configuration.
+============================================================
+

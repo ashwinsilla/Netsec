@@ -1,0 +1,143 @@
+
+######################################################################
+# [PROMPT-ENFORCED JSON ONLY] Run started: 2026-03-09T19:33:49.886977
+######################################################################
+
+######################################################################
+# PROMPT 1
+# Generate a JSON object with the AVD configuration to set the BGP router-id using Loopback0 with IP 10.10.10.1/32 on a leaf switch
+######################################################################
+
+============================================================
+Timestamp  : 2026-03-09T19:33:56.610318
+Model      : openai/gpt-4o-mini
+Valid JSON : YES
+------------------------------------------------------------
+User prompt sent:
+  Generate a JSON object with the AVD configuration to set the BGP router-id using Loopback0 with IP 10.10.10.1/32 on a leaf switch
+------------------------------------------------------------
+Response (prompt-enforced JSON):
+{
+  "aaa_settings": {},
+  "l2vlans": [],
+  "vrfs": [
+    {
+      "name": "default",
+      "description": "Default VRF",
+      "vrf_vni": 1,
+      "svis": [],
+      "bgp_peers": [
+        {
+          "ip_address": "10.10.10.1",
+          "remote_as": "65000",
+          "next_hop_self": true
+        }
+      ],
+      "ospf": {
+        "enabled": true,
+        "router_id": "10.10.10.1"
+      }
+    }
+  ]
+}
+============================================================
+
+######################################################################
+# PROMPT 2
+# Generate a JSON object with the AVD configuration to set the VXLAN source interface to Loopback1
+######################################################################
+
+============================================================
+Timestamp  : 2026-03-09T19:34:13.932029
+Model      : openai/gpt-4o-mini
+Valid JSON : YES
+------------------------------------------------------------
+User prompt sent:
+  Generate a JSON object with the AVD configuration to set the VXLAN source interface to Loopback1
+------------------------------------------------------------
+Response (prompt-enforced JSON):
+{
+  "aaa_settings": {},
+  "l2vlans": [],
+  "vrfs": [],
+  "uplink_type": "p2p",
+  "loopback_ipv4_address": "",
+  "uplink_ipv4_pool": "",
+  "uplink_ipv6_pool": "",
+  "uplink_interfaces": [],
+  "uplink_switches": [],
+  "uplink_switch_interfaces": [],
+  "uplink_switch_interface_speed": "",
+  "uplink_switch_port_channel_id": 0,
+  "uplink_port_channel_structured_config": {},
+  "uplink_ethernet_structured_config": {},
+  "uplink_port_channel_id": 0,
+  "uplink_switch_port_channel_structured_config": {},
+  "uplink_macsec": {},
+  "uplink_ptp": {},
+  "uplink_mtu": 1500,
+  "uplink_native_vlan": 1,
+  "always_configure_ip_routing": false,
+  "loopback_ipv4_pool": "",
+  "loopback_ip_pools": [],
+  "uplink_bfd": false,
+  "mlag_peer_vlan_structured_config": {},
+  "vtep_diagnostic": {
+    "loopback": 1,
+    "loopback_description": "VTEP Diagnostic Loopback",
+    "loopback_ip_range": "10.0.0.0/24",
+    "hardware_forwarding": false
+  },
+  "bgp_peers": [],
+  "structured_config": {}
+}
+============================================================
+
+######################################################################
+# PROMPT 3
+# Generate a minimal JSON object with the AVD configuration for VLAN 30 with VNI 1030, overriding the EVPN route-target to 65000:1030
+######################################################################
+
+============================================================
+Timestamp  : 2026-03-09T19:34:19.934179
+Model      : openai/gpt-4o-mini
+Valid JSON : YES
+------------------------------------------------------------
+User prompt sent:
+  Generate a minimal JSON object with the AVD configuration for VLAN 30 with VNI 1030, overriding the EVPN route-target to 65000:1030
+------------------------------------------------------------
+Response (prompt-enforced JSON):
+{
+  "l2vlans": [
+    {
+      "vni_override": 1030,
+      "rt_override": "65000:1030"
+    }
+  ]
+}
+============================================================
+
+######################################################################
+# PROMPT 4
+# Generate a minimal JSON object with the AVD configuration for a BGP peering with neighbor 10.0.0.2 remote-as 65100
+######################################################################
+
+============================================================
+Timestamp  : 2026-03-09T19:34:23.855783
+Model      : openai/gpt-4o-mini
+Valid JSON : YES
+------------------------------------------------------------
+User prompt sent:
+  Generate a minimal JSON object with the AVD configuration for a BGP peering with neighbor 10.0.0.2 remote-as 65100
+------------------------------------------------------------
+Response (prompt-enforced JSON):
+{
+  "bgp_peers": [
+    {
+      "ip_address": "10.0.0.2",
+      "remote_as": "65100"
+    }
+  ]
+}
+============================================================
+

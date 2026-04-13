@@ -1,0 +1,5 @@
+aiohttp
+pyyaml
+ansible
+ansible-core
+arista.avd

@@ -103,3 +103,20 @@ Desktop.ini
 
 # --- Local-only editor / agent state (optional noise) ---
 .vscode/*.local.*
+
+# --- AVD eval pipeline (was covered alongside phase 1; consolidated at repo root) ---
+# OpenRouter / model artifacts (generate_configs.py)
+results/
+
+# Legacy single-harness log if present
+harness.log
+
+# validate_configs.py temporary backups next to group_vars files
+*.validate_bak
+
+# Phase 1 script outputs (keep sources + schema; ignore run logs)
+phase 1/output*.txt
+phase 1/gpt4o_mini test results/
+
+# Ansible
+*.retry

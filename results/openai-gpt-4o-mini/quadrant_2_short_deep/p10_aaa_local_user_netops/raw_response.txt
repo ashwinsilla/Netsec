@@ -1,0 +1,27 @@
+<thinking>
+To add a new local user named 'netops' with privilege 15, role 'network-operator', and no_password set to true, I need to modify the `aaa_settings.local_users` list. The existing users will remain unchanged, and the new user will be appended to the list. The structure for each user includes fields for `name`, `privilege`, `role`, and `no_password`. The existing users are already defined, so I will ensure to include them along with the new user in the final output.
+</thinking>
+{
+  "aaa_settings": {
+    "local_users": [
+      {
+        "name": "admin",
+        "privilege": 15,
+        "role": "network-admin",
+        "no_password": true
+      },
+      {
+        "name": "arista",
+        "privilege": 15,
+        "role": "network-admin",
+        "sha512_password": "$6$Enl0WfE32FthwyiJ$yTyGaEJ2uPKLU.F7314YtB7J1jrzrMi7ogXIRTEHQfLdLgKWWmr1UvNlZLN6AyuxET7G5aH3AI9OYRzxVTkB1."
+      },
+      {
+        "name": "netops",
+        "privilege": 15,
+        "role": "network-operator",
+        "no_password": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "evpn_overlay_peers": {
+    "password": "arista123"
+  }
+}

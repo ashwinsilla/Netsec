@@ -1,0 +1,27 @@
+{
+  "task_id": "P21",
+  "quadrant": "quadrant_3_long_flat",
+  "task_slug": "p21_vrf10_svis_13_14",
+  "model": "openai/gpt-4o-mini",
+  "context_file": "group_vars/NETWORK_SERVICES/network_services.yml",
+  "insertion_path": [
+    "tenants",
+    0,
+    "vrfs",
+    0,
+    "svis"
+  ],
+  "syntax_ok": true,
+  "merge_ok": true,
+  "api_error": null,
+  "syntax_error": null,
+  "merge_error": null,
+  "json_parse_source": "post_thinking",
+  "artifacts": [
+    "raw_response.txt",
+    "json_candidate.txt",
+    "parsed.json",
+    "config.yaml"
+  ],
+  "timestamp_utc": "2026-04-14T03:20:07.574420Z"
+}

@@ -1,0 +1,25 @@
+{
+  "name": "VRF10",
+  "vrf_vni": 10,
+  "vtep_diagnostic": {
+    "loopback": 10,
+    "loopback_ip_range": "10.255.10.0/27"
+  },
+  "svis": [
+    {
+      "id": 11,
+      "name": "VRF10_VLAN11",
+      "enabled": true,
+      "ip_address_virtual": "10.10.11.1/24",
+      "tags": [
+        "DC1_L3_LEAF1"
+      ]
+    },
+    {
+      "id": 12,
+      "name": "VRF10_VLAN12",
+      "enabled": true,
+      "ip_address_virtual": "10.10.12.1/24"
+    }
+  ]
+}

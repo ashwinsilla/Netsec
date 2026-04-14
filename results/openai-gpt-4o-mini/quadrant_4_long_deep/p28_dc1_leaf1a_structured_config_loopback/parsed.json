@@ -1,0 +1,10 @@
+{
+  "structured_config": {
+    "loopback_interfaces": [
+      {
+        "name": "Loopback0",
+        "description": "ROUTER-ID"
+      }
+    ]
+  }
+}

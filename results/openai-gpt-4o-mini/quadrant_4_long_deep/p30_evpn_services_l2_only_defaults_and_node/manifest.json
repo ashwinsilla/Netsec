@@ -1,0 +1,23 @@
+{
+  "task_id": "P30",
+  "quadrant": "quadrant_4_long_deep",
+  "task_slug": "p30_evpn_services_l2_only_defaults_and_node",
+  "model": "openai/gpt-4o-mini",
+  "context_file": "group_vars/DC1_L3_LEAVES/l3_leaves.yml",
+  "insertion_path": [
+    "l3leaf"
+  ],
+  "syntax_ok": true,
+  "merge_ok": true,
+  "api_error": null,
+  "syntax_error": null,
+  "merge_error": null,
+  "json_parse_source": "post_thinking",
+  "artifacts": [
+    "raw_response.txt",
+    "json_candidate.txt",
+    "parsed.json",
+    "config.yaml"
+  ],
+  "timestamp_utc": "2026-04-14T03:20:07.575582Z"
+}

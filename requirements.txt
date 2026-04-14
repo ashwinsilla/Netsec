@@ -1,5 +1,6 @@
 aiohttp
 pyyaml
+python-dotenv
 ansible
 ansible-core
-arista.avd
+# arista.avd

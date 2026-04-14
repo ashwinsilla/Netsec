@@ -1,0 +1,6 @@
+{
+  "uplink_switch_interfaces": [
+    "Ethernet1",
+    "Ethernet1"
+  ]
+}

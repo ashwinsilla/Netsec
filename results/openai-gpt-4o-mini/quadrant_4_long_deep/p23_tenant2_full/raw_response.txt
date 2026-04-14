@@ -1,0 +1,21 @@
+<thinking>
+{
+  "name": "TENANT2",
+  "mac_vrf_vni_base": 20000,
+  "vrfs": [
+    {
+      "name": "VRF20",
+      "vrf_vni": 20,
+      "svis": [
+        {
+          "id": 100,
+          "name": "TENANT2_VLAN100",
+          "enabled": true,
+          "ip_address_virtual": "10.20.100.1/24"
+        }
+      ]
+    }
+  ],
+  "l2vlans": []
+}
+</thinking>

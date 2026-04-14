@@ -1,0 +1,11 @@
+{
+  "evpn_overlay_peers": {
+    "password": "arista123"
+  },
+  "ipv4_underlay_peers": {
+    "password": "7x4B4rnJhZB438m9+BrBfQ=="
+  },
+  "mlag_ipv4_underlay_peer": {
+    "password": "4b21pAdCvWeAqpcKDFMdWw=="
+  }
+}

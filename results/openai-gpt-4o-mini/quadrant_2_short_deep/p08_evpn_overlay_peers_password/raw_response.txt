@@ -1,0 +1,7 @@
+<thinking>
+{
+  "evpn_overlay_peers": {
+    "password": "arista123"
+  }
+}
+</thinking>

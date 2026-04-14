@@ -1,0 +1,13 @@
+<thinking>
+The user wants to add a second NTP server to the existing list of servers under the `ntp_settings` key. The current list contains one server, and I need to append the new server '1.pool.ntp.org' to this list while maintaining the existing structure. The final output should reflect the updated list of NTP servers.
+</thinking>
+{
+  "servers": [
+    {
+      "name": "0.pool.ntp.org"
+    },
+    {
+      "name": "1.pool.ntp.org"
+    }
+  ]
+}

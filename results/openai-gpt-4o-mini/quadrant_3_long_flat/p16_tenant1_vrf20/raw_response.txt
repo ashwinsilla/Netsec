@@ -1,0 +1,14 @@
+<thinking>
+{
+  "name": "VRF20",
+  "vrf_vni": 20,
+  "svis": [
+    {
+      "id": 31,
+      "name": "VRF20_VLAN31",
+      "enabled": true,
+      "ip_address_virtual": "10.10.31.1/24"
+    }
+  ]
+}
+</thinking>

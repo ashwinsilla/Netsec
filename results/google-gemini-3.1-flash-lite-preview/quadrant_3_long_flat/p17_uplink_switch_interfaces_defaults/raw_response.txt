@@ -1,0 +1,38 @@
+<thinking>
+The user wants to add `uplink_switch_interfaces: ['Ethernet1', 'Ethernet1']` to the `l3leaf.defaults` section of the provided configuration.
+
+1.  **Locate the target:** `l3leaf.defaults`
+2.  **Identify the schema:** The `l3leaf` key contains a `defaults` dictionary. The `uplink_switch_interfaces` key is defined under `node-type-uplink-configuration` which is referenced by `l3leaf` (via `eos_designs` structure).
+3.  **Construct the object:**
+    *   `platform`: "cEOSLab"
+    *   `loopback_ipv4_pool`: "10.255.0.0/27"
+    *   `loopback_ipv4_offset`: 2
+    *   `vtep_loopback_ipv4_pool`: "10.255.1.0/27"
+    *   `uplink_switches`: ["dc1-spine1", "dc1-spine2"]
+    *   `uplink_switch_interfaces`: ["Ethernet1", "Ethernet1"]
+    *   `uplink_ipv4_pool`: "10.255.255.0/26"
+    *   `mlag_peer_ipv4_pool`: "10.255.1.64/27"
+    *   `mlag_peer_l3_ipv4_pool`: "10.255.1.96/27"
+    *   `virtual_router_mac_address`: "00:1c:73:00:00:99"
+    *   `spanning_tree_priority`: 4096
+    *   `spanning_tree_mode`: "mstp"
+</thinking>{
+  "platform": "cEOSLab",
+  "loopback_ipv4_pool": "10.255.0.0/27",
+  "loopback_ipv4_offset": 2,
+  "vtep_loopback_ipv4_pool": "10.255.1.0/27",
+  "uplink_switches": [
+    "dc1-spine1",
+    "dc1-spine2"
+  ],
+  "uplink_switch_interfaces": [
+    "Ethernet1",
+    "Ethernet1"
+  ],
+  "uplink_ipv4_pool": "10.255.255.0/26",
+  "mlag_peer_ipv4_pool": "10.255.1.64/27",
+  "mlag_peer_l3_ipv4_pool": "10.255.1.96/27",
+  "virtual_router_mac_address": "00:1c:73:00:00:99",
+  "spanning_tree_priority": 4096,
+  "spanning_tree_mode": "mstp"
+}

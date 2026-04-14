@@ -1,0 +1,19 @@
+{
+  "svis": [
+    {
+      "id": 11,
+      "name": "VRF10_VLAN11",
+      "enabled": true,
+      "ip_address_virtual": "10.10.11.1/24",
+      "tags": [
+        "DC1_L3_LEAF1"
+      ]
+    },
+    {
+      "id": 12,
+      "name": "VRF10_VLAN12",
+      "enabled": true,
+      "ip_address_virtual": "10.10.12.1/24"
+    }
+  ]
+}

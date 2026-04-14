@@ -106,7 +106,7 @@ Desktop.ini
 
 # --- AVD eval pipeline (was covered alongside phase 1; consolidated at repo root) ---
 # OpenRouter / model artifacts (generate_configs.py)
-results/
+# results/
 
 # Legacy single-harness log if present
 harness.log

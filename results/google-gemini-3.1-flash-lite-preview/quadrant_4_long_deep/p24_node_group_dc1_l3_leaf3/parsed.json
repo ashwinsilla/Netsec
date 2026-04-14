@@ -1,0 +1,16 @@
+{
+  "group": "DC1_L3_LEAF3",
+  "bgp_as": 65103,
+  "nodes": [
+    {
+      "name": "dc1-leaf3a",
+      "id": 5,
+      "mgmt_ip": "172.16.1.105/24"
+    },
+    {
+      "name": "dc1-leaf3b",
+      "id": 6,
+      "mgmt_ip": "172.16.1.106/24"
+    }
+  ]
+}

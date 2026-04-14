@@ -1,0 +1,24 @@
+{
+  "task_id": "P01",
+  "quadrant": "quadrant_1_short_flat",
+  "task_slug": "p01_ntp_second_server",
+  "model": "openai/gpt-4o-mini",
+  "context_file": "group_vars/FABRIC/fabric_variables.yml",
+  "insertion_path": [
+    "ntp_settings",
+    "servers"
+  ],
+  "syntax_ok": true,
+  "merge_ok": true,
+  "api_error": null,
+  "syntax_error": null,
+  "merge_error": null,
+  "json_parse_source": "post_thinking",
+  "artifacts": [
+    "raw_response.txt",
+    "json_candidate.txt",
+    "parsed.json",
+    "config.yaml"
+  ],
+  "timestamp_utc": "2026-04-14T03:20:07.570002Z"
+}

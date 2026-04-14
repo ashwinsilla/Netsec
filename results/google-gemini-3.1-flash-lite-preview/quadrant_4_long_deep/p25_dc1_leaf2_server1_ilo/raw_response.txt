@@ -1,0 +1,110 @@
+<thinking>
+The user wants to add an additional adapter to the `dc1-leaf2-server1` server definition.
+The current structure for `dc1-leaf2-server1` has one adapter.
+The new adapter needs to be appended to the `adapters` list for `dc1-leaf2-server1`.
+Target: `servers` list, specifically the item where `name == "dc1-leaf2-server1"`.
+New adapter details:
+- endpoint_ports: ["iLO"]
+- switch_ports: ["Ethernet6"]
+- switches: ["dc1-leaf2c"]
+- vlans: "21"
+- mode: "access"
+- spanning_tree_portfast: "edge"
+</thinking>
+[
+  {
+    "name": "dc1-leaf1-server1",
+    "adapters": [
+      {
+        "endpoint_ports": [
+          "PCI1",
+          "PCI2"
+        ],
+        "switch_ports": [
+          "Ethernet5",
+          "Ethernet5"
+        ],
+        "switches": [
+          "dc1-leaf1a",
+          "dc1-leaf1b"
+        ],
+        "vlans": "11-12,21-22",
+        "native_vlan": 4092,
+        "mode": "trunk",
+        "spanning_tree_portfast": "edge",
+        "port_channel": {
+          "endpoint_port_channel": "Bond1",
+          "mode": "active"
+        }
+      },
+      {
+        "endpoint_ports": [
+          "iLO"
+        ],
+        "switch_ports": [
+          "Ethernet5"
+        ],
+        "switches": [
+          "dc1-leaf1c"
+        ],
+        "vlans": "11",
+        "mode": "access",
+        "spanning_tree_portfast": "edge"
+      }
+    ]
+  },
+  {
+    "name": "dc1-leaf2-server1",
+    "adapters": [
+      {
+        "endpoint_ports": [
+          "PCI1",
+          "PCI2"
+        ],
+        "switch_ports": [
+          "Ethernet5",
+          "Ethernet5"
+        ],
+        "switches": [
+          "dc1-leaf2a",
+          "dc1-leaf2b"
+        ],
+        "vlans": "11-12,21-22",
+        "native_vlan": 4092,
+        "mode": "trunk",
+        "spanning_tree_portfast": "edge",
+        "port_channel": {
+          "mode": "active"
+        }
+      },
+      {
+        "endpoint_ports": [
+          "iLO"
+        ],
+        "switch_ports": [
+          "Ethernet5"
+        ],
+        "switches": [
+          "dc1-leaf2c"
+        ],
+        "vlans": "11",
+        "mode": "access",
+        "spanning_tree_portfast": "edge"
+      },
+      {
+        "endpoint_ports": [
+          "iLO"
+        ],
+        "switch_ports": [
+          "Ethernet6"
+        ],
+        "switches": [
+          "dc1-leaf2c"
+        ],
+        "vlans": "21",
+        "mode": "access",
+        "spanning_tree_portfast": "edge"
+      }
+    ]
+  }
+]

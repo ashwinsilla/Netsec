@@ -1,0 +1,10 @@
+<thinking>
+{
+  "ip_helpers": [
+    {
+      "ip_helper": "10.255.0.1",
+      "source_interface": "Loopback0"
+    }
+  ]
+}
+</thinking>

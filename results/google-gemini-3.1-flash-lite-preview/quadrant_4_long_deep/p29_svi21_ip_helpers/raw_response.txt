@@ -1,0 +1,21 @@
+<thinking>
+The user wants to add `ip_helpers` to the SVI with `id: 21` inside `VRF11` within `TENANT1`.
+The schema for `svis` under `vrfs` is defined in `eos_designs#/$defs/svi`.
+The `svis` list is located at `tenants[0].vrfs[1].svis`.
+The target SVI is `id: 21`.
+The `ip_helpers` field is a list of objects with `ip_helper` (the IP address) and `source_interface`.
+Mapping:
+- `ip_helper`: "10.255.0.1"
+- `source_interface`: "Loopback0"
+</thinking>{
+  "id": 21,
+  "name": "VRF11_VLAN21",
+  "enabled": true,
+  "ip_address_virtual": "10.10.21.1/24",
+  "ip_helpers": [
+    {
+      "ip_helper": "10.255.0.1",
+      "source_interface": "Loopback0"
+    }
+  ]
+}

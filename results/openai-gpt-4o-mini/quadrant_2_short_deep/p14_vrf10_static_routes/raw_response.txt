@@ -1,0 +1,84 @@
+<thinking>
+To add a static route to VRF10, I need to locate the correct field in the schema. The static routes should be added under the `vrfs` list, specifically for the VRF named `VRF10`. The schema does not explicitly mention a `static_routes` field, but it is common to include static routes in a VRF configuration. I will create a new field called `static_routes` under `VRF10` and include the specified route with `destination_address_prefix` and `gateway`. 
+
+The final structure will look like this:
+- `tenants` (list)
+  - `name`: "TENANT1"
+  - `vrfs` (list)
+    - `name`: "VRF10"
+      - `static_routes` (list)
+        - `destination_address_prefix`: "0.0.0.0/0"
+        - `gateway`: "10.10.10.1"
+
+I will ensure that the output is strictly in JSON format and adheres to the schema requirements.
+</thinking>
+{
+  "tenants": [
+    {
+      "name": "TENANT1",
+      "mac_vrf_vni_base": 10000,
+      "vrfs": [
+        {
+          "name": "VRF10",
+          "vrf_vni": 10,
+          "vtep_diagnostic": {
+            "loopback": 10,
+            "loopback_ip_range": "10.255.10.0/27"
+          },
+          "svis": [
+            {
+              "id": 11,
+              "name": "VRF10_VLAN11",
+              "enabled": true,
+              "ip_address_virtual": "10.10.11.1/24"
+            },
+            {
+              "id": 12,
+              "name": "VRF10_VLAN12",
+              "enabled": true,
+              "ip_address_virtual": "10.10.12.1/24"
+            }
+          ],
+          "static_routes": [
+            {
+              "destination_address_prefix": "0.0.0.0/0",
+              "gateway": "10.10.10.1"
+            }
+          ]
+        },
+        {
+          "name": "VRF11",
+          "vrf_vni": 11,
+          "vtep_diagnostic": {
+            "loopback": 11,
+            "loopback_ip_range": "10.255.11.0/27"
+          },
+          "svis": [
+            {
+              "id": 21,
+              "name": "VRF11_VLAN21",
+              "enabled": true,
+              "ip_address_virtual": "10.10.21.1/24"
+            },
+            {
+              "id": 22,
+              "name": "VRF11_VLAN22",
+              "enabled": true,
+              "ip_address_virtual": "10.10.22.1/24"
+            }
+          ]
+        }
+      ],
+      "l2vlans": [
+        {
+          "id": 3401,
+          "name": "L2_VLAN3401"
+        },
+        {
+          "id": 3402,
+          "name": "L2_VLAN3402"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+tenants:
+- name: TENANT1
+  mac_vrf_vni_base: 10000
+  vrfs:
+    name: VRF20
+    vrf_vni: 20
+    svis:
+    - id: 31
+      name: VRF20_VLAN31
+      enabled: true
+      ip_address_virtual: 10.10.31.1/24
+  l2vlans:
+  - id: 3401
+    name: L2_VLAN3401
+  - id: 3402
+    name: L2_VLAN3402

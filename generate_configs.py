@@ -1,11 +1,20 @@
 #!/usr/bin/env python3
 """
 AVD structured-output generation (syntax path): OpenRouter calls, Anchor & Threat
-prompting, <thinking> strip + json.loads, sub-tree merge, artifact layout under results/.
+prompting, JSON parse + sub-tree merge, artifact layout under results/.
 API-level response_format is NOT used (prompt-enforced JSON only).
 
+Text artifacts (exactly two .txt files when the HTTP call succeeds):
+  raw_response.txt    — verbatim API message.content (unchanged from the provider).
+  json_candidate.txt  — exact substring passed to json.loads on success; on parse failure, a short debug dump.
+  parsed.json         — parsed JSON value (syntax success only).
+  config.yaml         — merged full group_vars file (merge success only).
+  manifest.json       — metadata including artifacts[] and json_parse_source.
+
+If the HTTP call fails, only raw_response.txt is written (no json_candidate).
+
 Usage:
-  export OPENROUTER_API_KEY=...   # or copy env.txt to .env and source if you prefer
+  Put OPENROUTER_API_KEY in a .env file at the repo root (see env.txt), or export it in the shell.
   python3 generate_configs.py [--model MODEL] [--task-id P01]
 """
 
@@ -23,6 +32,7 @@ from pathlib import Path
 
 import aiohttp
 import yaml
+from dotenv import load_dotenv
 
 from avd_tasks import all_tasks, task_by_id
 from subtree_merge import merge_yaml_file
@@ -33,9 +43,11 @@ SCHEMA_PATH = REPO_ROOT / "phase 1" / "eos_designs.schema.yml"
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 MODELS = [
-    "openai/gpt-5.4",
-    "google/gemini-3.1-pro-preview",
-    "anthropic/claude-sonnet-4.6",
+    "openai/gpt-4o-mini",
+    "google/gemini-3.1-flash-lite-preview"
+    # "openai/gpt-5.4",
+    # "google/gemini-3.1-pro-preview",
+    # "anthropic/claude-sonnet-4.6",
 ]
 
 MAX_RETRIES = 3
@@ -52,8 +64,38 @@ SYSTEM_PROMPT = (
 )
 
 THINKING_BLOCK = re.compile(r"<thinking>.*?</thinking>", re.IGNORECASE | re.DOTALL)
+THINKING_INNER = re.compile(r"<thinking>(.*?)</thinking>", re.IGNORECASE | re.DOTALL)
+
+# Max chars written into json_candidate.txt on parse failure (debug sections).
+_JSON_CANDIDATE_DEBUG_CAP = 12_000
 
 log = logging.getLogger(__name__)
+
+
+def _normalize_openrouter_api_key(raw: str) -> str:
+    """Strip whitespace/BOM, optional quotes, accidental 'Bearer ' prefix."""
+    s = raw.strip().strip("\ufeff")
+    if len(s) >= 2 and s[0] == s[-1] and s[0] in "\"'":
+        s = s[1:-1].strip()
+    if s.lower().startswith("bearer "):
+        s = s[7:].strip()
+    return s
+
+
+def load_openrouter_api_key() -> str:
+    """
+    Load from repo-root .env first (override=True so a bad shell export does not
+    mask the key in .env). Accept OPENROUTER_API_KEY or OPEN_ROUTER_API_KEY.
+    """
+    env_path = REPO_ROOT / ".env"
+    load_dotenv(env_path, override=True)
+    for var in ("OPENROUTER_API_KEY", "OPEN_ROUTER_API_KEY"):
+        raw = os.environ.get(var)
+        if raw:
+            key = _normalize_openrouter_api_key(raw)
+            if key:
+                return key
+    return ""
 
 
 def model_dirname(model: str) -> str:
@@ -87,17 +129,27 @@ def build_user_message(schema_text: str, task_text: str, context_yaml: str) -> s
     )
 
 
-def strip_thinking(raw: str) -> str:
+def strip_thinking_blocks(raw: str) -> str:
+    """Remove all <thinking>...</thinking> regions (non-greedy)."""
     return THINKING_BLOCK.sub("", raw).strip()
 
 
-def extract_json_value(text: str):
-    """Parse JSON from text after thinking removal; tolerate leading noise."""
+def extract_thinking_inner(raw: str) -> str | None:
+    """Return inner text of the first <thinking> block, or None if absent."""
+    m = THINKING_INNER.search(raw)
+    return m.group(1).strip() if m else None
+
+
+def extract_json_value_with_source(text: str) -> tuple[object, str]:
+    """
+    Parse one JSON value from text; tolerate leading/trailing noise via bracket scan.
+    Returns (parsed_python_value, exact_json_substring_used).
+    """
     s = text.strip()
     if not s:
         raise ValueError("empty string")
     try:
-        return json.loads(s)
+        return json.loads(s), s
     except json.JSONDecodeError:
         pass
 
@@ -122,8 +174,51 @@ def extract_json_value(text: str):
             if pairs[op] != ch:
                 raise ValueError("mismatched bracket")
             if not stack:
-                return json.loads(s[start_idx : j + 1])
+                snippet = s[start_idx : j + 1]
+                return json.loads(snippet), snippet
     raise ValueError("unclosed JSON")
+
+
+def resolve_parsed_json(raw: str) -> tuple[object, str, str]:
+    """
+    Prefer JSON in the post-</thinking> tail; if that fails or is empty, try the
+    interior of the first <thinking> block (models often misplace JSON there).
+
+    Returns (parsed_obj, json_substring_used, source) where source is
+    'post_thinking' or 'thinking_interior'.
+    """
+    post = strip_thinking_blocks(raw)
+    if post:
+        try:
+            obj, src = extract_json_value_with_source(post)
+            return obj, src, "post_thinking"
+        except (json.JSONDecodeError, ValueError):
+            pass
+
+    inner = extract_thinking_inner(raw)
+    if inner:
+        try:
+            obj, src = extract_json_value_with_source(inner)
+            return obj, src, "thinking_interior"
+        except (json.JSONDecodeError, ValueError) as e:
+            raise ValueError(f"post_thinking and thinking_interior parse failed: {e}") from e
+    raise ValueError("no JSON found (empty after stripping thinking, and no <thinking> inner text)")
+
+
+def format_json_candidate_debug(post_tail: str, thinking_inner: str | None, err: str) -> str:
+    """When parse fails, explain what was tried (trimmed)."""
+    lines = [
+        "# JSON parse failed. Sections below are what the harness attempted to parse.",
+        f"# syntax_error: {err[:500]}",
+        "",
+        "## post_thinking (content after removing <thinking>...</thinking>)",
+        (post_tail or "(empty)")[:_JSON_CANDIDATE_DEBUG_CAP],
+        "",
+        "## thinking_interior (first <thinking> block body only)",
+        ((thinking_inner or "(no <thinking> block)"))[:_JSON_CANDIDATE_DEBUG_CAP],
+        "",
+    ]
+    return "\n".join(lines)
 
 
 async def call_openrouter(
@@ -145,7 +240,7 @@ async def call_openrouter(
             {"role": "user", "content": user_message},
         ],
         "temperature": 0.0,
-        "max_tokens": 8192,
+        "max_tokens": 8000,
     }
 
     for attempt in range(1, MAX_RETRIES + 1):
@@ -163,7 +258,13 @@ async def call_openrouter(
                     continue
                 if resp.status != 200:
                     body = await resp.text()
-                    return None, f"HTTP {resp.status}: {body[:500]}"
+                    msg = f"HTTP {resp.status}: {body[:500]}"
+                    if resp.status == 401:
+                        msg += (
+                            " | OpenRouter auth failed: key invalid/revoked, or masked by a bad shell export. "
+                            "Regenerate at https://openrouter.ai/settings/keys — root .env overrides shell (override=True)."
+                        )
+                    return None, msg
                 data = await resp.json()
                 raw = data["choices"][0]["message"]["content"]
                 return raw, None
@@ -214,29 +315,46 @@ async def run_one_job(
         "api_error": None,
         "syntax_error": None,
         "merge_error": None,
+        "json_parse_source": None,
+        "artifacts": [],
         "timestamp_utc": datetime.utcnow().isoformat() + "Z",
     }
+    artifacts: list[str] = []
 
     async with semaphore:
         raw, err = await call_openrouter(session, api_key, model, user_msg)
 
-    write_text(out_dir / "raw_response.txt", raw or "")
+    text = raw or ""
+    write_text(out_dir / "raw_response.txt", text)
+    artifacts.append("raw_response.txt")
+
+    thinking_inner = extract_thinking_inner(text)
 
     if err:
         manifest["api_error"] = err
+        manifest["artifacts"] = artifacts
         (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
-        log.info("%s %s — API error", task["id"], model)
+        log.warning("%s %s — API error: %s", task["id"], model, err[:400])
         return
 
+    post_tail = strip_thinking_blocks(text)
     try:
-        after_think = strip_thinking(raw)
-        parsed = extract_json_value(after_think)
+        parsed, json_candidate, parse_source = resolve_parsed_json(text)
         manifest["syntax_ok"] = True
+        manifest["json_parse_source"] = parse_source
+        write_text(out_dir / "json_candidate.txt", json_candidate)
+        artifacts.append("json_candidate.txt")
         (out_dir / "parsed.json").write_text(
             json.dumps(parsed, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
         )
+        artifacts.append("parsed.json")
     except Exception as e:
-        manifest["syntax_error"] = str(e)[:800]
+        err_s = str(e)
+        manifest["syntax_error"] = err_s[:800]
+        dbg = format_json_candidate_debug(post_tail, thinking_inner, err_s)
+        write_text(out_dir / "json_candidate.txt", dbg)
+        artifacts.append("json_candidate.txt")
+        manifest["artifacts"] = artifacts
         (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
         log.info("%s %s — syntax fail: %s", task["id"], model, e)
         return
@@ -245,20 +363,32 @@ async def run_one_job(
         merged_yaml = merge_yaml_file(repo_root, task["context_file"], task["insertion_path"], parsed)
         write_text(out_dir / "config.yaml", merged_yaml)
         manifest["merge_ok"] = True
+        artifacts.append("config.yaml")
     except Exception as e:
         manifest["merge_error"] = str(e)[:800]
         log.info("%s %s — merge fail: %s", task["id"], model, e)
 
+    manifest["artifacts"] = artifacts
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     log.info("%s %s — done syntax=%s merge=%s", task["id"], model, manifest["syntax_ok"], manifest["merge_ok"])
 
 
 async def async_main(args: argparse.Namespace) -> None:
-    api_key = os.environ.get("OPENROUTER_API_KEY")
-    if not api_key:
-        sys.exit("OPENROUTER_API_KEY is not set. See env.txt.")
-
     logging.basicConfig(level=logging.INFO, format="%(asctime)s  %(message)s")
+
+    api_key = load_openrouter_api_key()
+    if not api_key:
+        sys.exit(
+            "OPENROUTER_API_KEY is not set or empty after loading .env at repo root. "
+            "Add OPENROUTER_API_KEY=sk-or-v1-... to .env (see env.txt). "
+            "Alias OPEN_ROUTER_API_KEY is also accepted."
+        )
+
+    env_path = REPO_ROOT / ".env"
+    if env_path.is_file():
+        log.info("Loaded API key from %s (shell value overridden if present).", env_path)
+    else:
+        log.warning("No %s — using OPENROUTER_API_KEY from environment only.", env_path)
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
     schema_text = load_schema_text()

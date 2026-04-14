@@ -1,4 +1,3 @@
-<thinking>
 {
   "servers": [
     {
@@ -9,4 +8,3 @@
     }
   ]
 }
-</thinking>

@@ -1,7 +1,25 @@
 <thinking>
+The user's request is to add a password field with the value 'arista123' to the `evpn_overlay_peers` BGP peer group within the `bgp_peer_groups` section of the provided YAML configuration. 
+
+The existing structure for `evpn_overlay_peers` is:
+```yaml
+evpn_overlay_peers:
+  password: Q4fqtbqcZ7oQuKfuWtNGRQ==
+```
+
+I need to replace the existing `password` value with the new value 'arista123'. The final JSON structure will maintain the existing key and simply update the value.
+
+The resulting JSON will look like this:
+```json
 {
   "evpn_overlay_peers": {
     "password": "arista123"
   }
 }
+```
 </thinking>
+{
+  "evpn_overlay_peers": {
+    "password": "arista123"
+  }
+}

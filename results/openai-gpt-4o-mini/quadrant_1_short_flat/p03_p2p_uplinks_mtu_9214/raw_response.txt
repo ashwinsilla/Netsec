@@ -1,5 +1,3 @@
-<thinking>
 {
   "p2p_uplinks_mtu": 9214
 }
-</thinking>

@@ -1,40 +1,26 @@
-<thinking>
 {
-  "nodes": [
-    {
-      "name": "dc1-spine1",
-      "id": 1,
-      "mgmt_ip": "172.16.1.11/24"
+  "spine": {
+    "defaults": {
+      "platform": "cEOSLab",
+      "loopback_ipv4_pool": "10.255.0.0/27",
+      "bgp_as": 65100
     },
-    {
-      "name": "dc1-spine2",
-      "id": 2,
-      "mgmt_ip": "172.16.1.12/24"
-    },
-    {
-      "name": "dc1-spine3",
-      "id": 3,
-      "mgmt_ip": "172.16.1.13/24"
-    }
-  ]
-}
-</thinking>
-{
-  "nodes": [
-    {
-      "name": "dc1-spine1",
-      "id": 1,
-      "mgmt_ip": "172.16.1.11/24"
-    },
-    {
-      "name": "dc1-spine2",
-      "id": 2,
-      "mgmt_ip": "172.16.1.12/24"
-    },
-    {
-      "name": "dc1-spine3",
-      "id": 3,
-      "mgmt_ip": "172.16.1.13/24"
-    }
-  ]
+    "nodes": [
+      {
+        "name": "dc1-spine1",
+        "id": 1,
+        "mgmt_ip": "172.16.1.11/24"
+      },
+      {
+        "name": "dc1-spine2",
+        "id": 2,
+        "mgmt_ip": "172.16.1.12/24"
+      },
+      {
+        "name": "dc1-spine3",
+        "id": 3,
+        "mgmt_ip": "172.16.1.13/24"
+      }
+    ]
+  }
 }

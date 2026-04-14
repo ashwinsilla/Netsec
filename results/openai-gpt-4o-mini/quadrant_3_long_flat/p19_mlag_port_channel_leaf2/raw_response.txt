@@ -1,4 +1,6 @@
 <thinking>
+The user's request is to add the key `mlag_port_channel_id` with a value of `2000` to the `DC1_L3_LEAF2` node group within the `node_groups` array. The existing structure of the `node_groups` array must be preserved, and the new key should be added to the appropriate dictionary corresponding to `DC1_L3_LEAF2`. The final output will be a JSON object that includes the entire `node_groups` array with the new key added to the correct position.
+</thinking>
 {
   "node_groups": [
     {
@@ -36,4 +38,3 @@
     }
   ]
 }
-</thinking>

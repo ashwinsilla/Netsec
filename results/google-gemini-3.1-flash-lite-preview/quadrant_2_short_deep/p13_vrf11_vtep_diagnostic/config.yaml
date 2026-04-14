@@ -19,20 +19,8 @@ tenants:
   - name: VRF11
     vrf_vni: 11
     vtep_diagnostic:
-      name: VRF11
-      vrf_vni: 11
-      vtep_diagnostic:
-        loopback: 12
-        loopback_ip_range: 10.255.12.0/27
-      svis:
-      - id: 21
-        name: VRF11_VLAN21
-        enabled: true
-        ip_address_virtual: 10.10.21.1/24
-      - id: 22
-        name: VRF11_VLAN22
-        enabled: true
-        ip_address_virtual: 10.10.22.1/24
+      loopback: 12
+      loopback_ip_range: 10.255.12.0/27
     svis:
     - id: 21
       name: VRF11_VLAN21

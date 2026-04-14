@@ -1,21 +1,4 @@
-<thinking>
-The user wants to add '1.pool.ntp.org' to the existing `ntp_settings.servers` list.
-The current `ntp_settings` structure is:
-{
-  "server_vrf": "use_mgmt_interface_vrf",
-  "servers": [
-    { "name": "0.pool.ntp.org" }
-  ]
-}
-The target is to update the `servers` list to include both entries.
-</thinking>{
-  "server_vrf": "use_mgmt_interface_vrf",
-  "servers": [
-    {
-      "name": "0.pool.ntp.org"
-    },
-    {
-      "name": "1.pool.ntp.org"
-    }
-  ]
-}
+[
+  "0.pool.ntp.org",
+  "1.pool.ntp.org"
+]

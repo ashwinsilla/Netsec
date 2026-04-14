@@ -407,7 +407,7 @@ spanning_tree:
   mode: mstp
   mst_instances:
   - id: '0'
-    priority: 4096
+    priority: 8192
   no_spanning_tree_vlan: 4093-4094
 static_routes:
 - vrf: MGMT

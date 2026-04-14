@@ -1,8 +1,4 @@
-<thinking>
 {
-  "vtep_diagnostic": {
-    "loopback": 12,
-    "loopback_ip_range": "10.255.12.0/27"
-  }
+  "loopback": 12,
+  "loopback_ip_range": "10.255.12.0/27"
 }
-</thinking>

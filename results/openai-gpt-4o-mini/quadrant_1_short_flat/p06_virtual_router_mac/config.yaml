@@ -12,10 +12,9 @@ l3leaf:
     mlag_peer_ipv4_pool: 10.255.1.64/27
     mlag_peer_l3_ipv4_pool: 10.255.1.96/27
     virtual_router_mac_address:
-      l3leaf:
-        defaults:
-          virtual_router_mac_address: 00:1c:73:00:dc:01
-    spanning_tree_priority: 4096
+      defaults:
+        virtual_router_mac_address: 00:1c:73:00:dc:01
+    spanning_tree_priority: 8192
     spanning_tree_mode: mstp
   node_groups:
   - group: DC1_L3_LEAF1

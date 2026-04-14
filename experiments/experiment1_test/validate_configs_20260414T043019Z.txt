@@ -1,0 +1,1936 @@
+2026-04-14 00:30:19,491  INFO     Run report (continuous): /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/experiments/experiment1_test/validate_configs_20260414T043019Z.txt
+2026-04-14 00:30:19,491  INFO     validate_configs | repo_root=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | results_dir=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/results
+2026-04-14 00:30:19,605  DEBUG    AVD pip OK | interpreter=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/.venv/bin/python
+2026-04-14 00:30:19,610  DEBUG    ansible child env: ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:30:19,610  INFO     Preflight OK | 60 artifact(s)
+2026-04-14 00:30:19,610  DEBUG    flow: backup fabric_variables.yml.validate_bak <- baseline group_vars/FABRIC/fabric_variables.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:30:19,612  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:30:21,356  DEBUG    ansible-playbook rc=2 elapsed=1.74s chars=3601
+2026-04-14 00:30:21,356  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 16 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "16 errors found during schema validation of input variables."}
+[ERROR]: [dc1-spine1] Validation error for the input data model 'ntp_settings.servers[0]': Invalid type 'Str'. Expected 'Dict'.
+[ERROR]: [dc1-spine1] Validation error for the input data model 'ntp_settings.servers[1]': Invalid type 'Str'. Expected 'Dict'.
+[ERROR]: [dc1-spine2] Validation error for the input data model 'ntp_settings.servers[0]': Invalid type 'Str'. Expected 'Dict'.
+[ERROR]: [dc1-spine2] Validation error for the input data model 'ntp_settings.servers[1]': Invalid type 'Str'. Expected 'Dict'.
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'ntp_settings.servers[0]': Invalid type 'Str'. Expected 'Dict'.
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'ntp_settings.servers[1]': Invalid type 'Str'. Expected 'Dict'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'ntp_settings.servers[0]': Invalid type 'Str'. Expected 'Dict'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'ntp_settings.servers[1]': Invalid type 'Str'. Expected 'Dict'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'ntp_settings.servers[0]': Invalid type 'Str'. Expected 'Dict'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'ntp_settings.servers[1]': Invalid type 'Str'. Expected 'Dict'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'ntp_settings.servers[0]': Invalid type 'Str'. Expected 'Dict'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'ntp_settings.servers[1]': Invalid type 'Str'. Expected 'Dict'.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'ntp_settings.servers[0]': Invalid type 'Str'. Expected 'Dict'.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'ntp_settings.servers[1]': Invalid type 'Str'. Expected 'Dict'.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'ntp_settings.servers[0]': Invalid type 'Str'. Expected 'Dict'.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'ntp_settings.servers[1]': Invalid type 'Str'. Expected 'Dict'.
+2026-04-14 00:30:21,357  ERROR    [1/60] P01 google/gemini-3.1-flash-lite-preview | FAIL | p01_ntp_second_server | context=group_vars/FABRIC/fabric_variables.yml | artifact=google-gemini-3.1-flash-lite-preview/quadrant_1_short_flat/p01_ntp_second_server | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:30:21,357  ERROR      [ERROR]: Task failed: Action failed: 16 errors found during schema validation of input variables.
+2026-04-14 00:30:21,357  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "16 errors found during schema validation of input variables."}
+2026-04-14 00:30:21,357  ERROR      [ERROR]: [dc1-spine1] Validation error for the input data model 'ntp_settings.servers[0]': Invalid type 'Str'. Expected 'Dict'.
+2026-04-14 00:30:21,357  ERROR      [ERROR]: [dc1-spine1] Validation error for the input data model 'ntp_settings.servers[1]': Invalid type 'Str'. Expected 'Dict'.
+2026-04-14 00:30:21,357  ERROR      ... +14 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:30:21,358  DEBUG    flow: backup fabric_variables.yml.validate_bak <- baseline group_vars/FABRIC/fabric_variables.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:30:21,358  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:30:25,236  DEBUG    ansible-playbook rc=0 elapsed=3.88s chars=3265
+2026-04-14 00:30:25,236  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+changed: [dc1-spine1 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-spine2 -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf1c -> localhost]
+changed: [dc1-leaf2b -> localhost]
+changed: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+changed: [dc1-spine2 -> localhost]
+changed: [dc1-spine1 -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-
+2026-04-14 00:30:25,238  INFO     [2/60] P02 google/gemini-3.1-flash-lite-preview | OK | p02_dns_second_server | context=group_vars/FABRIC/fabric_variables.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:30:25,238  DEBUG    flow: backup fabric_variables.yml.validate_bak <- baseline group_vars/FABRIC/fabric_variables.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:30:25,239  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:30:29,111  DEBUG    ansible-playbook rc=0 elapsed=3.87s chars=3265
+2026-04-14 00:30:29,111  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+changed: [dc1-spine1 -> localhost]
+changed: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf2c -> localhost]
+changed: [dc1-leaf2b -> localhost]
+changed: [dc1-leaf1c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+changed: [dc1-spine1 -> localhost]
+changed: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-
+2026-04-14 00:30:29,112  INFO     [3/60] P03 google/gemini-3.1-flash-lite-preview | OK | p03_p2p_uplinks_mtu_9214 | context=group_vars/FABRIC/fabric_variables.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:30:29,113  DEBUG    flow: backup spines.yml.validate_bak <- baseline group_vars/DC1_SPINES/spines.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:30:29,114  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:30:32,799  DEBUG    ansible-playbook rc=0 elapsed=3.68s chars=3245
+2026-04-14 00:30:32,799  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+changed: [dc1-spine1 -> localhost]
+changed: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf2b -> localhost]
+ok: [dc1-leaf1c -> localhost]
+ok: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+changed: [dc1-spine2 -> localhost]
+changed: [dc1-spine1 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> 
+2026-04-14 00:30:32,800  INFO     [4/60] P04 google/gemini-3.1-flash-lite-preview | OK | p04_spine_bgp_as_65000 | context=group_vars/DC1_SPINES/spines.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:30:32,800  DEBUG    flow: backup l3_leaves.yml.validate_bak <- baseline group_vars/DC1_L3_LEAVES/l3_leaves.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:30:32,802  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:30:36,454  DEBUG    ansible-playbook rc=0 elapsed=3.65s chars=3245
+2026-04-14 00:30:36,454  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+changed: [dc1-spine1 -> localhost]
+changed: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+ok: [dc1-leaf2c -> localhost]
+changed: [dc1-leaf2b -> localhost]
+ok: [dc1-leaf1c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+changed: [dc1-spine1 -> localhost]
+changed: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> 
+2026-04-14 00:30:36,455  INFO     [5/60] P06 google/gemini-3.1-flash-lite-preview | OK | p06_virtual_router_mac | context=group_vars/DC1_L3_LEAVES/l3_leaves.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:30:36,455  DEBUG    flow: backup l3_leaves.yml.validate_bak <- baseline group_vars/DC1_L3_LEAVES/l3_leaves.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:30:36,457  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:30:40,080  DEBUG    ansible-playbook rc=0 elapsed=3.62s chars=3225
+2026-04-14 00:30:40,081  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf2b -> localhost]
+ok: [dc1-leaf2c -> localhost]
+ok: [dc1-leaf1c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+ok: [dc1-
+2026-04-14 00:30:40,082  INFO     [6/60] P07 google/gemini-3.1-flash-lite-preview | OK | p07_spanning_tree_mode_rstp | context=group_vars/DC1_L3_LEAVES/l3_leaves.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:30:40,082  DEBUG    flow: backup fabric_variables.yml.validate_bak <- baseline group_vars/FABRIC/fabric_variables.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:30:40,083  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:30:41,700  DEBUG    ansible-playbook rc=2 elapsed=1.62s chars=2735
+2026-04-14 00:30:41,700  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 8 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "8 errors found during schema validation of input variables."}
+[ERROR]: [dc1-spine1] Validation error for the input data model 'bgp_peer_groups.evpn_overlay_peers.password': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-spine2] Validation error for the input data model 'bgp_peer_groups.evpn_overlay_peers.password': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'bgp_peer_groups.evpn_overlay_peers.password': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'bgp_peer_groups.evpn_overlay_peers.password': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'bgp_peer_groups.evpn_overlay_peers.password': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'bgp_peer_groups.evpn_overlay_peers.password': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'bgp_peer_groups.evpn_overlay_peers.password': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'bgp_peer_groups.evpn_overlay_peers.password': Invalid type 'Dict'. Expected 'Str'.
+2026-04-14 00:30:41,701  ERROR    [7/60] P08 google/gemini-3.1-flash-lite-preview | FAIL | p08_evpn_overlay_peers_password | context=group_vars/FABRIC/fabric_variables.yml | artifact=google-gemini-3.1-flash-lite-preview/quadrant_2_short_deep/p08_evpn_overlay_peers_password | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:30:41,701  ERROR      [ERROR]: Task failed: Action failed: 8 errors found during schema validation of input variables.
+2026-04-14 00:30:41,701  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "8 errors found during schema validation of input variables."}
+2026-04-14 00:30:41,701  ERROR      [ERROR]: [dc1-spine1] Validation error for the input data model 'bgp_peer_groups.evpn_overlay_peers.password': Invalid type 'Dict'. Expected 'Str'.
+2026-04-14 00:30:41,701  ERROR      ... +7 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:30:41,701  DEBUG    flow: backup l3_leaves.yml.validate_bak <- baseline group_vars/DC1_L3_LEAVES/l3_leaves.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:30:41,703  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:30:45,355  DEBUG    ansible-playbook rc=0 elapsed=3.65s chars=3225
+2026-04-14 00:30:45,356  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf2b -> localhost]
+ok: [dc1-leaf1c -> localhost]
+ok: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+ok: [dc1-spine2 -> localhost]
+ok: [dc1-spine1 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+ok: [dc1-
+2026-04-14 00:30:45,356  INFO     [8/60] P09 google/gemini-3.1-flash-lite-preview | OK | p09_spanning_tree_priority_8192 | context=group_vars/DC1_L3_LEAVES/l3_leaves.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:30:45,357  DEBUG    flow: backup fabric_variables.yml.validate_bak <- baseline group_vars/FABRIC/fabric_variables.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:30:45,358  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:30:48,937  DEBUG    ansible-playbook rc=0 elapsed=3.58s chars=3265
+2026-04-14 00:30:48,937  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+changed: [dc1-spine1 -> localhost]
+changed: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf2b -> localhost]
+changed: [dc1-leaf1c -> localhost]
+changed: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+changed: [dc1-spine1 -> localhost]
+changed: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-
+2026-04-14 00:30:48,938  INFO     [9/60] P10 google/gemini-3.1-flash-lite-preview | OK | p10_aaa_local_user_netops | context=group_vars/FABRIC/fabric_variables.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:30:48,938  DEBUG    flow: backup l3_leaves.yml.validate_bak <- baseline group_vars/DC1_L3_LEAVES/l3_leaves.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:30:48,939  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:30:50,493  DEBUG    ansible-playbook rc=2 elapsed=1.55s chars=1991
+2026-04-14 00:30:50,494  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.node_groups[0].filters': Invalid key.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'l3leaf.node_groups[0].filters': Invalid key.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'l3leaf.node_groups[0].filters': Invalid key.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'l3leaf.node_groups[0].filters': Invalid key.
+2026-04-14 00:30:50,494  ERROR    [10/60] P11 google/gemini-3.1-flash-lite-preview | FAIL | p11_dc1_l3_leaf1_filters_tags | context=group_vars/DC1_L3_LEAVES/l3_leaves.yml | artifact=google-gemini-3.1-flash-lite-preview/quadrant_2_short_deep/p11_dc1_l3_leaf1_filters_tags | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:30:50,494  ERROR      [ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+2026-04-14 00:30:50,494  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+2026-04-14 00:30:50,494  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.node_groups[0].filters': Invalid key.
+2026-04-14 00:30:50,494  ERROR      ... +3 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:30:50,495  DEBUG    flow: backup l3_leaves.yml.validate_bak <- baseline group_vars/DC1_L3_LEAVES/l3_leaves.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:30:50,496  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:30:52,061  DEBUG    ansible-playbook rc=2 elapsed=1.56s chars=2199
+2026-04-14 00:30:52,061  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.node_groups[0].nodes[0].evpn_gateway.remote_peers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'l3leaf.node_groups[0].nodes[0].evpn_gateway.remote_peers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'l3leaf.node_groups[0].nodes[0].evpn_gateway.remote_peers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'l3leaf.node_groups[0].nodes[0].evpn_gateway.remote_peers': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:30:52,062  ERROR    [11/60] P12 google/gemini-3.1-flash-lite-preview | FAIL | p12_dc1_leaf1a_remote_peers | context=group_vars/DC1_L3_LEAVES/l3_leaves.yml | artifact=google-gemini-3.1-flash-lite-preview/quadrant_2_short_deep/p12_dc1_leaf1a_remote_peers | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:30:52,062  ERROR      [ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+2026-04-14 00:30:52,062  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+2026-04-14 00:30:52,062  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.node_groups[0].nodes[0].evpn_gateway.remote_peers': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:30:52,062  ERROR      ... +3 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:30:52,062  DEBUG    flow: backup network_services.yml.validate_bak <- baseline group_vars/NETWORK_SERVICES/network_services.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:30:52,063  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:30:55,640  DEBUG    ansible-playbook rc=0 elapsed=3.58s chars=3265
+2026-04-14 00:30:55,640  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+changed: [dc1-spine1 -> localhost]
+changed: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf2b -> localhost]
+changed: [dc1-leaf1c -> localhost]
+changed: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+changed: [dc1-spine1 -> localhost]
+changed: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-
+2026-04-14 00:30:55,641  INFO     [12/60] P13 google/gemini-3.1-flash-lite-preview | OK | p13_vrf11_vtep_diagnostic | context=group_vars/NETWORK_SERVICES/network_services.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:30:55,642  DEBUG    flow: backup network_services.yml.validate_bak <- baseline group_vars/NETWORK_SERVICES/network_services.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:30:55,643  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:30:57,207  DEBUG    ansible-playbook rc=2 elapsed=1.56s chars=5429
+2026-04-14 00:30:57,207  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 18 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "18 errors found during schema validation of input variables."}
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'tenants[0].vrfs[0].static_routes[0].destination_address_prefix': The input data model 'tenants[0].vrfs[0].static_routes[0].destination_address_prefix' was removed in AVD version 6.0.0. Use 'prefix' instead.
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'tenants[0].vrfs[0].static_routes[0].gateway': The input data model 'tenants[0].vrfs[0].static_routes[0].gateway' was removed in AVD version 6.0.0. Use 'next_hop' instead.
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'tenants[0].vrfs[0].static_routes[0]': Missing the required key 'prefix'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'tenants[0].vrfs[0].static_routes[0].destination_address_prefix': The input data model 'tenants[0].vrfs[0].static_routes[0].destination_address_prefix' was removed in AVD version 6.0.0. Use 'prefix' instead.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'tenants[0].vrfs[0].static_routes[0].gateway': The input data model 'tenants[0].vrfs[0].static_routes[0].gateway' was removed in AVD version 6.0.0. Use 'next_hop' instead.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'tenants[0].vrfs[0].static_routes[0]': Missing the required key 'prefix'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'tenants[0].vrfs[0].static_routes[0].destination_address_prefix': The input data model 'tenants[0].vrfs[0].static_routes[0].destination_address_prefix' was removed in AVD version 6.0.0. Use 'prefix' instead.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'tenants[0].vrfs[0].static_routes[0].gateway': The input data model 'tenants[0].vrfs[0].static_routes[0].gateway' was removed in AVD version 6.0.0. Use 'next_hop' instead.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'tenants[0].vrfs[0].static_routes[0]': Missing the required key 'prefix'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'tenants[0].vrfs[0].static_routes[0].destination_address_prefix': The input data model 'tenants[0].vrfs[0].static_routes[0].destination_address_prefix' was removed in AVD version 6.0.0. Use 'prefix' instead.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'tenants[0].vrfs[0].static_routes[0].gateway': The input data model 'tenants[0].vrfs[0].static_routes[0].gateway' was removed in AVD version 6.0.0. Use 'next_hop' instead.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'tenants[0].vrfs[0].static_routes[0]': Missing the required key 'prefix'.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'tenants[0].vrfs[0].static_routes[0].destination_address_prefix': The input data model 'tenants[0].vrfs[0].static_routes[0].destination_address_prefix' was removed in AVD version 6.0.0. Use 'prefix' instead.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'tenants[0].vrfs[0].static_routes[0].gateway': The input data model 'tenants[0].vrfs[0].static_routes[0].gateway' was removed in AVD version 6.0.0. Use 'next_hop' instead.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'tenants[0].vrfs[0].static_routes[0]': Missing the required key 'prefix'.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'tenants[0].vrfs[0].static_routes[0].destination_address_prefix': The input data model 'tenants[0].vrfs[0].static_routes[0].destination_address_prefix' was removed in AVD version 6.0.0. Use 'prefix' instead.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'tenants[0].vrfs[0].static_routes[0].gateway': The input data model 'tenants[0].vrfs[0].static_routes[0].gateway' was removed in AVD version 6.0.0. Use 'next_hop' instead.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'tenants[0].vrfs[0].static_routes[0]': Missing the required key 'prefix'.
+2026-04-14 00:30:57,208  ERROR    [13/60] P14 google/gemini-3.1-flash-lite-preview | FAIL | p14_vrf10_static_routes | context=group_vars/NETWORK_SERVICES/network_services.yml | artifact=google-gemini-3.1-flash-lite-preview/quadrant_2_short_deep/p14_vrf10_static_routes | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:30:57,208  ERROR      [ERROR]: Task failed: Action failed: 18 errors found during schema validation of input variables.
+2026-04-14 00:30:57,208  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "18 errors found during schema validation of input variables."}
+2026-04-14 00:30:57,208  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'tenants[0].vrfs[0].static_routes[0].destination_address_prefix': The input data model 'tenants[0].vrfs[0].static_routes[0].destination_address_prefix' was removed in AVD version 6.0.0. Use 'prefix' instead.
+2026-04-14 00:30:57,208  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'tenants[0].vrfs[0].static_routes[0].gateway': The input data model 'tenants[0].vrfs[0].static_routes[0].gateway' was removed in AVD version 6.0.0. Use 'next_hop' instead.
+2026-04-14 00:30:57,208  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'tenants[0].vrfs[0].static_routes[0]': Missing the required key 'prefix'.
+2026-04-14 00:30:57,208  ERROR      ... +15 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:30:57,209  DEBUG    flow: backup network_services.yml.validate_bak <- baseline group_vars/NETWORK_SERVICES/network_services.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:30:57,210  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:31:00,903  DEBUG    ansible-playbook rc=0 elapsed=3.69s chars=3225
+2026-04-14 00:31:00,904  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+ok: [dc1-leaf1c -> localhost]
+changed: [dc1-leaf2b -> localhost]
+ok: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+ok: [dc1-
+2026-04-14 00:31:00,905  INFO     [14/60] P15 google/gemini-3.1-flash-lite-preview | OK | p15_svi11_ip_address_virtual | context=group_vars/NETWORK_SERVICES/network_services.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:31:00,905  DEBUG    flow: backup spines.yml.validate_bak <- baseline group_vars/DC1_SPINES/spines.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:31:00,906  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:31:04,431  DEBUG    ansible-playbook rc=0 elapsed=3.53s chars=3225
+2026-04-14 00:31:04,432  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+ok: [dc1-spine2 -> localhost]
+ok: [dc1-spine1 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf2b -> localhost]
+ok: [dc1-leaf1c -> localhost]
+ok: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+ok: [dc1-spine2 -> localhost]
+ok: [dc1-spine1 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+ok: [dc1-
+2026-04-14 00:31:04,432  INFO     [15/60] P05 google/gemini-3.1-flash-lite-preview | OK | p05_spine_third_node | context=group_vars/DC1_SPINES/spines.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:31:04,433  DEBUG    flow: backup network_services.yml.validate_bak <- baseline group_vars/NETWORK_SERVICES/network_services.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:31:04,434  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:31:08,018  DEBUG    ansible-playbook rc=0 elapsed=3.58s chars=3245
+2026-04-14 00:31:08,019  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf2b -> localhost]
+changed: [dc1-leaf1c -> localhost]
+changed: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+2026-04-14 00:31:08,019  INFO     [16/60] P16 google/gemini-3.1-flash-lite-preview | OK | p16_tenant1_vrf20 | context=group_vars/NETWORK_SERVICES/network_services.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:31:08,020  DEBUG    flow: backup l3_leaves.yml.validate_bak <- baseline group_vars/DC1_L3_LEAVES/l3_leaves.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:31:08,021  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:31:11,513  DEBUG    ansible-playbook rc=2 elapsed=3.49s chars=6278
+2026-04-14 00:31:11,514  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Found duplicate objects with conflicting data while generating configuration for EthernetInterfaces. {'name': 'Ethernet1', 'description': 'P2P_dc1-leaf1b_Ethernet2', 'shutdown': False, 'mtu': 1500, 'ip_address': '10.255.255.6/31', 'metadata': {'peer': 'dc1-leaf1b', 'peer_interface': 'Ethernet2', 'peer_type': 'l3leaf'}, 'switchport': {'enabled': False}} conflicts with {'name': 'Ethernet1', 'description': 'P2P_dc1-leaf1a_Ethernet2', 'shutdown': False, 'mtu': 1500, 'ip_address': '10.255.255.2/31', 'metadata': {'peer': 'dc1-leaf1a', 'peer_interface': 'Ethernet2', 'peer_type': 'l3leaf'}, 'switchport': {'enabled': False}}.
+fatal: [dc1-spine2 -> localhost]: FAILED! => {"changed": false, "msg": "Found duplicate objects with conflicting data while generating configuration for EthernetInterfaces. {'name': 'Ethernet1', 'description': 'P2P_dc1-leaf1b_Ethernet2', 'shutdown': False, 'mtu': 1500, 'ip_address': '10.255.255.6/31', 'metadata': {'peer': 'dc1-leaf1b', 'peer_interface': 'Ethernet2', 'peer_type': 'l3leaf'}, 'switchport': {'enabled': False}} conflicts with {'name': 'Ethernet1', 'description': 'P2P_dc1-leaf1a_Ethernet2', 'shutdown': False, 'mtu': 1500, 'ip_address': '10.255.255.2/31', 'metadata': {'peer': 'dc1-leaf1a', 'peer_interface': 'Ethernet2', 'peer_type': 'l3leaf'}, 'switchport': {'enabled': False}}."}
+[ERROR]: Task failed: Found duplicate objects with conflicting data while generating configuration for EthernetInterfaces. {'name': 'Ethernet1', 'description': 'P2P_dc1-leaf1b_Ethernet1', 'shutdown': False, 'mtu': 1500, 'ip_address': '10.255.255.4/31', 'metadata': {'peer': 'dc1-leaf1b', 'peer_interface': 'Ethernet1', 'peer_type': 'l3leaf'}, 'switchport': {'enabled': False}} conflicts with {'name': 'Ethernet1', 'description': 'P2P_dc1-leaf1a_Ethernet1', 'shutdown': False, 'mtu': 1500, 'ip_address': '10.255.255.0/31', 'metadata': {'peer': 'dc1-leaf1a', 'peer_interface': 'Ethernet1', 'peer_type': 'l3leaf'}, 'switchport': {'enabled': False}}.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "Found duplicate objects with conflicting data while generating configuration for EthernetInterfaces. {'name': 'Ethernet1', 'description': 'P2P_dc1-leaf1b_Ethernet1', 'shutdown': False, 'mtu': 1500, 'ip_address': '10.255.255.4/31', 'metadata': {'peer': 'dc1-leaf1b', 'peer_interface': 'Ethernet1', 'peer_type': 'l3leaf'}, 'switchport': {'enabled': False}} conflicts with {'name': 'Ethernet1', 'description': 'P2P_dc1-leaf1a_Ethernet1', 'shutdown': False, 'mtu': 1500, 'ip_address': '10.255.255.0/31', 'metadata': {'peer': 'dc1-leaf1a', 'peer_interface': 'Ethernet1', 'peer_type': 'l3leaf'}, 'switchport': {'enabled': False}}."}
+2026-04-14 00:31:11,514  ERROR    [17/60] P17 google/gemini-3.1-flash-lite-preview | FAIL | p17_uplink_switch_interfaces_defaults | context=group_vars/DC1_L3_LEAVES/l3_leaves.yml | artifact=google-gemini-3.1-flash-lite-preview/quadrant_3_long_flat/p17_uplink_switch_interfaces_defaults | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:31:11,515  ERROR      [ERROR]: Task failed: Found duplicate objects with conflicting data while generating configuration for EthernetInterfaces. {'name': 'Ethernet1', 'description': 'P2P_dc1-leaf1b_Ethernet2', 'shutdown': False, 'mtu': 1500, 'ip_address': '10.255.255.6/31', 'metadata': {'peer': 'dc1-leaf1b', 'peer_interface': 'Ethernet2', 'peer_type': 'l3leaf'}, 'switchport': {'enabled': False}} conflicts with {'name': 'Ethernet1', 'description': 'P2P_dc1-leaf1a_Ethernet2', 'shutdown': False, 'mtu': 1500, 'ip_address': '10.255.255.2/31', 'metadata': {'peer': 'dc1-leaf1a', 'peer_interface': 'Ethernet2', 'peer_type': 'l3leaf'}, 'switchport': {'enabled': False}}.
+2026-04-14 00:31:11,515  ERROR      fatal: [dc1-spine2 -> localhost]: FAILED! => {"changed": false, "msg": "Found duplicate objects with conflicting data while generating configuration for EthernetInterfaces. {'name': 'Ethernet1', 'description': 'P2P_dc1-leaf1b_Ethernet2', 'shutdown': False, 'mtu': 1500, 'ip_address': '10.255.255.6/31', 'metadata': {'peer': 'dc1-leaf1b', 'peer_interface': 'Ethernet2', 'peer_type': 'l3leaf'}, 'switchport': {'enabled': False}} conflicts with {'name': 'Ethernet1', 'description': 'P2P_dc1-leaf1a_Ethernet2', 'shutdown': False, 'mtu': 1500, 'ip_address': '10.255.255.2/31', 'metadata': {'peer': 'dc1-leaf1a', 'peer_interface': 'Ethernet2', 'peer_type': 'l3leaf'}, 'switchport': {'enabled': False}}."}
+2026-04-14 00:31:11,515  ERROR      [ERROR]: Task failed: Found duplicate objects with conflicting data while generating configuration for EthernetInterfaces. {'name': 'Ethernet1', 'description': 'P2P_dc1-leaf1b_Ethernet1', 'shutdown': False, 'mtu': 1500, 'ip_address': '10.255.255.4/31', 'metadata': {'peer': 'dc1-leaf1b', 'peer_interface': 'Ethernet1', 'peer_type': 'l3leaf'}, 'switchport': {'enabled': False}} conflicts with {'name': 'Ethernet1', 'description': 'P2P_dc1-leaf1a_Ethernet1', 'shutdown': False, 'mtu': 1500, 'ip_address': '10.255.255.0/31', 'metadata': {'peer': 'dc1-leaf1a', 'peer_interface': 'Ethernet1', 'peer_type': 'l3leaf'}, 'switchport': {'enabled': False}}.
+2026-04-14 00:31:11,515  ERROR      ... +1 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:31:11,515  DEBUG    flow: backup network_services.yml.validate_bak <- baseline group_vars/NETWORK_SERVICES/network_services.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:31:11,516  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:31:15,039  DEBUG    ansible-playbook rc=0 elapsed=3.52s chars=3250
+2026-04-14 00:31:15,039  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf1c -> localhost]
+changed: [dc1-leaf2b -> localhost]
+changed: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+changed: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> local
+2026-04-14 00:31:15,040  INFO     [18/60] P18 google/gemini-3.1-flash-lite-preview | OK | p18_l2vlan_3403 | context=group_vars/NETWORK_SERVICES/network_services.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:31:15,041  DEBUG    flow: backup l3_leaves.yml.validate_bak <- baseline group_vars/DC1_L3_LEAVES/l3_leaves.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:31:15,042  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:31:16,616  DEBUG    ansible-playbook rc=2 elapsed=1.57s chars=2139
+2026-04-14 00:31:16,616  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.node_groups[1].mlag_port_channel_id': Invalid type 'Dict'. Expected 'Int'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'l3leaf.node_groups[1].mlag_port_channel_id': Invalid type 'Dict'. Expected 'Int'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'l3leaf.node_groups[1].mlag_port_channel_id': Invalid type 'Dict'. Expected 'Int'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'l3leaf.node_groups[1].mlag_port_channel_id': Invalid type 'Dict'. Expected 'Int'.
+2026-04-14 00:31:16,617  ERROR    [19/60] P19 google/gemini-3.1-flash-lite-preview | FAIL | p19_mlag_port_channel_leaf2 | context=group_vars/DC1_L3_LEAVES/l3_leaves.yml | artifact=google-gemini-3.1-flash-lite-preview/quadrant_3_long_flat/p19_mlag_port_channel_leaf2 | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:31:16,617  ERROR      [ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+2026-04-14 00:31:16,617  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+2026-04-14 00:31:16,617  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.node_groups[1].mlag_port_channel_id': Invalid type 'Dict'. Expected 'Int'.
+2026-04-14 00:31:16,617  ERROR      ... +3 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:31:16,618  DEBUG    flow: backup network_services.yml.validate_bak <- baseline group_vars/NETWORK_SERVICES/network_services.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:31:16,619  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:31:20,343  DEBUG    ansible-playbook rc=0 elapsed=3.72s chars=3245
+2026-04-14 00:31:20,344  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1c -> localhost]
+changed: [dc1-leaf2b -> localhost]
+changed: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+ok: [dc1-spine2 -> localhost]
+ok: [dc1-spine1 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+2026-04-14 00:31:20,345  INFO     [20/60] P20 google/gemini-3.1-flash-lite-preview | OK | p20_svi11_tags | context=group_vars/NETWORK_SERVICES/network_services.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:31:20,346  DEBUG    flow: backup network_services.yml.validate_bak <- baseline group_vars/NETWORK_SERVICES/network_services.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:31:20,346  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:31:24,126  DEBUG    ansible-playbook rc=0 elapsed=3.78s chars=3245
+2026-04-14 00:31:24,126  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1c -> localhost]
+changed: [dc1-leaf2b -> localhost]
+changed: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+2026-04-14 00:31:24,127  INFO     [21/60] P21 google/gemini-3.1-flash-lite-preview | OK | p21_vrf10_svis_13_14 | context=group_vars/NETWORK_SERVICES/network_services.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:31:24,128  DEBUG    flow: backup connected_endpoints.yml.validate_bak <- baseline group_vars/CONNECTED_ENDPOINTS/connected_endpoints.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:31:24,129  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:31:27,858  DEBUG    ansible-playbook rc=0 elapsed=3.73s chars=3250
+2026-04-14 00:31:27,859  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2b -> localhost]
+changed: [dc1-leaf1c -> localhost]
+changed: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+changed: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf1b -> local
+2026-04-14 00:31:27,860  INFO     [22/60] P22 google/gemini-3.1-flash-lite-preview | OK | p22_server_dc1_leaf1_server2 | context=group_vars/CONNECTED_ENDPOINTS/connected_endpoints.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:31:27,861  DEBUG    flow: backup network_services.yml.validate_bak <- baseline group_vars/NETWORK_SERVICES/network_services.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:31:27,861  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:31:31,408  DEBUG    ansible-playbook rc=0 elapsed=3.55s chars=3250
+2026-04-14 00:31:31,408  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf1c -> localhost]
+changed: [dc1-leaf2b -> localhost]
+changed: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+changed: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> local
+2026-04-14 00:31:31,409  INFO     [23/60] P23 google/gemini-3.1-flash-lite-preview | OK | p23_tenant2_full | context=group_vars/NETWORK_SERVICES/network_services.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:31:31,410  DEBUG    flow: backup l3_leaves.yml.validate_bak <- baseline group_vars/DC1_L3_LEAVES/l3_leaves.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:31:31,411  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:31:35,068  DEBUG    ansible-playbook rc=0 elapsed=3.66s chars=3245
+2026-04-14 00:31:35,069  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+ok: [dc1-spine2 -> localhost]
+ok: [dc1-spine1 -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf2b -> localhost]
+changed: [dc1-leaf1c -> localhost]
+changed: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+2026-04-14 00:31:35,070  INFO     [24/60] P24 google/gemini-3.1-flash-lite-preview | OK | p24_node_group_dc1_l3_leaf3 | context=group_vars/DC1_L3_LEAVES/l3_leaves.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:31:35,071  DEBUG    flow: backup connected_endpoints.yml.validate_bak <- baseline group_vars/CONNECTED_ENDPOINTS/connected_endpoints.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:31:35,072  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:31:38,639  DEBUG    ansible-playbook rc=0 elapsed=3.57s chars=3200
+2026-04-14 00:31:38,640  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+ok: [dc1-leaf1a -> localhost]
+ok: [dc1-leaf1b -> localhost]
+ok: [dc1-leaf2a -> localhost]
+ok: [dc1-leaf2b -> localhost]
+ok: [dc1-leaf1c -> localhost]
+changed: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+changed: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+ok: [dc1-spine2 -> localhost]
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-leaf1a -> localhost]
+ok: [dc1-leaf1b -> localhost]
+ok: [dc1-leaf2a -> localhost]
+ok: [dc1-leaf1c -> localhost]
+chan
+2026-04-14 00:31:38,640  INFO     [25/60] P25 google/gemini-3.1-flash-lite-preview | OK | p25_dc1_leaf2_server1_ilo | context=group_vars/CONNECTED_ENDPOINTS/connected_endpoints.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:31:38,641  DEBUG    flow: backup network_services.yml.validate_bak <- baseline group_vars/NETWORK_SERVICES/network_services.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:31:38,642  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:31:42,175  DEBUG    ansible-playbook rc=0 elapsed=3.53s chars=3240
+2026-04-14 00:31:42,176  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2b -> localhost]
+ok: [dc1-leaf1c -> localhost]
+changed: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+changed: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+ok: [dc1-spine2 -> localhost]
+ok: [dc1-spine1 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+2026-04-14 00:31:42,176  INFO     [26/60] P26 google/gemini-3.1-flash-lite-preview | OK | p26_svi12_structured_config | context=group_vars/NETWORK_SERVICES/network_services.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:31:42,177  DEBUG    flow: backup fabric_variables.yml.validate_bak <- baseline group_vars/FABRIC/fabric_variables.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:31:42,178  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:31:43,717  DEBUG    ansible-playbook rc=2 elapsed=1.54s chars=2439
+2026-04-14 00:31:43,717  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 8 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "8 errors found during schema validation of input variables."}
+[ERROR]: [dc1-spine1] Validation error for the input data model 'ntp_settings.servers[0].prefer': Invalid key.
+[ERROR]: [dc1-spine2] Validation error for the input data model 'ntp_settings.servers[0].prefer': Invalid key.
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'ntp_settings.servers[0].prefer': Invalid key.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'ntp_settings.servers[0].prefer': Invalid key.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'ntp_settings.servers[0].prefer': Invalid key.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'ntp_settings.servers[0].prefer': Invalid key.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'ntp_settings.servers[0].prefer': Invalid key.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'ntp_settings.servers[0].prefer': Invalid key.
+2026-04-14 00:31:43,718  ERROR    [27/60] P27 google/gemini-3.1-flash-lite-preview | FAIL | p27_ntp_multi_edit | context=group_vars/FABRIC/fabric_variables.yml | artifact=google-gemini-3.1-flash-lite-preview/quadrant_4_long_deep/p27_ntp_multi_edit | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:31:43,718  ERROR      [ERROR]: Task failed: Action failed: 8 errors found during schema validation of input variables.
+2026-04-14 00:31:43,718  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "8 errors found during schema validation of input variables."}
+2026-04-14 00:31:43,718  ERROR      [ERROR]: [dc1-spine1] Validation error for the input data model 'ntp_settings.servers[0].prefer': Invalid key.
+2026-04-14 00:31:43,718  ERROR      ... +7 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:31:43,719  DEBUG    flow: backup l3_leaves.yml.validate_bak <- baseline group_vars/DC1_L3_LEAVES/l3_leaves.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:31:43,720  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:31:47,278  DEBUG    ansible-playbook rc=0 elapsed=3.56s chars=3225
+2026-04-14 00:31:47,278  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+ok: [dc1-spine2 -> localhost]
+ok: [dc1-spine1 -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf2b -> localhost]
+ok: [dc1-leaf1c -> localhost]
+ok: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+ok: [dc1-
+2026-04-14 00:31:47,279  INFO     [28/60] P28 google/gemini-3.1-flash-lite-preview | OK | p28_dc1_leaf1a_structured_config_loopback | context=group_vars/DC1_L3_LEAVES/l3_leaves.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:31:47,280  DEBUG    flow: backup network_services.yml.validate_bak <- baseline group_vars/NETWORK_SERVICES/network_services.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:31:47,280  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:31:50,989  DEBUG    ansible-playbook rc=0 elapsed=3.71s chars=3225
+2026-04-14 00:31:50,991  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf2b -> localhost]
+ok: [dc1-leaf1c -> localhost]
+ok: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+ok: [dc1-
+2026-04-14 00:31:50,992  INFO     [29/60] P29 google/gemini-3.1-flash-lite-preview | OK | p29_svi21_ip_helpers | context=group_vars/NETWORK_SERVICES/network_services.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:31:50,992  DEBUG    flow: backup l3_leaves.yml.validate_bak <- baseline group_vars/DC1_L3_LEAVES/l3_leaves.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:31:50,993  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:31:54,520  DEBUG    ansible-playbook rc=0 elapsed=3.53s chars=3225
+2026-04-14 00:31:54,520  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2b -> localhost]
+ok: [dc1-leaf1c -> localhost]
+ok: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+ok: [dc1-spine2 -> localhost]
+ok: [dc1-spine1 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+ok: [dc1-
+2026-04-14 00:31:54,521  INFO     [30/60] P30 google/gemini-3.1-flash-lite-preview | OK | p30_evpn_services_l2_only_defaults_and_node | context=group_vars/DC1_L3_LEAVES/l3_leaves.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:31:54,522  DEBUG    flow: backup fabric_variables.yml.validate_bak <- baseline group_vars/FABRIC/fabric_variables.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:31:54,523  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:31:56,110  DEBUG    ansible-playbook rc=2 elapsed=1.59s chars=2559
+2026-04-14 00:31:56,110  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 8 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "8 errors found during schema validation of input variables."}
+[ERROR]: [dc1-spine1] Validation error for the input data model 'ntp_settings.servers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-spine2] Validation error for the input data model 'ntp_settings.servers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'ntp_settings.servers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'ntp_settings.servers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'ntp_settings.servers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'ntp_settings.servers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'ntp_settings.servers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'ntp_settings.servers': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:31:56,111  ERROR    [31/60] P01 openai/gpt-4o-mini | FAIL | p01_ntp_second_server | context=group_vars/FABRIC/fabric_variables.yml | artifact=openai-gpt-4o-mini/quadrant_1_short_flat/p01_ntp_second_server | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:31:56,111  ERROR      [ERROR]: Task failed: Action failed: 8 errors found during schema validation of input variables.
+2026-04-14 00:31:56,111  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "8 errors found during schema validation of input variables."}
+2026-04-14 00:31:56,111  ERROR      [ERROR]: [dc1-spine1] Validation error for the input data model 'ntp_settings.servers': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:31:56,111  ERROR      ... +7 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:31:56,112  DEBUG    flow: backup fabric_variables.yml.validate_bak <- baseline group_vars/FABRIC/fabric_variables.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:31:56,112  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:31:57,649  DEBUG    ansible-playbook rc=2 elapsed=1.54s chars=2559
+2026-04-14 00:31:57,650  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 8 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "8 errors found during schema validation of input variables."}
+[ERROR]: [dc1-spine1] Validation error for the input data model 'dns_settings.servers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-spine2] Validation error for the input data model 'dns_settings.servers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'dns_settings.servers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'dns_settings.servers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'dns_settings.servers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'dns_settings.servers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'dns_settings.servers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'dns_settings.servers': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:31:57,650  ERROR    [32/60] P02 openai/gpt-4o-mini | FAIL | p02_dns_second_server | context=group_vars/FABRIC/fabric_variables.yml | artifact=openai-gpt-4o-mini/quadrant_1_short_flat/p02_dns_second_server | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:31:57,651  ERROR      [ERROR]: Task failed: Action failed: 8 errors found during schema validation of input variables.
+2026-04-14 00:31:57,651  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "8 errors found during schema validation of input variables."}
+2026-04-14 00:31:57,651  ERROR      [ERROR]: [dc1-spine1] Validation error for the input data model 'dns_settings.servers': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:31:57,651  ERROR      ... +7 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:31:57,651  DEBUG    flow: backup fabric_variables.yml.validate_bak <- baseline group_vars/FABRIC/fabric_variables.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:31:57,652  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:31:59,169  DEBUG    ansible-playbook rc=2 elapsed=1.52s chars=2511
+2026-04-14 00:31:59,169  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 8 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "8 errors found during schema validation of input variables."}
+[ERROR]: [dc1-spine1] Validation error for the input data model 'p2p_uplinks_mtu': Invalid type 'Dict'. Expected 'Int'.
+[ERROR]: [dc1-spine2] Validation error for the input data model 'p2p_uplinks_mtu': Invalid type 'Dict'. Expected 'Int'.
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'p2p_uplinks_mtu': Invalid type 'Dict'. Expected 'Int'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'p2p_uplinks_mtu': Invalid type 'Dict'. Expected 'Int'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'p2p_uplinks_mtu': Invalid type 'Dict'. Expected 'Int'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'p2p_uplinks_mtu': Invalid type 'Dict'. Expected 'Int'.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'p2p_uplinks_mtu': Invalid type 'Dict'. Expected 'Int'.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'p2p_uplinks_mtu': Invalid type 'Dict'. Expected 'Int'.
+2026-04-14 00:31:59,170  ERROR    [33/60] P03 openai/gpt-4o-mini | FAIL | p03_p2p_uplinks_mtu_9214 | context=group_vars/FABRIC/fabric_variables.yml | artifact=openai-gpt-4o-mini/quadrant_1_short_flat/p03_p2p_uplinks_mtu_9214 | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:31:59,170  ERROR      [ERROR]: Task failed: Action failed: 8 errors found during schema validation of input variables.
+2026-04-14 00:31:59,170  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "8 errors found during schema validation of input variables."}
+2026-04-14 00:31:59,170  ERROR      [ERROR]: [dc1-spine1] Validation error for the input data model 'p2p_uplinks_mtu': Invalid type 'Dict'. Expected 'Int'.
+2026-04-14 00:31:59,170  ERROR      ... +7 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:31:59,171  DEBUG    flow: backup spines.yml.validate_bak <- baseline group_vars/DC1_SPINES/spines.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:31:59,172  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:00,801  DEBUG    ansible-playbook rc=2 elapsed=1.63s chars=1803
+2026-04-14 00:32:00,801  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 2 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "2 errors found during schema validation of input variables."}
+[ERROR]: [dc1-spine1] Validation error for the input data model 'spine.defaults.bgp_as': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-spine2] Validation error for the input data model 'spine.defaults.bgp_as': Invalid type 'Dict'. Expected 'Str'.
+2026-04-14 00:32:00,802  ERROR    [34/60] P04 openai/gpt-4o-mini | FAIL | p04_spine_bgp_as_65000 | context=group_vars/DC1_SPINES/spines.yml | artifact=openai-gpt-4o-mini/quadrant_1_short_flat/p04_spine_bgp_as_65000 | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:00,802  ERROR      [ERROR]: Task failed: Action failed: 2 errors found during schema validation of input variables.
+2026-04-14 00:32:00,802  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "2 errors found during schema validation of input variables."}
+2026-04-14 00:32:00,802  ERROR      [ERROR]: [dc1-spine1] Validation error for the input data model 'spine.defaults.bgp_as': Invalid type 'Dict'. Expected 'Str'.
+2026-04-14 00:32:00,802  ERROR      ... +1 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:00,803  DEBUG    flow: backup l3_leaves.yml.validate_bak <- baseline group_vars/DC1_L3_LEAVES/l3_leaves.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:00,804  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:02,387  DEBUG    ansible-playbook rc=2 elapsed=1.58s chars=2139
+2026-04-14 00:32:02,388  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.defaults.virtual_router_mac_address': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'l3leaf.defaults.virtual_router_mac_address': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'l3leaf.defaults.virtual_router_mac_address': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'l3leaf.defaults.virtual_router_mac_address': Invalid type 'Dict'. Expected 'Str'.
+2026-04-14 00:32:02,388  ERROR    [35/60] P06 openai/gpt-4o-mini | FAIL | p06_virtual_router_mac | context=group_vars/DC1_L3_LEAVES/l3_leaves.yml | artifact=openai-gpt-4o-mini/quadrant_1_short_flat/p06_virtual_router_mac | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:02,388  ERROR      [ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+2026-04-14 00:32:02,388  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+2026-04-14 00:32:02,388  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.defaults.virtual_router_mac_address': Invalid type 'Dict'. Expected 'Str'.
+2026-04-14 00:32:02,388  ERROR      ... +3 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:02,389  DEBUG    flow: backup l3_leaves.yml.validate_bak <- baseline group_vars/DC1_L3_LEAVES/l3_leaves.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:02,390  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:03,986  DEBUG    ansible-playbook rc=2 elapsed=1.60s chars=2107
+2026-04-14 00:32:03,986  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.defaults.spanning_tree_mode': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'l3leaf.defaults.spanning_tree_mode': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'l3leaf.defaults.spanning_tree_mode': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'l3leaf.defaults.spanning_tree_mode': Invalid type 'Dict'. Expected 'Str'.
+2026-04-14 00:32:03,987  ERROR    [36/60] P07 openai/gpt-4o-mini | FAIL | p07_spanning_tree_mode_rstp | context=group_vars/DC1_L3_LEAVES/l3_leaves.yml | artifact=openai-gpt-4o-mini/quadrant_1_short_flat/p07_spanning_tree_mode_rstp | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:03,987  ERROR      [ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+2026-04-14 00:32:03,987  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+2026-04-14 00:32:03,987  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.defaults.spanning_tree_mode': Invalid type 'Dict'. Expected 'Str'.
+2026-04-14 00:32:03,987  ERROR      ... +3 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:03,987  DEBUG    flow: backup fabric_variables.yml.validate_bak <- baseline group_vars/FABRIC/fabric_variables.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:03,988  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:05,522  DEBUG    ansible-playbook rc=2 elapsed=1.53s chars=2735
+2026-04-14 00:32:05,523  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 8 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "8 errors found during schema validation of input variables."}
+[ERROR]: [dc1-spine1] Validation error for the input data model 'bgp_peer_groups.evpn_overlay_peers.password': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-spine2] Validation error for the input data model 'bgp_peer_groups.evpn_overlay_peers.password': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'bgp_peer_groups.evpn_overlay_peers.password': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'bgp_peer_groups.evpn_overlay_peers.password': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'bgp_peer_groups.evpn_overlay_peers.password': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'bgp_peer_groups.evpn_overlay_peers.password': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'bgp_peer_groups.evpn_overlay_peers.password': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'bgp_peer_groups.evpn_overlay_peers.password': Invalid type 'Dict'. Expected 'Str'.
+2026-04-14 00:32:05,523  ERROR    [37/60] P08 openai/gpt-4o-mini | FAIL | p08_evpn_overlay_peers_password | context=group_vars/FABRIC/fabric_variables.yml | artifact=openai-gpt-4o-mini/quadrant_2_short_deep/p08_evpn_overlay_peers_password | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:05,523  ERROR      [ERROR]: Task failed: Action failed: 8 errors found during schema validation of input variables.
+2026-04-14 00:32:05,523  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "8 errors found during schema validation of input variables."}
+2026-04-14 00:32:05,523  ERROR      [ERROR]: [dc1-spine1] Validation error for the input data model 'bgp_peer_groups.evpn_overlay_peers.password': Invalid type 'Dict'. Expected 'Str'.
+2026-04-14 00:32:05,523  ERROR      ... +7 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:05,524  DEBUG    flow: backup l3_leaves.yml.validate_bak <- baseline group_vars/DC1_L3_LEAVES/l3_leaves.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:05,525  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:07,058  DEBUG    ansible-playbook rc=2 elapsed=1.53s chars=2123
+2026-04-14 00:32:07,058  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.defaults.spanning_tree_priority': Invalid type 'Dict'. Expected 'Int'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'l3leaf.defaults.spanning_tree_priority': Invalid type 'Dict'. Expected 'Int'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'l3leaf.defaults.spanning_tree_priority': Invalid type 'Dict'. Expected 'Int'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'l3leaf.defaults.spanning_tree_priority': Invalid type 'Dict'. Expected 'Int'.
+2026-04-14 00:32:07,059  ERROR    [38/60] P09 openai/gpt-4o-mini | FAIL | p09_spanning_tree_priority_8192 | context=group_vars/DC1_L3_LEAVES/l3_leaves.yml | artifact=openai-gpt-4o-mini/quadrant_2_short_deep/p09_spanning_tree_priority_8192 | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:07,059  ERROR      [ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+2026-04-14 00:32:07,059  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+2026-04-14 00:32:07,059  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.defaults.spanning_tree_priority': Invalid type 'Dict'. Expected 'Int'.
+2026-04-14 00:32:07,059  ERROR      ... +3 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:07,059  DEBUG    flow: backup fabric_variables.yml.validate_bak <- baseline group_vars/FABRIC/fabric_variables.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:07,060  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:08,590  DEBUG    ansible-playbook rc=2 elapsed=1.53s chars=2591
+2026-04-14 00:32:08,591  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 8 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "8 errors found during schema validation of input variables."}
+[ERROR]: [dc1-spine1] Validation error for the input data model 'aaa_settings.local_users': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-spine2] Validation error for the input data model 'aaa_settings.local_users': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'aaa_settings.local_users': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'aaa_settings.local_users': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'aaa_settings.local_users': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'aaa_settings.local_users': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'aaa_settings.local_users': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'aaa_settings.local_users': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:08,591  ERROR    [39/60] P10 openai/gpt-4o-mini | FAIL | p10_aaa_local_user_netops | context=group_vars/FABRIC/fabric_variables.yml | artifact=openai-gpt-4o-mini/quadrant_2_short_deep/p10_aaa_local_user_netops | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:08,591  ERROR      [ERROR]: Task failed: Action failed: 8 errors found during schema validation of input variables.
+2026-04-14 00:32:08,591  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "8 errors found during schema validation of input variables."}
+2026-04-14 00:32:08,591  ERROR      [ERROR]: [dc1-spine1] Validation error for the input data model 'aaa_settings.local_users': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:08,591  ERROR      ... +7 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:08,592  DEBUG    flow: backup l3_leaves.yml.validate_bak <- baseline group_vars/DC1_L3_LEAVES/l3_leaves.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:08,593  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:10,113  DEBUG    ansible-playbook rc=2 elapsed=1.52s chars=1991
+2026-04-14 00:32:10,113  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.node_groups[0].filters': Invalid key.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'l3leaf.node_groups[0].filters': Invalid key.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'l3leaf.node_groups[0].filters': Invalid key.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'l3leaf.node_groups[0].filters': Invalid key.
+2026-04-14 00:32:10,114  ERROR    [40/60] P11 openai/gpt-4o-mini | FAIL | p11_dc1_l3_leaf1_filters_tags | context=group_vars/DC1_L3_LEAVES/l3_leaves.yml | artifact=openai-gpt-4o-mini/quadrant_2_short_deep/p11_dc1_l3_leaf1_filters_tags | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:10,114  ERROR      [ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+2026-04-14 00:32:10,114  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+2026-04-14 00:32:10,114  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.node_groups[0].filters': Invalid key.
+2026-04-14 00:32:10,114  ERROR      ... +3 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:10,114  DEBUG    flow: backup l3_leaves.yml.validate_bak <- baseline group_vars/DC1_L3_LEAVES/l3_leaves.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:10,115  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:11,656  DEBUG    ansible-playbook rc=2 elapsed=1.54s chars=2199
+2026-04-14 00:32:11,656  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.node_groups[0].nodes[0].evpn_gateway.remote_peers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'l3leaf.node_groups[0].nodes[0].evpn_gateway.remote_peers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'l3leaf.node_groups[0].nodes[0].evpn_gateway.remote_peers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'l3leaf.node_groups[0].nodes[0].evpn_gateway.remote_peers': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:11,657  ERROR    [41/60] P12 openai/gpt-4o-mini | FAIL | p12_dc1_leaf1a_remote_peers | context=group_vars/DC1_L3_LEAVES/l3_leaves.yml | artifact=openai-gpt-4o-mini/quadrant_2_short_deep/p12_dc1_leaf1a_remote_peers | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:11,657  ERROR      [ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+2026-04-14 00:32:11,657  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+2026-04-14 00:32:11,657  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.node_groups[0].nodes[0].evpn_gateway.remote_peers': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:11,657  ERROR      ... +3 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:11,658  DEBUG    flow: backup network_services.yml.validate_bak <- baseline group_vars/NETWORK_SERVICES/network_services.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:11,659  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:15,221  DEBUG    ansible-playbook rc=0 elapsed=3.56s chars=3225
+2026-04-14 00:32:15,222  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2b -> localhost]
+ok: [dc1-leaf2c -> localhost]
+ok: [dc1-leaf1c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+ok: [dc1-
+2026-04-14 00:32:15,223  INFO     [42/60] P13 openai/gpt-4o-mini | OK | p13_vrf11_vtep_diagnostic | context=group_vars/NETWORK_SERVICES/network_services.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:15,224  DEBUG    flow: backup network_services.yml.validate_bak <- baseline group_vars/NETWORK_SERVICES/network_services.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:15,224  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:16,757  DEBUG    ansible-playbook rc=2 elapsed=1.53s chars=2379
+2026-04-14 00:32:16,757  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 6 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "6 errors found during schema validation of input variables."}
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'tenants[0].vrfs[0].static_routes': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'tenants[0].vrfs[0].static_routes': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'tenants[0].vrfs[0].static_routes': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'tenants[0].vrfs[0].static_routes': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'tenants[0].vrfs[0].static_routes': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'tenants[0].vrfs[0].static_routes': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:16,758  ERROR    [43/60] P14 openai/gpt-4o-mini | FAIL | p14_vrf10_static_routes | context=group_vars/NETWORK_SERVICES/network_services.yml | artifact=openai-gpt-4o-mini/quadrant_2_short_deep/p14_vrf10_static_routes | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:16,758  ERROR      [ERROR]: Task failed: Action failed: 6 errors found during schema validation of input variables.
+2026-04-14 00:32:16,758  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "6 errors found during schema validation of input variables."}
+2026-04-14 00:32:16,758  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'tenants[0].vrfs[0].static_routes': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:16,758  ERROR      ... +5 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:16,759  DEBUG    flow: backup network_services.yml.validate_bak <- baseline group_vars/NETWORK_SERVICES/network_services.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:16,759  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:18,287  DEBUG    ansible-playbook rc=2 elapsed=1.53s chars=2451
+2026-04-14 00:32:18,287  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 6 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "6 errors found during schema validation of input variables."}
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'tenants[0].vrfs[0].svis[0].ip_address_virtual': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'tenants[0].vrfs[0].svis[0].ip_address_virtual': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'tenants[0].vrfs[0].svis[0].ip_address_virtual': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'tenants[0].vrfs[0].svis[0].ip_address_virtual': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'tenants[0].vrfs[0].svis[0].ip_address_virtual': Invalid type 'Dict'. Expected 'Str'.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'tenants[0].vrfs[0].svis[0].ip_address_virtual': Invalid type 'Dict'. Expected 'Str'.
+2026-04-14 00:32:18,288  ERROR    [44/60] P15 openai/gpt-4o-mini | FAIL | p15_svi11_ip_address_virtual | context=group_vars/NETWORK_SERVICES/network_services.yml | artifact=openai-gpt-4o-mini/quadrant_2_short_deep/p15_svi11_ip_address_virtual | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:18,288  ERROR      [ERROR]: Task failed: Action failed: 6 errors found during schema validation of input variables.
+2026-04-14 00:32:18,288  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "6 errors found during schema validation of input variables."}
+2026-04-14 00:32:18,288  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'tenants[0].vrfs[0].svis[0].ip_address_virtual': Invalid type 'Dict'. Expected 'Str'.
+2026-04-14 00:32:18,288  ERROR      ... +5 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:18,289  DEBUG    flow: backup spines.yml.validate_bak <- baseline group_vars/DC1_SPINES/spines.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:18,290  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:19,853  DEBUG    ansible-playbook rc=2 elapsed=1.56s chars=1785
+2026-04-14 00:32:19,853  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 2 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "2 errors found during schema validation of input variables."}
+[ERROR]: [dc1-spine1] Validation error for the input data model 'spine.nodes': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-spine2] Validation error for the input data model 'spine.nodes': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:19,854  ERROR    [45/60] P05 openai/gpt-4o-mini | FAIL | p05_spine_third_node | context=group_vars/DC1_SPINES/spines.yml | artifact=openai-gpt-4o-mini/quadrant_3_long_flat/p05_spine_third_node | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:19,854  ERROR      [ERROR]: Task failed: Action failed: 2 errors found during schema validation of input variables.
+2026-04-14 00:32:19,854  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "2 errors found during schema validation of input variables."}
+2026-04-14 00:32:19,854  ERROR      [ERROR]: [dc1-spine1] Validation error for the input data model 'spine.nodes': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:19,854  ERROR      ... +1 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:19,855  DEBUG    flow: backup network_services.yml.validate_bak <- baseline group_vars/NETWORK_SERVICES/network_services.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:19,857  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:21,463  DEBUG    ansible-playbook rc=2 elapsed=1.61s chars=2277
+2026-04-14 00:32:21,463  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 6 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "6 errors found during schema validation of input variables."}
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'tenants[0].vrfs': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'tenants[0].vrfs': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'tenants[0].vrfs': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'tenants[0].vrfs': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'tenants[0].vrfs': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'tenants[0].vrfs': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:21,464  ERROR    [46/60] P16 openai/gpt-4o-mini | FAIL | p16_tenant1_vrf20 | context=group_vars/NETWORK_SERVICES/network_services.yml | artifact=openai-gpt-4o-mini/quadrant_3_long_flat/p16_tenant1_vrf20 | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:21,464  ERROR      [ERROR]: Task failed: Action failed: 6 errors found during schema validation of input variables.
+2026-04-14 00:32:21,464  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "6 errors found during schema validation of input variables."}
+2026-04-14 00:32:21,464  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'tenants[0].vrfs': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:21,464  ERROR      ... +5 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:21,464  DEBUG    flow: backup l3_leaves.yml.validate_bak <- baseline group_vars/DC1_L3_LEAVES/l3_leaves.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:21,465  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:23,069  DEBUG    ansible-playbook rc=2 elapsed=1.60s chars=2135
+2026-04-14 00:32:23,070  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.defaults.uplink_switch_interfaces': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'l3leaf.defaults.uplink_switch_interfaces': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'l3leaf.defaults.uplink_switch_interfaces': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'l3leaf.defaults.uplink_switch_interfaces': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:23,070  ERROR    [47/60] P17 openai/gpt-4o-mini | FAIL | p17_uplink_switch_interfaces_defaults | context=group_vars/DC1_L3_LEAVES/l3_leaves.yml | artifact=openai-gpt-4o-mini/quadrant_3_long_flat/p17_uplink_switch_interfaces_defaults | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:23,071  ERROR      [ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+2026-04-14 00:32:23,071  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+2026-04-14 00:32:23,071  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.defaults.uplink_switch_interfaces': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:23,071  ERROR      ... +3 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:23,071  DEBUG    flow: backup network_services.yml.validate_bak <- baseline group_vars/NETWORK_SERVICES/network_services.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:23,072  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:26,733  DEBUG    ansible-playbook rc=0 elapsed=3.66s chars=3245
+2026-04-14 00:32:26,733  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+ok: [dc1-spine2 -> localhost]
+ok: [dc1-spine1 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2b -> localhost]
+changed: [dc1-leaf1c -> localhost]
+changed: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+ok: [dc1-spine2 -> localhost]
+ok: [dc1-spine1 -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf2a -> localhost]
+2026-04-14 00:32:26,734  INFO     [48/60] P18 openai/gpt-4o-mini | OK | p18_l2vlan_3403 | context=group_vars/NETWORK_SERVICES/network_services.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:26,734  DEBUG    flow: backup l3_leaves.yml.validate_bak <- baseline group_vars/DC1_L3_LEAVES/l3_leaves.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:26,735  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:28,274  DEBUG    ansible-playbook rc=2 elapsed=1.54s chars=2139
+2026-04-14 00:32:28,274  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.node_groups[1].mlag_port_channel_id': Invalid type 'Dict'. Expected 'Int'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'l3leaf.node_groups[1].mlag_port_channel_id': Invalid type 'Dict'. Expected 'Int'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'l3leaf.node_groups[1].mlag_port_channel_id': Invalid type 'Dict'. Expected 'Int'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'l3leaf.node_groups[1].mlag_port_channel_id': Invalid type 'Dict'. Expected 'Int'.
+2026-04-14 00:32:28,275  ERROR    [49/60] P19 openai/gpt-4o-mini | FAIL | p19_mlag_port_channel_leaf2 | context=group_vars/DC1_L3_LEAVES/l3_leaves.yml | artifact=openai-gpt-4o-mini/quadrant_3_long_flat/p19_mlag_port_channel_leaf2 | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:28,275  ERROR      [ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+2026-04-14 00:32:28,275  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+2026-04-14 00:32:28,275  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.node_groups[1].mlag_port_channel_id': Invalid type 'Dict'. Expected 'Int'.
+2026-04-14 00:32:28,275  ERROR      ... +3 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:28,276  DEBUG    flow: backup network_services.yml.validate_bak <- baseline group_vars/NETWORK_SERVICES/network_services.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:28,277  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:29,802  DEBUG    ansible-playbook rc=2 elapsed=1.53s chars=2373
+2026-04-14 00:32:29,802  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 6 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "6 errors found during schema validation of input variables."}
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'tenants[0].vrfs[0].svis[0].tags': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'tenants[0].vrfs[0].svis[0].tags': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'tenants[0].vrfs[0].svis[0].tags': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'tenants[0].vrfs[0].svis[0].tags': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'tenants[0].vrfs[0].svis[0].tags': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'tenants[0].vrfs[0].svis[0].tags': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:29,803  ERROR    [50/60] P20 openai/gpt-4o-mini | FAIL | p20_svi11_tags | context=group_vars/NETWORK_SERVICES/network_services.yml | artifact=openai-gpt-4o-mini/quadrant_3_long_flat/p20_svi11_tags | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:29,803  ERROR      [ERROR]: Task failed: Action failed: 6 errors found during schema validation of input variables.
+2026-04-14 00:32:29,803  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "6 errors found during schema validation of input variables."}
+2026-04-14 00:32:29,803  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'tenants[0].vrfs[0].svis[0].tags': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:29,803  ERROR      ... +5 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:29,803  DEBUG    flow: backup network_services.yml.validate_bak <- baseline group_vars/NETWORK_SERVICES/network_services.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:29,804  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:31,326  DEBUG    ansible-playbook rc=2 elapsed=1.52s chars=2325
+2026-04-14 00:32:31,326  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 6 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "6 errors found during schema validation of input variables."}
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'tenants[0].vrfs[0].svis': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'tenants[0].vrfs[0].svis': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'tenants[0].vrfs[0].svis': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'tenants[0].vrfs[0].svis': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'tenants[0].vrfs[0].svis': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'tenants[0].vrfs[0].svis': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:31,327  ERROR    [51/60] P21 openai/gpt-4o-mini | FAIL | p21_vrf10_svis_13_14 | context=group_vars/NETWORK_SERVICES/network_services.yml | artifact=openai-gpt-4o-mini/quadrant_3_long_flat/p21_vrf10_svis_13_14 | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:31,327  ERROR      [ERROR]: Task failed: Action failed: 6 errors found during schema validation of input variables.
+2026-04-14 00:32:31,327  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "6 errors found during schema validation of input variables."}
+2026-04-14 00:32:31,327  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'tenants[0].vrfs[0].svis': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:31,327  ERROR      ... +5 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:31,328  DEBUG    flow: backup connected_endpoints.yml.validate_bak <- baseline group_vars/CONNECTED_ENDPOINTS/connected_endpoints.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:31,329  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:32,854  DEBUG    ansible-playbook rc=2 elapsed=1.53s chars=2229
+2026-04-14 00:32:32,854  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 6 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "6 errors found during schema validation of input variables."}
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'servers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'servers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'servers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'servers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'servers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'servers': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:32,855  ERROR    [52/60] P22 openai/gpt-4o-mini | FAIL | p22_server_dc1_leaf1_server2 | context=group_vars/CONNECTED_ENDPOINTS/connected_endpoints.yml | artifact=openai-gpt-4o-mini/quadrant_3_long_flat/p22_server_dc1_leaf1_server2 | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:32,855  ERROR      [ERROR]: Task failed: Action failed: 6 errors found during schema validation of input variables.
+2026-04-14 00:32:32,855  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "6 errors found during schema validation of input variables."}
+2026-04-14 00:32:32,855  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'servers': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:32,855  ERROR      ... +5 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:32,856  DEBUG    flow: backup network_services.yml.validate_bak <- baseline group_vars/NETWORK_SERVICES/network_services.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:32,856  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:34,382  DEBUG    ansible-playbook rc=2 elapsed=1.53s chars=2229
+2026-04-14 00:32:34,382  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 6 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "6 errors found during schema validation of input variables."}
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'tenants': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'tenants': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'tenants': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'tenants': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'tenants': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'tenants': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:34,383  ERROR    [53/60] P23 openai/gpt-4o-mini | FAIL | p23_tenant2_full | context=group_vars/NETWORK_SERVICES/network_services.yml | artifact=openai-gpt-4o-mini/quadrant_4_long_deep/p23_tenant2_full | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:34,383  ERROR      [ERROR]: Task failed: Action failed: 6 errors found during schema validation of input variables.
+2026-04-14 00:32:34,383  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "6 errors found during schema validation of input variables."}
+2026-04-14 00:32:34,383  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'tenants': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:34,383  ERROR      ... +5 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:34,383  DEBUG    flow: backup l3_leaves.yml.validate_bak <- baseline group_vars/DC1_L3_LEAVES/l3_leaves.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:34,384  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:35,909  DEBUG    ansible-playbook rc=2 elapsed=1.52s chars=2047
+2026-04-14 00:32:35,909  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.node_groups': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'l3leaf.node_groups': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'l3leaf.node_groups': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'l3leaf.node_groups': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:35,910  ERROR    [54/60] P24 openai/gpt-4o-mini | FAIL | p24_node_group_dc1_l3_leaf3 | context=group_vars/DC1_L3_LEAVES/l3_leaves.yml | artifact=openai-gpt-4o-mini/quadrant_4_long_deep/p24_node_group_dc1_l3_leaf3 | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:35,910  ERROR      [ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+2026-04-14 00:32:35,910  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+2026-04-14 00:32:35,910  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.node_groups': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:35,910  ERROR      ... +3 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:35,911  DEBUG    flow: backup connected_endpoints.yml.validate_bak <- baseline group_vars/CONNECTED_ENDPOINTS/connected_endpoints.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:35,911  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:37,474  DEBUG    ansible-playbook rc=2 elapsed=1.56s chars=2301
+2026-04-14 00:32:37,474  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 6 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "6 errors found during schema validation of input variables."}
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'servers[1].adapters': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'servers[1].adapters': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'servers[1].adapters': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'servers[1].adapters': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'servers[1].adapters': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'servers[1].adapters': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:37,475  ERROR    [55/60] P25 openai/gpt-4o-mini | FAIL | p25_dc1_leaf2_server1_ilo | context=group_vars/CONNECTED_ENDPOINTS/connected_endpoints.yml | artifact=openai-gpt-4o-mini/quadrant_4_long_deep/p25_dc1_leaf2_server1_ilo | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:37,475  ERROR      [ERROR]: Task failed: Action failed: 6 errors found during schema validation of input variables.
+2026-04-14 00:32:37,475  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "6 errors found during schema validation of input variables."}
+2026-04-14 00:32:37,475  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'servers[1].adapters': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:37,475  ERROR      ... +5 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:37,475  DEBUG    flow: backup network_services.yml.validate_bak <- baseline group_vars/NETWORK_SERVICES/network_services.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:37,476  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:41,039  DEBUG    ansible-playbook rc=0 elapsed=3.56s chars=3245
+2026-04-14 00:32:41,040  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+ok: [dc1-spine2 -> localhost]
+ok: [dc1-spine1 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf1c -> localhost]
+changed: [dc1-leaf2b -> localhost]
+changed: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+2026-04-14 00:32:41,041  INFO     [56/60] P26 openai/gpt-4o-mini | OK | p26_svi12_structured_config | context=group_vars/NETWORK_SERVICES/network_services.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:41,041  DEBUG    flow: backup fabric_variables.yml.validate_bak <- baseline group_vars/FABRIC/fabric_variables.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:41,042  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:42,568  DEBUG    ansible-playbook rc=2 elapsed=1.53s chars=2439
+2026-04-14 00:32:42,568  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 8 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "8 errors found during schema validation of input variables."}
+[ERROR]: [dc1-spine1] Validation error for the input data model 'ntp_settings.servers[0].prefer': Invalid key.
+[ERROR]: [dc1-spine2] Validation error for the input data model 'ntp_settings.servers[0].prefer': Invalid key.
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'ntp_settings.servers[0].prefer': Invalid key.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'ntp_settings.servers[0].prefer': Invalid key.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'ntp_settings.servers[0].prefer': Invalid key.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'ntp_settings.servers[0].prefer': Invalid key.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'ntp_settings.servers[0].prefer': Invalid key.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'ntp_settings.servers[0].prefer': Invalid key.
+2026-04-14 00:32:42,569  ERROR    [57/60] P27 openai/gpt-4o-mini | FAIL | p27_ntp_multi_edit | context=group_vars/FABRIC/fabric_variables.yml | artifact=openai-gpt-4o-mini/quadrant_4_long_deep/p27_ntp_multi_edit | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:42,569  ERROR      [ERROR]: Task failed: Action failed: 8 errors found during schema validation of input variables.
+2026-04-14 00:32:42,569  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "8 errors found during schema validation of input variables."}
+2026-04-14 00:32:42,569  ERROR      [ERROR]: [dc1-spine1] Validation error for the input data model 'ntp_settings.servers[0].prefer': Invalid key.
+2026-04-14 00:32:42,569  ERROR      ... +7 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:42,570  DEBUG    flow: backup l3_leaves.yml.validate_bak <- baseline group_vars/DC1_L3_LEAVES/l3_leaves.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:42,570  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:46,063  DEBUG    ansible-playbook rc=0 elapsed=3.49s chars=3225
+2026-04-14 00:32:46,063  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+ok: [dc1-spine2 -> localhost]
+ok: [dc1-spine1 -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf2a -> localhost]
+ok: [dc1-leaf2c -> localhost]
+changed: [dc1-leaf2b -> localhost]
+ok: [dc1-leaf1c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+ok: [dc1-spine2 -> localhost]
+ok: [dc1-spine1 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+ok: [dc1-
+2026-04-14 00:32:46,064  INFO     [58/60] P28 openai/gpt-4o-mini | OK | p28_dc1_leaf1a_structured_config_loopback | context=group_vars/DC1_L3_LEAVES/l3_leaves.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:46,064  DEBUG    flow: backup network_services.yml.validate_bak <- baseline group_vars/NETWORK_SERVICES/network_services.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:46,065  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:47,595  DEBUG    ansible-playbook rc=2 elapsed=1.53s chars=2409
+2026-04-14 00:32:47,595  DEBUG    ansible error lines (for -v):
+[ERROR]: Task failed: Action failed: 6 errors found during schema validation of input variables.
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "6 errors found during schema validation of input variables."}
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'tenants[0].vrfs[1].svis[0].ip_helpers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'tenants[0].vrfs[1].svis[0].ip_helpers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'tenants[0].vrfs[1].svis[0].ip_helpers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'tenants[0].vrfs[1].svis[0].ip_helpers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf1c] Validation error for the input data model 'tenants[0].vrfs[1].svis[0].ip_helpers': Invalid type 'Dict'. Expected 'List'.
+[ERROR]: [dc1-leaf2c] Validation error for the input data model 'tenants[0].vrfs[1].svis[0].ip_helpers': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:47,596  ERROR    [59/60] P29 openai/gpt-4o-mini | FAIL | p29_svi21_ip_helpers | context=group_vars/NETWORK_SERVICES/network_services.yml | artifact=openai-gpt-4o-mini/quadrant_4_long_deep/p29_svi21_ip_helpers | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:47,596  ERROR      [ERROR]: Task failed: Action failed: 6 errors found during schema validation of input variables.
+2026-04-14 00:32:47,596  ERROR      fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "6 errors found during schema validation of input variables."}
+2026-04-14 00:32:47,596  ERROR      [ERROR]: [dc1-leaf1a] Validation error for the input data model 'tenants[0].vrfs[1].svis[0].ip_helpers': Invalid type 'Dict'. Expected 'List'.
+2026-04-14 00:32:47,596  ERROR      ... +5 line(s) not shown (often duplicate hosts); full tail in manifest.json -> semantic_validation.ansible_tail
+2026-04-14 00:32:47,596  DEBUG    flow: backup l3_leaves.yml.validate_bak <- baseline group_vars/DC1_L3_LEAVES/l3_leaves.yml ; patch <- config.yaml ; ansible ; restore
+2026-04-14 00:32:47,597  DEBUG    ansible-playbook ansible-playbook /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/build.yml -i /Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/inventory.yml | cwd=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs | ANSIBLE_CONFIG=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/ansible.cfg
+2026-04-14 00:32:51,144  DEBUG    ansible-playbook rc=0 elapsed=3.55s chars=3205
+2026-04-14 00:32:51,145  DEBUG    ansible-playbook combined output (first 2000 chars):
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/mendoza/Desktop/CMU/Principles and Engineer Application of AI - 18662/Overcoming-the-Limits-of-Constrained-Decoding-in-Frontier-LLMs/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+ok: [dc1-spine2 -> localhost]
+ok: [dc1-spine1 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+ok: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+ok: [dc1-leaf2b -> localhost]
+ok: [dc1-leaf1c -> localhost]
+ok: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+ok: [dc1-spine1 -> localhost]
+ok: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf2a -> localhost]
+ok: [dc1-leaf1b -> localhost]
+ok: [dc1-leaf1c -> local
+2026-04-14 00:32:51,146  INFO     [60/60] P30 openai/gpt-4o-mini | OK | p30_evpn_services_l2_only_defaults_and_node | context=group_vars/DC1_L3_LEAVES/l3_leaves.yml | backup(baseline) -> write artifact -> ansible-playbook build.yml -> restore baseline
+2026-04-14 00:32:51,156  INFO     Done | 27/60 passed semantic validation

@@ -1,4 +1,8 @@
 <thinking>
+The user's request is to add an `ip_helpers` entry to the SVI with `id: 21` in the `VRF11` section of the configuration. According to the schema, `ip_helpers` is a list of dictionaries, where each dictionary contains `ip_helper`, `source_interface`, and optionally `source_vrf`. The `ip_helper` should be set to `10.255.0.1` and `source_interface` should be set to `Loopback0`. 
+
+The existing structure for `svis` under `VRF11` will be modified to include the new `ip_helpers` entry for the specified SVI. The final output will maintain the existing structure of the `svis` list, with the new `ip_helpers` added to the SVI with `id: 21`.
+</thinking>
 {
   "ip_helpers": [
     {
@@ -7,4 +11,3 @@
     }
   ]
 }
-</thinking>

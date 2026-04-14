@@ -1,7 +1,5 @@
 {
-  "l3leaf": {
-    "defaults": {
-      "virtual_router_mac_address": "00:1c:73:00:dc:01"
-    }
+  "defaults": {
+    "virtual_router_mac_address": "00:1c:73:00:dc:01"
   }
 }

@@ -1,6 +1,10 @@
 {
   "name": "VRF20",
   "vrf_vni": 20,
+  "vtep_diagnostic": {
+    "loopback": 20,
+    "loopback_ip_range": "10.255.20.0/27"
+  },
   "svis": [
     {
       "id": 31,

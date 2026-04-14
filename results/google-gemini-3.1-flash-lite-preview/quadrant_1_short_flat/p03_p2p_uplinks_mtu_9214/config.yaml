@@ -21,8 +21,7 @@ bgp_peer_groups:
     password: 7x4B4rnJhZB438m9+BrBfQ==
   mlag_ipv4_underlay_peer:
     password: 4b21pAdCvWeAqpcKDFMdWw==
-p2p_uplinks_mtu:
-  p2p_uplinks_mtu: 9214
+p2p_uplinks_mtu: 9214
 default_interfaces:
 - types:
   - spine

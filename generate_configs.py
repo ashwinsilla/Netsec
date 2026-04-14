@@ -15,7 +15,11 @@ If the HTTP call fails, only raw_response.txt is written (no json_candidate).
 
 Usage:
   Put OPENROUTER_API_KEY in a .env file at the repo root (see env.txt), or export it in the shell.
-  python3 generate_configs.py [--model MODEL] [--task-id P01]
+  python3 generate_configs.py [--model MODEL] [--task-id P01] [--report-dir DIR]
+
+  ``--report-dir`` is a folder under ``experiments/`` (relative to repo root unless absolute); each run
+  writes a timestamped ``generate_configs_<UTC>.txt`` log mirroring the terminal (line-flushed as it runs).
+  Omit ``--report-dir`` to use ``experiments/auto_<UTC>/`` automatically.
 """
 
 from __future__ import annotations
@@ -35,6 +39,7 @@ import yaml
 from dotenv import load_dotenv
 
 from avd_tasks import all_tasks, task_by_id
+from experiment_report import configure_run_logging
 from subtree_merge import merge_yaml_file
 
 REPO_ROOT = Path(__file__).resolve().parent
@@ -109,21 +114,48 @@ def load_schema_text() -> str:
     return SCHEMA_PATH.read_text(encoding="utf-8", errors="replace")
 
 
-def build_user_message(schema_text: str, task_text: str, context_yaml: str) -> str:
+def build_user_message(
+    schema_text: str,
+    task_text: str,
+    context_yaml: str,
+    context_file: str,
+    insertion_path: list,
+) -> str:
     schema_block = (
         f"<schema_reference>\n{schema_text}\n</schema_reference>\n\n" if schema_text else ""
     )
+    path_s = json.dumps(insertion_path, separators=(",", ":"))
+    merge_block = (
+        "<merge_target>\n"
+        f"context_file: {context_file}\n"
+        f"insertion_path: {path_s}\n"
+        "The tool will walk the YAML root following insertion_path (string keys = dict keys, "
+        "integers = list indices) and replace exactly one value with your JSON.\n"
+        "Shape rules: (1) If insertion_path is a single string key [\"K\"], your JSON root must NOT "
+        "repeat \"K\" — e.g. [\"l3leaf\"] means an object with keys like defaults and node_groups only; "
+        "[\"tenants\"] or [\"servers\"] means a JSON array at the root; [\"ntp_settings\"] means the "
+        "ntp_settings object alone. "
+        "(2) Do not echo the file-level key `type:` or other keys outside the replaced subtree.\n"
+        "Root JSON must be a single object `{...}` or array `[...]` (first non-whitespace character `{` or `[`), "
+        "matching the system constraint.\n"
+        "</merge_target>\n\n"
+    )
+    context_block = (
+        f"<configuration_context source=\"{context_file}\">\n"
+        f"{context_yaml.rstrip()}\n"
+        "</configuration_context>\n\n"
+    )
+    task_block = f"<task>\n{task_text}\n</task>\n\n"
     return (
         f"{schema_block}"
-        f"[Insert YAML/Schema Context Here]\n\n"
-        f"{context_yaml}\n\n"
-        f"Task: {task_text}\n\n"
+        f"{merge_block}"
+        f"{context_block}"
+        f"{task_block}"
         "Before generating the JSON, open a <thinking> block to map the user's request to the exact schema "
         "field names, verify the required nesting layers, and resolve any conditional defaults. "
         "After closing your </thinking> block, output the JSON.\n\n"
-        "Subtree rule: output ONLY the JSON value that should replace the target subtree at the path given "
-        "in the manifest (list-valued targets must include the full merged list after your edits). "
-        "If the target is a scalar or a single object field, output that JSON type directly.\n\n"
+        "Subtree rule: output ONLY the JSON object or array that replaces the merge target above "
+        "(for list-valued merge targets, include the full merged array after your edits).\n\n"
         "Remember: Output ONLY the raw JSON object or array immediately after the </thinking> tag. "
         "Any non-JSON text will cause a fatal syntax error."
     )
@@ -301,7 +333,13 @@ async def run_one_job(
 
     context_path = repo_root / task["context_file"]
     context_yaml = context_path.read_text(encoding="utf-8")
-    user_msg = build_user_message(schema_text, task["task_text"], context_yaml)
+    user_msg = build_user_message(
+        schema_text,
+        task["task_text"],
+        context_yaml,
+        task["context_file"],
+        task["insertion_path"],
+    )
 
     manifest: dict = {
         "task_id": task["id"],
@@ -374,8 +412,6 @@ async def run_one_job(
 
 
 async def async_main(args: argparse.Namespace) -> None:
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s  %(message)s")
-
     api_key = load_openrouter_api_key()
     if not api_key:
         sys.exit(
@@ -420,7 +456,24 @@ def main() -> None:
     p = argparse.ArgumentParser(description="Generate merged AVD configs via OpenRouter (prompt JSON only).")
     p.add_argument("--model", help="Run a single OpenRouter model id (default: all three frontier models).")
     p.add_argument("--task-id", help="Run a single task id, e.g. P01 (default: all 30).")
+    p.add_argument(
+        "--report-dir",
+        type=Path,
+        default=None,
+        help="Experiment folder for this run's log (relative to experiments/ unless absolute). "
+        "Default: experiments/auto_<UTC>/. A line-flushed generate_configs_<UTC>.txt mirrors stderr.",
+    )
     args = p.parse_args()
+
+    report_path = configure_run_logging(
+        repo_root=REPO_ROOT,
+        report_dir=args.report_dir,
+        console_level=logging.INFO,
+        log_format="%(asctime)s  %(message)s",
+        report_basename="generate_configs",
+    )
+    log.info("Run report (continuous): %s", report_path)
+
     asyncio.run(async_main(args))
 
 

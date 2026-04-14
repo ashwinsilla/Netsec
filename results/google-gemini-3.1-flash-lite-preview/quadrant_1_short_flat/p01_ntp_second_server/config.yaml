@@ -60,7 +60,5 @@ dns_settings:
 ntp_settings:
   server_vrf: use_mgmt_interface_vrf
   servers:
-    server_vrf: use_mgmt_interface_vrf
-    servers:
-    - name: 0.pool.ntp.org
-    - name: 1.pool.ntp.org
+  - 0.pool.ntp.org
+  - 1.pool.ntp.org

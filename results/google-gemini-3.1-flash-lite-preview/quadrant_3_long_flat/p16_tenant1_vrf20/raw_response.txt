@@ -1,77 +1,58 @@
-<thinking>
-The user wants to add a new VRF "VRF20" to the existing "TENANT1" structure.
-1. Locate "tenants" -> "name: TENANT1" -> "vrfs".
-2. Append the new VRF object:
-   {
-     "name": "VRF20",
-     "vrf_vni": 20,
-     "svis": [
-       {
-         "id": 31,
-         "name": "VRF20_VLAN31",
-         "enabled": true,
-         "ip_address_virtual": "10.10.31.1/24"
-       }
-     ]
-   }
-3. Ensure the output is the full list of VRFs for TENANT1 as per the "Subtree rule" (output the full merged list).
-</thinking>{
-  "vrfs": [
-    {
-      "name": "VRF10",
-      "vrf_vni": 10,
-      "vtep_diagnostic": {
-        "loopback": 10,
-        "loopback_ip_range": "10.255.10.0/27"
-      },
-      "svis": [
-        {
-          "id": 11,
-          "name": "VRF10_VLAN11",
-          "enabled": true,
-          "ip_address_virtual": "10.10.11.1/24"
-        },
-        {
-          "id": 12,
-          "name": "VRF10_VLAN12",
-          "enabled": true,
-          "ip_address_virtual": "10.10.12.1/24"
-        }
-      ]
+[
+  {
+    "name": "VRF10",
+    "vrf_vni": 10,
+    "vtep_diagnostic": {
+      "loopback": 10,
+      "loopback_ip_range": "10.255.10.0/27"
     },
-    {
-      "name": "VRF11",
-      "vrf_vni": 11,
-      "vtep_diagnostic": {
-        "loopback": 11,
-        "loopback_ip_range": "10.255.11.0/27"
+    "svis": [
+      {
+        "id": 11,
+        "name": "VRF10_VLAN11",
+        "enabled": true,
+        "ip_address_virtual": "10.10.11.1/24"
       },
-      "svis": [
-        {
-          "id": 21,
-          "name": "VRF11_VLAN21",
-          "enabled": true,
-          "ip_address_virtual": "10.10.21.1/24"
-        },
-        {
-          "id": 22,
-          "name": "VRF11_VLAN22",
-          "enabled": true,
-          "ip_address_virtual": "10.10.22.1/24"
-        }
-      ]
+      {
+        "id": 12,
+        "name": "VRF10_VLAN12",
+        "enabled": true,
+        "ip_address_virtual": "10.10.12.1/24"
+      }
+    ]
+  },
+  {
+    "name": "VRF11",
+    "vrf_vni": 11,
+    "vtep_diagnostic": {
+      "loopback": 11,
+      "loopback_ip_range": "10.255.11.0/27"
     },
-    {
-      "name": "VRF20",
-      "vrf_vni": 20,
-      "svis": [
-        {
-          "id": 31,
-          "name": "VRF20_VLAN31",
-          "enabled": true,
-          "ip_address_virtual": "10.10.31.1/24"
-        }
-      ]
-    }
-  ]
-}
+    "svis": [
+      {
+        "id": 21,
+        "name": "VRF11_VLAN21",
+        "enabled": true,
+        "ip_address_virtual": "10.10.21.1/24"
+      },
+      {
+        "id": 22,
+        "name": "VRF11_VLAN22",
+        "enabled": true,
+        "ip_address_virtual": "10.10.22.1/24"
+      }
+    ]
+  },
+  {
+    "name": "VRF20",
+    "vrf_vni": 20,
+    "svis": [
+      {
+        "id": 31,
+        "name": "VRF20_VLAN31",
+        "enabled": true,
+        "ip_address_virtual": "10.10.31.1/24"
+      }
+    ]
+  }
+]

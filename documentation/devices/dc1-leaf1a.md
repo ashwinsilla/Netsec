@@ -236,7 +236,7 @@ STP mode: **mstp**
 
 | Instance(s) | Priority |
 | -------- | -------- |
-| 0 | 4096 |
+| 0 | 8192 |
 
 #### Global Spanning-Tree Settings
 
@@ -248,7 +248,7 @@ STP mode: **mstp**
 !
 spanning-tree mode mstp
 no spanning-tree vlan-id 4093-4094
-spanning-tree mst 0 priority 4096
+spanning-tree mst 0 priority 8192
 ```
 
 ## Internal VLAN Allocation Policy

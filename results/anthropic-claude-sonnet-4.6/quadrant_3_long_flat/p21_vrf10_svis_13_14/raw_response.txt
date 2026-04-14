@@ -1,0 +1,40 @@
+<thinking>
+The insertion_path is ["tenants", 0, "vrfs", 0, "svis"], which means I need to replace the `svis` array of the first VRF (VRF10) in the first tenant (TENANT1).
+
+The current svis for VRF10 are:
+- id: 11, name: VRF10_VLAN11, enabled: true, ip_address_virtual: 10.10.11.1/24
+- id: 12, name: VRF10_VLAN12, enabled: true, ip_address_virtual: 10.10.12.1/24
+
+I need to add:
+- id: 13, name: VRF10_VLAN13, enabled: true, ip_address_virtual: 10.10.13.1/24
+- id: 14, name: VRF10_VLAN14, enabled: true, ip_address_virtual: 10.10.14.1/24
+
+So the output should be the full merged array with all 4 SVIs.
+</thinking>
+
+[
+  {
+    "id": 11,
+    "name": "VRF10_VLAN11",
+    "enabled": true,
+    "ip_address_virtual": "10.10.11.1/24"
+  },
+  {
+    "id": 12,
+    "name": "VRF10_VLAN12",
+    "enabled": true,
+    "ip_address_virtual": "10.10.12.1/24"
+  },
+  {
+    "id": 13,
+    "name": "VRF10_VLAN13",
+    "enabled": true,
+    "ip_address_virtual": "10.10.13.1/24"
+  },
+  {
+    "id": 14,
+    "name": "VRF10_VLAN14",
+    "enabled": true,
+    "ip_address_virtual": "10.10.14.1/24"
+  }
+]

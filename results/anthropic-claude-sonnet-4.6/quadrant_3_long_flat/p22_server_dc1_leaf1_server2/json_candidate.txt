@@ -1,0 +1,69 @@
+[
+  {
+    "name": "dc1-leaf1-server1",
+    "adapters": [
+      {
+        "endpoint_ports": ["PCI1", "PCI2"],
+        "switch_ports": ["Ethernet5", "Ethernet5"],
+        "switches": ["dc1-leaf1a", "dc1-leaf1b"],
+        "vlans": "11-12,21-22",
+        "native_vlan": 4092,
+        "mode": "trunk",
+        "spanning_tree_portfast": "edge",
+        "port_channel": {
+          "endpoint_port_channel": "Bond1",
+          "mode": "active"
+        }
+      },
+      {
+        "endpoint_ports": ["iLO"],
+        "switch_ports": ["Ethernet5"],
+        "switches": ["dc1-leaf1c"],
+        "vlans": "11",
+        "mode": "access",
+        "spanning_tree_portfast": "edge"
+      }
+    ]
+  },
+  {
+    "name": "dc1-leaf2-server1",
+    "adapters": [
+      {
+        "endpoint_ports": ["PCI1", "PCI2"],
+        "switch_ports": ["Ethernet5", "Ethernet5"],
+        "switches": ["dc1-leaf2a", "dc1-leaf2b"],
+        "vlans": "11-12,21-22",
+        "native_vlan": 4092,
+        "mode": "trunk",
+        "spanning_tree_portfast": "edge",
+        "port_channel": {
+          "mode": "active"
+        }
+      },
+      {
+        "endpoint_ports": ["iLO"],
+        "switch_ports": ["Ethernet5"],
+        "switches": ["dc1-leaf2c"],
+        "vlans": "11",
+        "mode": "access",
+        "spanning_tree_portfast": "edge"
+      }
+    ]
+  },
+  {
+    "name": "dc1-leaf1-server2",
+    "adapters": [
+      {
+        "endpoint_ports": ["PCI1", "PCI2"],
+        "switch_ports": ["Ethernet6", "Ethernet6"],
+        "switches": ["dc1-leaf1a", "dc1-leaf1b"],
+        "vlans": "11-12",
+        "mode": "trunk",
+        "spanning_tree_portfast": "edge",
+        "port_channel": {
+          "mode": "active"
+        }
+      }
+    ]
+  }
+]

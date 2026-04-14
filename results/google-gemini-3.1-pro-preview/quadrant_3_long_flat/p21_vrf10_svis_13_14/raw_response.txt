@@ -1,0 +1,82 @@
+thinking
+The user wants to add two new SVIs to VRF10 in TENANT1.
+The insertion path is `["tenants", 0, "vrfs", 0, "svis"]`.
+The current SVIs in VRF10 are:
+```yaml
+        svis:
+          # SVI definitions.
+          - id: 11
+            # SVI Description
+            name: VRF10_VLAN11
+            enabled: true
+            # IP anycast gateway to be used in the SVI in every leaf.
+            ip_address_virtual: 10.10.11.1/24
+          - id: 12
+            name: VRF10_VLAN12
+            enabled: true
+            ip_address_virtual: 10.10.12.1/24
+```
+The new SVIs to add are:
+- id: 13, name: VRF10_VLAN13, ip_address_virtual: 10.10.13.1/24, enabled: true
+- id: 14, name: VRF10_VLAN14, ip_address_virtual: 10.10.14.1/24, enabled: true
+
+The output should be the full list of SVIs for VRF10, replacing the existing list.
+
+List of SVIs:
+```json
+[
+  {
+    "id": 11,
+    "name": "VRF10_VLAN11",
+    "enabled": true,
+    "ip_address_virtual": "10.10.11.1/24"
+  },
+  {
+    "id": 12,
+    "name": "VRF10_VLAN12",
+    "enabled": true,
+    "ip_address_virtual": "10.10.12.1/24"
+  },
+  {
+    "id": 13,
+    "name": "VRF10_VLAN13",
+    "enabled": true,
+    "ip_address_virtual": "10.10.13.1/24"
+  },
+  {
+    "id": 14,
+    "name": "VRF10_VLAN14",
+    "enabled": true,
+    "ip_address_virtual": "10.10.14.1/24"
+  }
+]
+```
+Double check the schema for `svis` under `vrfs`.
+`id` (int), `name` (str), `enabled` (bool), `ip_address_virtual` (str).
+The output must be strictly parseable JSON.
+[
+  {
+    "id": 11,
+    "name": "VRF10_VLAN11",
+    "enabled": true,
+    "ip_address_virtual": "10.10.11.1/24"
+  },
+  {
+    "id": 12,
+    "name": "VRF10_VLAN12",
+    "enabled": true,
+    "ip_address_virtual": "10.10.12.1/24"
+  },
+  {
+    "id": 13,
+    "name": "VRF10_VLAN13",
+    "enabled": true,
+    "ip_address_virtual": "10.10.13.1/24"
+  },
+  {
+    "id": 14,
+    "name": "VRF10_VLAN14",
+    "enabled": true,
+    "ip_address_virtual": "10.10.14.1/24"
+  }
+]

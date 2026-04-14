@@ -1,0 +1,20 @@
+<thinking>
+The task is to add a static_routes list to VRF10 (the first VRF, index 0) containing one route with destination_address_prefix 0.0.0.0/0 and gateway 10.10.10.1.
+
+The insertion_path is ["tenants", 0, "vrfs", 0, "static_routes"], so I need to output just the value that goes at static_routes - which is a list/array.
+
+The output should be the array of static routes:
+[
+  {
+    "destination_address_prefix": "0.0.0.0/0",
+    "gateway": "10.10.10.1"
+  }
+]
+</thinking>
+
+[
+  {
+    "destination_address_prefix": "0.0.0.0/0",
+    "gateway": "10.10.10.1"
+  }
+]

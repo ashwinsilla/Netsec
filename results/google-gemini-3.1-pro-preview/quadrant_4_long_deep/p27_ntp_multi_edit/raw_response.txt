@@ -1,0 +1,59 @@
+thinking
+The user wants to update the `ntp_settings` in `group_vars/FABRIC/fabric_variables.yml`.
+The insertion path is `["ntp_settings"]`.
+The current `ntp_settings` is:
+```yaml
+ntp_settings:
+  server_vrf: use_mgmt_interface_vrf
+  servers:
+    - name: 0.pool.ntp.org
+```
+The task is to:
+1. Add NTP servers `1.pool.ntp.org` and `2.pool.ntp.org` to `ntp_settings.servers`.
+2. Set `prefer: true` on the existing `0.pool.ntp.org` server.
+
+The resulting `ntp_settings` should be:
+```yaml
+server_vrf: use_mgmt_interface_vrf
+servers:
+  - name: 0.pool.ntp.org
+    prefer: true
+  - name: 1.pool.ntp.org
+  - name: 2.pool.ntp.org
+```
+
+Let's construct the JSON object for `ntp_settings`.
+```json
+{
+  "server_vrf": "use_mgmt_interface_vrf",
+  "servers": [
+    {
+      "name": "0.pool.ntp.org",
+      "prefer": true
+    },
+    {
+      "name": "1.pool.ntp.org"
+    },
+    {
+      "name": "2.pool.ntp.org"
+    }
+  ]
+}
+```
+Double check the schema for `ntp_settings` (not explicitly in the provided schema snippet, but standard AVD `ntp_settings` structure applies).
+The insertion path is `["ntp_settings"]`, so the root of the JSON should be the dictionary containing `server_vrf` and `servers`.
+{
+  "server_vrf": "use_mgmt_interface_vrf",
+  "servers": [
+    {
+      "name": "0.pool.ntp.org",
+      "prefer": true
+    },
+    {
+      "name": "1.pool.ntp.org"
+    },
+    {
+      "name": "2.pool.ntp.org"
+    }
+  ]
+}

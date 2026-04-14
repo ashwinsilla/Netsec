@@ -1,0 +1,52 @@
+<thinking>
+The user wants to modify the `ntp_settings` object in the fabric variables. The insertion path is `["ntp_settings"]`, so I need to output the `ntp_settings` object (without the key itself).
+
+Current `ntp_settings`:
+```yaml
+ntp_settings:
+  server_vrf: use_mgmt_interface_vrf
+  servers:
+    - name: 0.pool.ntp.org
+```
+
+Required changes:
+1. Set `prefer: true` on `0.pool.ntp.org`
+2. Add `1.pool.ntp.org` 
+3. Add `2.pool.ntp.org`
+
+The output should be the `ntp_settings` object content (not wrapped in `ntp_settings` key):
+
+```json
+{
+  "server_vrf": "use_mgmt_interface_vrf",
+  "servers": [
+    {
+      "name": "0.pool.ntp.org",
+      "prefer": true
+    },
+    {
+      "name": "1.pool.ntp.org"
+    },
+    {
+      "name": "2.pool.ntp.org"
+    }
+  ]
+}
+```
+</thinking>
+
+{
+  "server_vrf": "use_mgmt_interface_vrf",
+  "servers": [
+    {
+      "name": "0.pool.ntp.org",
+      "prefer": true
+    },
+    {
+      "name": "1.pool.ntp.org"
+    },
+    {
+      "name": "2.pool.ntp.org"
+    }
+  ]
+}

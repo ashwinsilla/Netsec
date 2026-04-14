@@ -48,11 +48,11 @@ SCHEMA_PATH = REPO_ROOT / "phase 1" / "eos_designs.schema.yml"
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 MODELS = [
-    "openai/gpt-4o-mini",
-    "google/gemini-3.1-flash-lite-preview"
-    # "openai/gpt-5.4",
-    # "google/gemini-3.1-pro-preview",
-    # "anthropic/claude-sonnet-4.6",
+    # "openai/gpt-4o-mini",
+    # "google/gemini-3.1-flash-lite-preview"
+    "openai/gpt-5.4",
+    "google/gemini-3.1-pro-preview",
+    "anthropic/claude-sonnet-4.6",
 ]
 
 MAX_RETRIES = 3

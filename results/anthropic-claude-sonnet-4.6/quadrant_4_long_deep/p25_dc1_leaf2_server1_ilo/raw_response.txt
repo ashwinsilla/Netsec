@@ -1,0 +1,53 @@
+<thinking>
+The insertion_path is ["servers", 1, "adapters"] - this means I need to replace the adapters list of the second server (dc1-leaf2-server1, index 1).
+
+The current adapters for dc1-leaf2-server1 are:
+1. PCI1/PCI2 adapter (port-channel trunk)
+2. iLO adapter (access on Ethernet5, dc1-leaf2c, vlan 11)
+
+I need to add a new iLO adapter:
+- endpoint_ports: [iLO]
+- switch_ports: [Ethernet6]
+- switches: [dc1-leaf2c]
+- vlans: 21
+- mode: access
+- spanning_tree_portfast: edge
+
+So the full adapters array for dc1-leaf2-server1 should be:
+1. The existing PCI1/PCI2 adapter
+2. The existing iLO adapter (Ethernet5, vlan 11)
+3. The new iLO adapter (Ethernet6, vlan 21)
+
+The output should be the full merged array replacing the adapters list.
+</thinking>
+
+[
+  {
+    "endpoint_ports": ["PCI1", "PCI2"],
+    "switch_ports": ["Ethernet5", "Ethernet5"],
+    "switches": ["dc1-leaf2a", "dc1-leaf2b"],
+    "vlans": "11-12,21-22",
+    "native_vlan": 4092,
+    "mode": "trunk",
+    "spanning_tree_portfast": "edge",
+    "port_channel": {
+      "mode": "active"
+    }
+  },
+  {
+    "endpoint_ports": ["iLO"],
+    "switch_ports": ["Ethernet5"],
+    "switches": ["dc1-leaf2c"],
+    "vlans": 11,
+    "mode": "access",
+    "spanning_tree_portfast": "edge"
+  },
+  {
+    "endpoint_ports": ["iLO"],
+    "switch_ports": ["Ethernet6"],
+    "switches": ["dc1-leaf2c"],
+    "vlans": 21,
+    "mode": "access",
+    "spanning_tree_portfast": "edge"
+  }
+]

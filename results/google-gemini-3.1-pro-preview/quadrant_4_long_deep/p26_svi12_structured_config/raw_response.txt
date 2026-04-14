@@ -1,0 +1,31 @@
+thinking
+The user wants to add `structured_config.description: 'VRF10_VLAN12_CUSTOM'` to SVI id 12 in VRF10.
+The insertion path is `["tenants",0,"vrfs",0,"svis",1,"structured_config"]`.
+Looking at the context:
+`tenants[0]` is `TENANT1`.
+`vrfs[0]` is `VRF10`.
+`svis[1]` is `id: 12`.
+We need to provide the JSON for `structured_config` which is a dict.
+The dict should contain `description: 'VRF10_VLAN12_CUSTOM'`.
+
+Wait, the insertion path is `["tenants",0,"vrfs",0,"svis",1,"structured_config"]`.
+This means the JSON root should be the `structured_config` object itself.
+So the output should be:
+```json
+{
+  "description": "VRF10_VLAN12_CUSTOM"
+}
+```
+Let's double check the schema for `structured_config` under `svis`.
+`structured_config` is a dict, relaxed_validation: true, $ref: eos_cli_config_gen#.
+It allows any valid EOS CLI config gen keys for vlan_interfaces. `description` is a valid key.
+
+So the JSON is:
+```json
+{
+  "description": "VRF10_VLAN12_CUSTOM"
+}
+```
+{
+  "description": "VRF10_VLAN12_CUSTOM"
+}

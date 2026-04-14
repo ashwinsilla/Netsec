@@ -1,0 +1,78 @@
+thinking
+The user wants to add `ip_helpers` to SVI id 21 in VRF11.
+The insertion path is `["tenants", 0, "vrfs", 1, "svis", 0, "ip_helpers"]`.
+Looking at the schema for `ip_helpers` under `svis`:
+Wait, `ip_helpers` is defined under `vrfs` in the schema, but let's check `svis` schema.
+Ah, the schema reference for `svis` has `$ref: eos_designs#/$defs/svi`.
+Wait, `ip_helpers` is a list of dicts.
+Wait, the schema for `ip_helpers` under `svis` (from `$defs/svi` which is not fully expanded but usually has `ip_helpers`):
+```yaml
+ip_helpers:
+  type: list
+  primary_key: ip_helper
+  items:
+    type: dict
+    keys:
+      ip_helper:
+        type: str
+      source_interface:
+        type: str
+      source_vrf:
+        type: str
+```
+Wait, the task says: "Add ip_helpers to SVI id 21 in VRF11 as a list with one entry: ip_address 10.255.0.1, source_interface Loopback0."
+Wait, the key is `ip_helper` not `ip_address`.
+Let's check the schema for `ip_helpers` under `vrfs` (which is similar):
+```yaml
+ip_helpers:
+  type: list
+  primary_key: ip_helper
+  items:
+    type: dict
+    keys:
+      ip_helper:
+        type: str
+        description: IPv4 DHCP server IP.
+      source_interface:
+        type: str
+        description: Interface name.
+      source_vrf:
+        type: str
+```
+So the list item should be:
+```json
+[
+  {
+    "ip_helper": "10.255.0.1",
+    "source_interface": "Loopback0"
+  }
+]
+```
+Let's double check the insertion path: `["tenants", 0, "vrfs", 1, "svis", 0, "ip_helpers"]`.
+This means the output should be just the list of `ip_helpers`.
+
+```json
+[
+  {
+    "ip_helper": "10.255.0.1",
+    "source_interface": "Loopback0"
+  }
+]
+```
+Let's verify the task: "Add ip_helpers to SVI id 21 in VRF11 as a list with one entry: ip_address 10.255.0.1, source_interface Loopback0."
+The key is `ip_helper` based on the schema.
+```json
+[
+  {
+    "ip_helper": "10.255.0.1",
+    "source_interface": "Loopback0"
+  }
+]
+```
+Looks correct.
+[
+  {
+    "ip_helper": "10.255.0.1",
+    "source_interface": "Loopback0"
+  }
+]

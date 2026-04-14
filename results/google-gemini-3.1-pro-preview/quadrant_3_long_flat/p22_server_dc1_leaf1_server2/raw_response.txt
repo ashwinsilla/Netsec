@@ -1,0 +1,262 @@
+thinking
+The user wants to add a new server named `dc1-leaf1-server2` to the `servers` list in `group_vars/CONNECTED_ENDPOINTS/connected_endpoints.yml`.
+The insertion path is `["servers"]`, which means the output should be a JSON array containing all the servers, including the existing ones and the new one.
+
+Existing servers:
+1. `dc1-leaf1-server1`
+2. `dc1-leaf2-server1`
+
+New server to add:
+- name: `dc1-leaf1-server2`
+- adapters:
+  - endpoint_ports: [PCI1, PCI2]
+    switch_ports: [Ethernet6, Ethernet6]
+    switches: [dc1-leaf1a, dc1-leaf1b]
+    vlans: "11-12"
+    mode: trunk
+    spanning_tree_portfast: edge
+    port_channel:
+      mode: active
+
+Let's construct the JSON array.
+
+```json
+[
+  {
+    "name": "dc1-leaf1-server1",
+    "adapters": [
+      {
+        "endpoint_ports": ["PCI1", "PCI2"],
+        "switch_ports": ["Ethernet5", "Ethernet5"],
+        "switches": ["dc1-leaf1a", "dc1-leaf1b"],
+        "vlans": "11-12,21-22",
+        "native_vlan": 4092,
+        "mode": "trunk",
+        "spanning_tree_portfast": "edge",
+        "port_channel": {
+          "endpoint_port_channel": "Bond1",
+          "mode": "active"
+        }
+      },
+      {
+        "endpoint_ports": ["iLO"],
+        "switch_ports": ["Ethernet5"],
+        "switches": ["dc1-leaf1c"],
+        "vlans": 11,
+        "mode": "access",
+        "spanning_tree_portfast": "edge"
+      }
+    ]
+  },
+  {
+    "name": "dc1-leaf2-server1",
+    "adapters": [
+      {
+        "endpoint_ports": ["PCI1", "PCI2"],
+        "switch_ports": ["Ethernet5", "Ethernet5"],
+        "switches": ["dc1-leaf2a", "dc1-leaf2b"],
+        "vlans": "11-12,21-22",
+        "native_vlan": 4092,
+        "mode": "trunk",
+        "spanning_tree_portfast": "edge",
+        "port_channel": {
+          "mode": "active"
+        }
+      },
+      {
+        "endpoint_ports": ["iLO"],
+        "switch_ports": ["Ethernet5"],
+        "switches": ["dc1-leaf2c"],
+        "vlans": 11,
+        "mode": "access",
+        "spanning_tree_portfast": "edge"
+      }
+    ]
+  },
+  {
+    "name": "dc1-leaf1-server2",
+    "adapters": [
+      {
+        "endpoint_ports": ["PCI1", "PCI2"],
+        "switch_ports": ["Ethernet6", "Ethernet6"],
+        "switches": ["dc1-leaf1a", "dc1-leaf1b"],
+        "vlans": "11-12",
+        "mode": "trunk",
+        "spanning_tree_portfast": "edge",
+        "port_channel": {
+          "mode": "active"
+        }
+      }
+    ]
+  }
+]
+```
+
+Wait, the `vlans` field in the existing config for `iLO` is `11` (integer). I should keep it as integer or string as it was. In YAML `11` is an integer. `11-12,21-22` is a string.
+Let's double check the new server's `vlans`: `11-12` (string).
+
+Let's review the existing servers:
+```yaml
+  - name: dc1-leaf1-server1
+    adapters:
+      - endpoint_ports: [PCI1, PCI2]
+        switch_ports: [Ethernet5, Ethernet5]
+        switches: [dc1-leaf1a, dc1-leaf1b]
+        vlans: 11-12,21-22
+        native_vlan: 4092
+        mode: trunk
+        spanning_tree_portfast: edge
+        port_channel:
+          endpoint_port_channel: Bond1
+          mode: active
+
+      - endpoint_ports: [iLO]
+        switch_ports: [Ethernet5]
+        switches: [dc1-leaf1c]
+        vlans: 11
+        mode: access
+        spanning_tree_portfast: edge
+
+  - name: dc1-leaf2-server1
+    adapters:
+      - endpoint_ports: [PCI1, PCI2]
+        switch_ports: [Ethernet5, Ethernet5]
+        switches: [dc1-leaf2a, dc1-leaf2b]
+        vlans: 11-12,21-22
+        native_vlan: 4092
+        mode: trunk
+        spanning_tree_portfast: edge
+        port_channel:
+          mode: active
+
+      - endpoint_ports: [iLO]
+        switch_ports: [Ethernet5]
+        switches: [dc1-leaf2c]
+        vlans: 11
+        mode: access
+        spanning_tree_portfast: edge
+```
+
+The new server:
+```yaml
+  - name: dc1-leaf1-server2
+    adapters:
+      - endpoint_ports: [PCI1, PCI2]
+        switch_ports: [Ethernet6, Ethernet6]
+        switches: [dc1-leaf1a, dc1-leaf1b]
+        vlans: "11-12"
+        mode: trunk
+        spanning_tree_portfast: edge
+        port_channel:
+          mode: active
+```
+
+Everything looks correct.
+[
+  {
+    "name": "dc1-leaf1-server1",
+    "adapters": [
+      {
+        "endpoint_ports": [
+          "PCI1",
+          "PCI2"
+        ],
+        "switch_ports": [
+          "Ethernet5",
+          "Ethernet5"
+        ],
+        "switches": [
+          "dc1-leaf1a",
+          "dc1-leaf1b"
+        ],
+        "vlans": "11-12,21-22",
+        "native_vlan": 4092,
+        "mode": "trunk",
+        "spanning_tree_portfast": "edge",
+        "port_channel": {
+          "endpoint_port_channel": "Bond1",
+          "mode": "active"
+        }
+      },
+      {
+        "endpoint_ports": [
+          "iLO"
+        ],
+        "switch_ports": [
+          "Ethernet5"
+        ],
+        "switches": [
+          "dc1-leaf1c"
+        ],
+        "vlans": 11,
+        "mode": "access",
+        "spanning_tree_portfast": "edge"
+      }
+    ]
+  },
+  {
+    "name": "dc1-leaf2-server1",
+    "adapters": [
+      {
+        "endpoint_ports": [
+          "PCI1",
+          "PCI2"
+        ],
+        "switch_ports": [
+          "Ethernet5",
+          "Ethernet5"
+        ],
+        "switches": [
+          "dc1-leaf2a",
+          "dc1-leaf2b"
+        ],
+        "vlans": "11-12,21-22",
+        "native_vlan": 4092,
+        "mode": "trunk",
+        "spanning_tree_portfast": "edge",
+        "port_channel": {
+          "mode": "active"
+        }
+      },
+      {
+        "endpoint_ports": [
+          "iLO"
+        ],
+        "switch_ports": [
+          "Ethernet5"
+        ],
+        "switches": [
+          "dc1-leaf2c"
+        ],
+        "vlans": 11,
+        "mode": "access",
+        "spanning_tree_portfast": "edge"
+      }
+    ]
+  },
+  {
+    "name": "dc1-leaf1-server2",
+    "adapters": [
+      {
+        "endpoint_ports": [
+          "PCI1",
+          "PCI2"
+        ],
+        "switch_ports": [
+          "Ethernet6",
+          "Ethernet6"
+        ],
+        "switches": [
+          "dc1-leaf1a",
+          "dc1-leaf1b"
+        ],
+        "vlans": "11-12",
+        "mode": "trunk",
+        "spanning_tree_portfast": "edge",
+        "port_channel": {
+          "mode": "active"
+        }
+      }
+    ]
+  }
+]

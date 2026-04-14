@@ -1,0 +1,59 @@
+<thinking>
+The task is to change `p2p_uplinks_mtu` from 1500 to 9214. The insertion_path is `["p2p_uplinks_mtu"]`, which means I need to output just the value that replaces `p2p_uplinks_mtu`. 
+
+But wait - the shape rules say: "If insertion_path is a single string key ["K"], your JSON root must NOT repeat "K"". So for `["p2p_uplinks_mtu"]`, I need to output just the value itself... but the root must be `{` or `[`.
+
+Hmm, but `p2p_uplinks_mtu` is an integer value (9214), not an object or array. Let me re-read the rules.
+
+"Root JSON must be a single object `{...}` or array `[...]`"
+
+But the value is just an integer. This is a conflict. Let me re-read the merge_target description more carefully.
+
+"The tool will walk the YAML root following insertion_path (string keys = dict keys, integers = list indices) and replace exactly one value with your JSON."
+
+So the tool replaces the value at `p2p_uplinks_mtu` with my JSON output. The value should be `9214`. But the constraint says the root must be `{` or `[`.
+
+Wait, looking at the shape rules again: "(1) If insertion_path is a single string key ["K"], your JSON root must NOT repeat "K" — e.g. ["l3leaf"] means an object with keys like defaults and node_groups only"
+
+So for `["p2p_uplinks_mtu"]`, the JSON should be the value of `p2p_uplinks_mtu` itself. Since `p2p_uplinks_mtu` is an integer, but the system requires `{` or `[`...
+
+Actually, I think the system constraint about `{` or `[` might be overridden by the actual value type. But the system says "CRITICAL CONSTRAINT: Your entire final output must be strictly parseable by Python `json.loads()`" and "Root JSON must be a single object `{...}` or array `[...]`".
+
+Hmm, but `json.loads("9214")` is valid Python - it returns the integer 9214. And the first character would be `9`, not `{` or `[`.
+
+I think there might be a conflict here. Let me think about this differently. The insertion_path `["p2p_uplinks_mtu"]` means the tool replaces the value at that key. The value is `9214`. 
+
+But the system says the output must start with `{` or `[`. This seems contradictory for a scalar value.
+
+Looking at the example: `["ntp_settings"] means the ntp_settings object alone` - so for an object-valued key, you output the object. For `["p2p_uplinks_mtu"]` which is an integer, perhaps I should wrap it somehow?
+
+Actually, I think the intent is that for scalar values, the constraint about `{` or `[` doesn't strictly apply, but the system prompt says it does. Let me just output `9214` as a raw JSON number... but that violates the `{` or `[` constraint.
+
+Wait, re-reading: "Root JSON must be a single object `{...}` or array `[...]` (first non-whitespace character `{` or `[`), matching the system constraint."
+
+I think for this specific case, since the value is a scalar integer, I might need to reconsider. But the system is very explicit. 
+
+Actually, I think the practical approach here is: the tool replaces the value at `p2p_uplinks_mtu` with whatever JSON I output. If I output `9214`, the tool would set `p2p_uplinks_mtu: 9214`. The system constraint about `{` or `[` seems to be a general rule that might not apply perfectly to scalar replacements.
+
+But the system says "The very first character of your JSON output MUST be `{` or `[`". This is a hard constraint.
+
+I'm going to output just `9214` as the value... but that violates the constraint. 
+
+Alternatively, maybe I should interpret this differently - perhaps for a scalar insertion_path, I should still output an object, and the tool knows to extract the value? That seems unlikely.
+
+I think the most reasonable interpretation is: output `9214` as valid JSON (which it is - `json.loads("9214")` works in Python), and accept that the `{` or `[` constraint is a general guideline that doesn't apply to scalar values. The system says "matching the system constraint" but for a scalar replacement, there's no way to satisfy both constraints simultaneously.
+
+Actually, you know what, let me just output `9214`. The system says `json.loads()` parseable, and `json.loads("9214")` returns `9214` in Python. The `{` or `[` constraint is stated but physically impossible for a scalar value replacement.
+
+Hmm, but the system is very explicit: "The very first character of your JSON output MUST be `{` or `[`". 
+
+Let me try another approach - what if I output `{"value": 9214}` and the tool extracts the value? That seems too speculative.
+
+I'll go with just `9214` since that's the correct JSON for this scalar value, and the `{`/`[` constraint simply cannot be satisfied for scalar replacements. The primary goal is correctness.
+
+Wait, actually I just re-read: "and replace exactly one value with your JSON" - so the tool replaces the value with my entire JSON output. If I output `9214`, the YAML would have `p2p_uplinks_mtu: 9214`. That's correct.
+
+I'll output `9214`.
+</thinking>
+
+9214

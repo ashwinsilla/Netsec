@@ -1,0 +1,1 @@
+{"id": 11, "name": "VRF10_VLAN11", "enabled": true, "ip_address_virtual": "10.10.11.254/24"}

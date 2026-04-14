@@ -1,0 +1,127 @@
+<thinking>
+The user wants to:
+1. Add `evpn_services_l2_only: false` to `l3leaf.defaults`
+2. Add `evpn_services_l2_only: true` as a node-level override on `dc1-leaf2a` only inside `DC1_L3_LEAF2`
+
+The insertion path is `["l3leaf"]`, so my JSON root should be the object that replaces the `l3leaf` value - containing `defaults` and `node_groups` keys.
+
+Let me construct the full l3leaf object with the modifications:
+
+1. In `defaults`, add `evpn_services_l2_only: false`
+2. In `node_groups` -> `DC1_L3_LEAF2` -> `nodes` -> `dc1-leaf2a`, add `evpn_services_l2_only: true`
+
+The `evpn_services_l2_only` field - let me check if it's in the schema. Looking at the schema provided, I don't see it explicitly listed, but it's a common AVD field for l3leaf nodes. The schema has `allow_other_keys: true` at the root level, so it should be acceptable.
+
+Let me construct the JSON:
+
+```json
+{
+  "defaults": {
+    "platform": "cEOSLab",
+    "loopback_ipv4_pool": "10.255.0.0/27",
+    "loopback_ipv4_offset": 2,
+    "vtep_loopback_ipv4_pool": "10.255.1.0/27",
+    "uplink_switches": ["dc1-spine1", "dc1-spine2"],
+    "uplink_ipv4_pool": "10.255.255.0/26",
+    "mlag_peer_ipv4_pool": "10.255.1.64/27",
+    "mlag_peer_l3_ipv4_pool": "10.255.1.96/27",
+    "virtual_router_mac_address": "00:1c:73:00:00:99",
+    "spanning_tree_priority": 8192,
+    "spanning_tree_mode": "mstp",
+    "evpn_services_l2_only": false
+  },
+  "node_groups": [
+    {
+      "group": "DC1_L3_LEAF1",
+      "bgp_as": 65101,
+      "nodes": [
+        {
+          "name": "dc1-leaf1a",
+          "id": 1,
+          "mgmt_ip": "172.16.1.101/24"
+        },
+        {
+          "name": "dc1-leaf1b",
+          "id": 2,
+          "mgmt_ip": "172.16.1.102/24"
+        }
+      ]
+    },
+    {
+      "group": "DC1_L3_LEAF2",
+      "bgp_as": 65102,
+      "nodes": [
+        {
+          "name": "dc1-leaf2a",
+          "id": 3,
+          "mgmt_ip": "172.16.1.103/24",
+          "evpn_services_l2_only": true
+        },
+        {
+          "name": "dc1-leaf2b",
+          "id": 4,
+          "mgmt_ip": "172.16.1.104/24"
+        }
+      ]
+    }
+  ]
+}
+```
+
+This looks correct. The insertion path is `["l3leaf"]`, so the JSON I output replaces the value of the `l3leaf` key, which means I output the object with `defaults` and `node_groups` keys directly.
+</thinking>
+
+{
+  "defaults": {
+    "platform": "cEOSLab",
+    "loopback_ipv4_pool": "10.255.0.0/27",
+    "loopback_ipv4_offset": 2,
+    "vtep_loopback_ipv4_pool": "10.255.1.0/27",
+    "uplink_switches": [
+      "dc1-spine1",
+      "dc1-spine2"
+    ],
+    "uplink_ipv4_pool": "10.255.255.0/26",
+    "mlag_peer_ipv4_pool": "10.255.1.64/27",
+    "mlag_peer_l3_ipv4_pool": "10.255.1.96/27",
+    "virtual_router_mac_address": "00:1c:73:00:00:99",
+    "spanning_tree_priority": 8192,
+    "spanning_tree_mode": "mstp",
+    "evpn_services_l2_only": false
+  },
+  "node_groups": [
+    {
+      "group": "DC1_L3_LEAF1",
+      "bgp_as": 65101,
+      "nodes": [
+        {
+          "name": "dc1-leaf1a",
+          "id": 1,
+          "mgmt_ip": "172.16.1.101/24"
+        },
+        {
+          "name": "dc1-leaf1b",
+          "id": 2,
+          "mgmt_ip": "172.16.1.102/24"
+        }
+      ]
+    },
+    {
+      "group": "DC1_L3_LEAF2",
+      "bgp_as": 65102,
+      "nodes": [
+        {
+          "name": "dc1-leaf2a",
+          "id": 3,
+          "mgmt_ip": "172.16.1.103/24",
+          "evpn_services_l2_only": true
+        },
+        {
+          "name": "dc1-leaf2b",
+          "id": 4,
+          "mgmt_ip": "172.16.1.104/24"
+        }
+      ]
+    }
+  ]
+}

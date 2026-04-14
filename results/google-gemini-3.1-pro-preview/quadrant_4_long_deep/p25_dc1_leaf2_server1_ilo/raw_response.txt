@@ -1,0 +1,150 @@
+thinking
+The user wants to add an iLO adapter to `dc1-leaf2-server1` in the `servers` list.
+The insertion path is `["servers", 1, "adapters"]`.
+The current value of `servers[1].adapters` is:
+```yaml
+    adapters:
+      - endpoint_ports: [PCI1, PCI2]
+        switch_ports: [Ethernet5, Ethernet5]
+        switches: [dc1-leaf2a, dc1-leaf2b]
+        vlans: 11-12,21-22
+        native_vlan: 4092
+        mode: trunk
+        spanning_tree_portfast: edge
+        port_channel:
+          mode: active
+
+      - endpoint_ports: [iLO]
+        switch_ports: [Ethernet5]
+        switches: [dc1-leaf2c]
+        vlans: 11
+        mode: access
+        spanning_tree_portfast: edge
+```
+The new adapter to add:
+```yaml
+      - endpoint_ports: [iLO]
+        switch_ports: [Ethernet6]
+        switches: [dc1-leaf2c]
+        vlans: 21
+        mode: access
+        spanning_tree_portfast: edge
+```
+Wait, the vlans is an integer or string? In the existing config, `vlans: 11` is an integer, but usually it's a string or int. I'll use `21` as an integer or string. Let's use integer `21` or string `"21"`. The existing one is `11`.
+
+Let's construct the full array for `servers[1].adapters`:
+```json
+[
+  {
+    "endpoint_ports": ["PCI1", "PCI2"],
+    "switch_ports": ["Ethernet5", "Ethernet5"],
+    "switches": ["dc1-leaf2a", "dc1-leaf2b"],
+    "vlans": "11-12,21-22",
+    "native_vlan": 4092,
+    "mode": "trunk",
+    "spanning_tree_portfast": "edge",
+    "port_channel": {
+      "mode": "active"
+    }
+  },
+  {
+    "endpoint_ports": ["iLO"],
+    "switch_ports": ["Ethernet5"],
+    "switches": ["dc1-leaf2c"],
+    "vlans": 11,
+    "mode": "access",
+    "spanning_tree_portfast": "edge"
+  },
+  {
+    "endpoint_ports": ["iLO"],
+    "switch_ports": ["Ethernet6"],
+    "switches": ["dc1-leaf2c"],
+    "vlans": 21,
+    "mode": "access",
+    "spanning_tree_portfast": "edge"
+  }
+]
+```
+Wait, the existing `vlans: 11` is parsed as integer in YAML, but AVD schema usually accepts string or int. I'll use integer `11` and `21` to match the existing format.
+
+Let's double check the existing `adapters` for `dc1-leaf2-server1`:
+```yaml
+      - endpoint_ports: [PCI1, PCI2]
+        switch_ports: [Ethernet5, Ethernet5]
+        switches: [dc1-leaf2a, dc1-leaf2b]
+        vlans: 11-12,21-22
+        native_vlan: 4092
+        mode: trunk
+        spanning_tree_portfast: edge
+        port_channel:
+          mode: active
+
+      - endpoint_ports: [iLO]
+        switch_ports: [Ethernet5]
+        switches: [dc1-leaf2c]
+        vlans: 11
+        mode: access
+        spanning_tree_portfast: edge
+```
+Adding the new one:
+```yaml
+      - endpoint_ports: [iLO]
+        switch_ports: [Ethernet6]
+        switches: [dc1-leaf2c]
+        vlans: 21
+        mode: access
+        spanning_tree_portfast: edge
+```
+
+The output should be a JSON array.
+[
+  {
+    "endpoint_ports": [
+      "PCI1",
+      "PCI2"
+    ],
+    "switch_ports": [
+      "Ethernet5",
+      "Ethernet5"
+    ],
+    "switches": [
+      "dc1-leaf2a",
+      "dc1-leaf2b"
+    ],
+    "vlans": "11-12,21-22",
+    "native_vlan": 4092,
+    "mode": "trunk",
+    "spanning_tree_portfast": "edge",
+    "port_channel": {
+      "mode": "active"
+    }
+  },
+  {
+    "endpoint_ports": [
+      "iLO"
+    ],
+    "switch_ports": [
+      "Ethernet5"
+    ],
+    "switches": [
+      "dc1-leaf2c"
+    ],
+    "vlans": 11,
+    "mode": "access",
+    "spanning_tree_portfast": "edge"
+  },
+  {
+    "endpoint_ports": [
+      "iLO"
+    ],
+    "switch_ports": [
+      "Ethernet6"
+    ],
+    "switches": [
+      "dc1-leaf2c"
+    ],
+    "vlans": 21,
+    "mode": "access",
+    "spanning_tree_portfast": "edge"
+  }
+]

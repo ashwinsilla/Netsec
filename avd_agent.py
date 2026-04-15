@@ -302,6 +302,149 @@ def _extract_target_section(context_yaml: str, top_key: str) -> str:
 
 
 # ──────────────────────────────────────────────────────────────────────────────
+# RAG — TF-IDF retriever
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Domain-specific keyword expansions per file.
+# These supplement the live YAML content so that user phrasings that don't
+# appear verbatim in the YAML still map to the right file.
+# E.g. a user typing "spanning tree mode" should match l3leaves even though
+# the YAML key is `spanning_tree_mode`.
+_FILE_KEYWORDS: dict[str, str] = {
+    "fabric": (
+        "ntp ntpd time server pool clock sync ntp_settings "
+        "dns domain nameserver resolve dns_settings "
+        "bgp peer group password evpn underlay overlay bgp_peer_groups "
+        "aaa authentication authorization accounting "
+        "timezone mtu p2p fabric-wide global"
+    ),
+    "spines": (
+        "spine spines switch node bgp asn autonomous system number bgp_as "
+        "loopback pool platform hardware chassis "
+        "uplink underlay overlay spine-leaf"
+    ),
+    "l3leaves": (
+        "leaf leaves l3leaf l3 switch "
+        "spanning tree rstp mstp pvrst mode priority spanning_tree_mode spanning_tree_priority "
+        "virtual router mac address vrrp anycast mac virtual_router_mac_address "
+        "mlag peer link port-channel uplink vtep loopback "
+        "l3leaf defaults node_groups"
+    ),
+    "netsvcs": (
+        "tenant tenants vrf routing table vrfs "
+        "vlan vlans l2 l3 svi svis virtual interface ip gateway anycast "
+        "vxlan vni l2vlan l2vlans mac_vrf network services "
+        "ip_helpers dhcp relay"
+    ),
+    "endpoints": (
+        "server servers endpoint connected host adapter adapters "
+        "port ethernet interface port-channel trunk access vlan native "
+        "connected_endpoints workload compute nic"
+    ),
+}
+
+
+def _build_rag_corpus() -> dict[str, str]:
+    """
+    Build a rich text document for each file key.
+
+    Each document is the concatenation of:
+      1. The human-readable FILE_PURPOSES description.
+      2. Domain-specific keyword expansions (_FILE_KEYWORDS) — covers phrasings
+         that users commonly say but that don't appear verbatim in the YAML keys.
+      3. Every YAML key path found in the live file (e.g. "ntp_settings servers
+         name iburst"), so the corpus stays current as the repo evolves.
+      4. Scalar values up to depth 4 (e.g. "ebgp rstp use_mgmt_interface_vrf").
+
+    The resulting corpus is used by _rag_retrieve() for TF-IDF vectorisation.
+    """
+    import yaml
+
+    def _extract_terms(node: Any, depth: int = 0) -> list[str]:
+        """Recursively flatten a YAML node into a list of tokens."""
+        if depth > 4:
+            return []
+        terms: list[str] = []
+        if isinstance(node, dict):
+            for k, v in node.items():
+                terms.append(str(k))
+                terms.extend(_extract_terms(v, depth + 1))
+        elif isinstance(node, list):
+            for item in node[:3]:          # first 3 list items to stay compact
+                terms.extend(_extract_terms(item, depth + 1))
+        elif isinstance(node, (str, int, float, bool)) and node is not None:
+            terms.append(str(node))
+        return terms
+
+    corpus: dict[str, str] = {}
+    for key, rel in FILE_MAP.items():
+        parts: list[str] = [
+            FILE_PURPOSES[key],            # human-readable purpose
+            _FILE_KEYWORDS[key],           # domain keyword expansions
+        ]
+        path = REPO_ROOT / rel
+        if path.is_file():
+            try:
+                with open(path, encoding="utf-8") as fh:
+                    data = yaml.safe_load(fh) or {}
+                parts.append(" ".join(_extract_terms(data)))
+            except Exception:
+                pass
+        corpus[key] = " ".join(parts)
+    return corpus
+
+
+def _rag_retrieve(query: str, top_k: int = 2) -> list[str]:
+    """
+    Return the top_k most relevant file keys for *query* using TF-IDF cosine
+    similarity — no external embedding API, no network calls, runs locally.
+
+    Pipeline
+    ────────
+    1. Build corpus (one doc per file) via _build_rag_corpus().
+    2. Fit a TfidfVectorizer on the corpus (unigrams + bigrams, English stop-words).
+    3. Transform both the corpus and the query into TF-IDF vectors.
+    4. Compute cosine similarity between the query vector and each corpus vector.
+    5. Return the top_k file keys sorted by descending similarity.
+
+    Falls back to returning ALL file keys if scikit-learn is unavailable or
+    an unexpected error occurs — the agent degrades gracefully.
+    """
+    try:
+        from sklearn.feature_extraction.text import TfidfVectorizer  # type: ignore
+        from sklearn.metrics.pairwise import cosine_similarity        # type: ignore
+        import numpy as np                                            # type: ignore
+
+        corpus   = _build_rag_corpus()
+        keys     = list(corpus.keys())
+        docs     = [corpus[k] for k in keys]
+
+        vectorizer = TfidfVectorizer(
+            ngram_range=(1, 2),     # captures "BGP ASN", "NTP server", "spanning tree" etc.
+            stop_words="english",
+            max_features=5000,
+            sublinear_tf=True,      # log(1+tf) dampens common high-frequency terms
+        )
+        matrix    = vectorizer.fit_transform(docs)
+        query_vec = vectorizer.transform([query])
+        scores    = cosine_similarity(query_vec, matrix)[0]
+
+        ranked = np.argsort(scores)[::-1][:top_k]
+        result = [keys[i] for i in ranked]
+
+        log.debug(
+            "RAG retrieve %r → %s  (scores: %s)",
+            query, result,
+            [f"{scores[i]:.3f}" for i in ranked],
+        )
+        return result
+
+    except Exception as exc:
+        log.warning("RAG retrieval failed (%s) — sending all files to intent resolver", exc)
+        return list(FILE_MAP.keys())   # safe fallback: send everything
+
+
+# ──────────────────────────────────────────────────────────────────────────────
 # OpenRouter API
 # ──────────────────────────────────────────────────────────────────────────────
 
@@ -514,20 +657,46 @@ Examples
 
 
 def _build_intent_prompt(user_request: str) -> str:
+    """
+    Build the Phase 1 intent-resolution prompt.
+
+    RAG step
+    ────────
+    Before assembling the prompt, _rag_retrieve() uses TF-IDF cosine similarity
+    to rank all 5 group_vars files against the user request and returns the top 2.
+    Only those files' compact structural summaries are included in full.
+    The remaining files are listed as one-line entries (no content) so the model
+    still knows they exist but isn't flooded with irrelevant YAML.
+
+    This reduces Phase 1 prompt size by ~60 % compared to sending all 5 files.
+    """
     parts: list[str] = []
 
-    # File catalogue + compact structural summary of each file.
-    # We send a key/type outline (~10-20x fewer tokens than raw YAML) so the
-    # model can identify the right file and insertion_path without receiving
-    # thousands of lines of config it doesn't need for routing.
+    # ── RAG retrieval ────────────────────────────────────────────────────────
+    retrieved = _rag_retrieve(user_request, top_k=2)
+    not_retrieved = [k for k in FILE_MAP if k not in retrieved]
+
+    # ── Full detail for retrieved files ─────────────────────────────────────
     parts.append("<available_files>")
-    for key, rel in FILE_MAP.items():
-        parts.append(f"\n  [{key}]  {rel}")
+    parts.append(
+        f"  (RAG retrieved {len(retrieved)} most relevant file(s) for this request "
+        f"— full structure shown below; remaining files listed briefly.)\n"
+    )
+    for key in retrieved:
+        rel = FILE_MAP[key]
+        parts.append(f"\n  [{key}]  {rel}  ← RAG match")
         parts.append(f"  Purpose: {FILE_PURPOSES[key]}")
         path = REPO_ROOT / rel
         if path.is_file():
             compact = _yaml_compact(path)
             parts.append(f"  Current structure:\n{compact}")
+
+    # ── Brief listing for non-retrieved files ────────────────────────────────
+    if not_retrieved:
+        parts.append("\n  Other files (not retrieved — no detailed structure sent):")
+        for key in not_retrieved:
+            parts.append(f"    [{key}] {FILE_MAP[key]}: {FILE_PURPOSES[key]}")
+
     parts.append("\n</available_files>\n")
 
     parts.append(f"<user_request>\n{user_request.strip()}\n</user_request>\n")

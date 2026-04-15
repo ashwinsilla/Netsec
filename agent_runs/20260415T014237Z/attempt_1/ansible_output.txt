@@ -1,0 +1,62 @@
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/ashwinsilla/avd-eval/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/ashwinsilla/avd-eval/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Set eos_designs facts] **************************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Generate device configuration in structured format] ***
+changed: [dc1-spine1 -> localhost]
+changed: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf2b -> localhost]
+changed: [dc1-leaf1c -> localhost]
+changed: [dc1-leaf2c -> localhost]
+
+TASK [arista.avd.eos_designs : Generate fabric documentation] ******************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Verify Requirements] *********************
+skipping: [dc1-spine1]
+
+TASK [arista.avd.eos_cli_config_gen : Validate eos_cli_config_gen inputs] ******
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Generate EOS intended configuration and device documentation] ***
+changed: [dc1-spine1 -> localhost]
+changed: [dc1-spine2 -> localhost]
+changed: [dc1-leaf1b -> localhost]
+changed: [dc1-leaf2a -> localhost]
+changed: [dc1-leaf1a -> localhost]
+changed: [dc1-leaf2c -> localhost]
+changed: [dc1-leaf1c -> localhost]
+changed: [dc1-leaf2b -> localhost]
+
+TASK [arista.avd.eos_cli_config_gen : Clean up AVD temporary directory] ********
+ok: [dc1-spine1 -> localhost]
+
+PLAY RECAP *********************************************************************
+dc1-leaf1a                 : ok=2    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+dc1-leaf1b                 : ok=2    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+dc1-leaf1c                 : ok=2    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+dc1-leaf2a                 : ok=2    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+dc1-leaf2b                 : ok=2    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+dc1-leaf2c                 : ok=2    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+dc1-spine1                 : ok=10   changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+dc1-spine2                 : ok=2    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

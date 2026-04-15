@@ -1,0 +1,10 @@
+{
+  "file_key": "netsvcs",
+  "context_file": "group_vars/NETWORK_SERVICES/network_services.yml",
+  "insertion_path": [
+    "tenants"
+  ],
+  "task_text": "Append a new tenant named TENANT2 to the tenants list. TENANT2 should have mac_vrf_vni_base: 20000, one VRF named VRF20 with vrf_vni: 20, and one SVI with id: 100, name: VRF20_VLAN100, enabled: true, and ip_address_virtual: 10.20.100.1/24.",
+  "confidence": "high",
+  "reasoning": "New tenants are defined in the netsvcs file under the top-level 'tenants' list, so the new TENANT2 entry must be appended there."
+}

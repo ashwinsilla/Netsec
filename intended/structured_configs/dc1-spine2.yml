@@ -108,6 +108,7 @@ ntp:
   servers:
   - name: 0.pool.ntp.org
     preferred: true
+  - name: 2.pool.ntp.org
   vrf: MGMT
 prefix_lists:
 - name: PL-LOOPBACKS-EVPN-OVERLAY

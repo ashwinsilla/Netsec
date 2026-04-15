@@ -1,0 +1,290 @@
+<available_files>
+  fabric (group_vars/FABRIC/fabric_variables.yml): Fabric-wide settings: NTP (ntp_settings), DNS (dns_settings), BGP peer groups (bgp_peer_groups), AAA (aaa_settings), p2p_uplinks_mtu, timezone.
+  spines (group_vars/DC1_SPINES/spines.yml): Spine nodes (spine.nodes) and spine defaults: BGP ASN (spine.defaults.bgp_as), platform, loopback pools.
+  l3leaves (group_vars/DC1_L3_LEAVES/l3_leaves.yml): L3 leaf node groups (l3leaf.node_groups) and defaults (l3leaf.defaults): virtual_router_mac_address, spanning_tree_mode/priority, uplink settings, MLAG.
+  netsvcs (group_vars/NETWORK_SERVICES/network_services.yml): Network services: tenants list, VRFs, VLANs, SVIs, IP helpers, L2 VLANs.
+  endpoints (group_vars/CONNECTED_ENDPOINTS/connected_endpoints.yml): Connected endpoints: servers list with adapter definitions.
+</available_files>
+
+<current_group_vars>
+
+# group_vars/FABRIC/fabric_variables.yml
+---
+# Common AVD group variables
+fabric_name: FABRIC
+
+# Generate CSVs with fabric link info.
+eos_designs_documentation:
+  topology_csv: true
+  p2p_links_csv: true
+
+# Define underlay and overlay routing protocol to be used
+underlay_routing_protocol: ebgp
+overlay_routing_protocol: ebgp
+
+# Local users
+aaa_settings:
+  local_users:
+    # Username with no password configured
+    - name: admin
+      privilege: 15
+      role: network-admin
+      no_password: true
+    # Username with a password
+    - name: arista
+      privilege: 15
+      role: network-admin
+      sha512_password: "$6$Enl0WfE32FthwyiJ$yTyGaEJ2uPKLU.F7314YtB7J1jrzrMi7ogXIRTEHQfLdLgKWWmr1UvNlZLN6AyuxET7G5aH3AI9OYRzxVTkB1."
+
+# BGP peer groups passwords
+bgp_peer_groups:
+  # all passwords set to "arista"
+  evpn_overlay_peers:
+    password: Q4fqtbqcZ7oQuKfuWtNGRQ==
+  ipv4_underlay_peers:
+    password: 7x4B4rnJhZB438m9+BrBfQ==
+  mlag_ipv4_underlay_peer:
+    password: 4b21pAdCvWeAqpcKDFMdWw==
+
+# P2P interfaces MTU, includes VLANs 4093 and 4094 that are over peer-link
+# If you're running vEOS-lab or cEOS, you should use MTU of 1500 instead as shown in the following line
+# p2p_uplinks_mtu: 9214
+p2p_uplinks_mtu: 1500
+
+# Set default uplink, downlink, and MLAG interfaces based on node type
+default_interfaces:
+  - types: [spine]
+    platforms: [default]
+    uplink_interfaces: [Ethernet1-2]
+    downlink_interfaces: [Ethernet1-8]
+  - types: [l3leaf]
+    platforms: [default]
+    uplink_interfaces: [Ethernet1-2]
+    mlag_interfaces: [Ethernet3-4]
+    downlink_interfaces: [Ethernet8]
+  - types: [l2leaf]
+    platforms: [default]
+    uplink_interfaces: [Ethernet1-2]
+
+# CloudVision Portal definitions
+cv_settings:
+  onprem_clusters:
+    - name: primary
+      servers:
+        - name: 192.168.1.12
+  terminattr:
+    disable_aaa: true
+
+# DNS Server
+dns_settings:
+  servers:
+    - ip_address: 192.168.1.1
+
+# NTP Servers IP or DNS name, first NTP server will be preferred, and sourced from Management VRF
+ntp_settings:
+  server_vrf: use_mgmt_interface_vrf
+  servers:
+    - name: 0.pool.ntp.org
+
+# group_vars/DC1_SPINES/spines.yml
+---
+type: spine
+
+spine:
+  # Define variables for all nodes of this type
+  defaults:
+    # Set the relevant platform as each platform has different default values in Ansible AVD
+    platform: cEOSLab
+    # Pool of IPv4 addresses to configure interface Loopback0 used for BGP EVPN sessions
+    loopback_ipv4_pool: 10.255.0.0/27
+    # Autonous System Number for BGP
+    bgp_as: 65100
+  # Define variables per node
+  nodes:
+    # The Node Name is used as "hostname"
+    - name: dc1-spine1
+      # Unique identifier used for IP addressing and other algorithms
+      id: 1
+      # Node management interface IPv4 address
+      mgmt_ip: 172.16.1.11/24
+
+    - name: dc1-spine2
+      id: 2
+      mgmt_ip: 172.16.1.12/24
+
+# group_vars/DC1_L3_LEAVES/l3_leaves.yml
+type: l3leaf
+l3leaf:
+  defaults:
+    platform: cEOSLab
+    loopback_ipv4_pool: 10.255.0.0/27
+    loopback_ipv4_offset: 2
+    vtep_loopback_ipv4_pool: 10.255.1.0/27
+    uplink_switches:
+    - dc1-spine1
+    - dc1-spine2
+    uplink_ipv4_pool: 10.255.255.0/26
+    mlag_peer_ipv4_pool: 10.255.1.64/27
+    mlag_peer_l3_ipv4_pool: 10.255.1.96/27
+    virtual_router_mac_address: 00:1c:73:00:00:99
+    spanning_tree_priority: 8192
+    spanning_tree_mode: mstp
+  node_groups:
+  - group: DC1_L3_LEAF1
+    bgp_as: 65101
+    nodes:
+    - name: dc1-leaf1a
+      id: 1
+      mgmt_ip: 172.16.1.101/24
+    - name: dc1-leaf1b
+      id: 2
+      mgmt_ip: 172.16.1.102/24
+  - group: DC1_L3_LEAF2
+    bgp_as: 65102
+    nodes:
+    - name: dc1-leaf2a
+      id: 3
+      mgmt_ip: 172.16.1.103/24
+    - name: dc1-leaf2b
+      id: 4
+      mgmt_ip: 172.16.1.104/24
+
+# group_vars/NETWORK_SERVICES/network_services.yml
+---
+tenants:
+  # Definition of tenants. Additional level of abstraction to VRFs
+  - name: TENANT1
+    # Number used to generate the VNI of each VLAN by adding the VLAN number in this tenant.
+    mac_vrf_vni_base: 10000
+    vrfs:
+      # VRF definitions inside the tenant.
+      - name: VRF10
+        # VRF VNI definition.
+        vrf_vni: 10
+        # Enable VTEP Network diagnostics
+        # This will create a loopback with virtual source-nat enable to perform diagnostics from the switch.
+        vtep_diagnostic:
+          # Loopback interface number
+          loopback: 10
+          # Loopback ip range, a unique ip is derived from this ranged and assigned
+          # to each l3 leaf based on it's unique id.
+          loopback_ip_range: 10.255.10.0/27
+        svis:
+          # SVI definitions.
+          - id: 11
+            # SVI Description
+            name: VRF10_VLAN11
+            enabled: true
+            # IP anycast gateway to be used in the SVI in every leaf.
+            ip_address_virtual: 10.10.11.1/24
+          - id: 12
+            name: VRF10_VLAN12
+            enabled: true
+            ip_address_virtual: 10.10.12.1/24
+      - name: VRF11
+        vrf_vni: 11
+        vtep_diagnostic:
+          loopback: 11
+          loopback_ip_range: 10.255.11.0/27
+        svis:
+          - id: 21
+            name: VRF11_VLAN21
+            enabled: true
+            ip_address_virtual: 10.10.21.1/24
+          - id: 22
+            name: VRF11_VLAN22
+            enabled: true
+            ip_address_virtual: 10.10.22.1/24
+
+    l2vlans:
+      # These are pure L2 vlans. They do not have a SVI defined in the l3leafs and they will be bridged inside the VXLAN fabric
+      - id: 3401
+        name: L2_VLAN3401
+      - id: 3402
+        name: L2_VLAN3402
+
+# group_vars/CONNECTED_ENDPOINTS/connected_endpoints.yml
+---
+# Definition of connected endpoints in the fabric.
+servers:
+  # Name of the defined server.
+  - name: dc1-leaf1-server1
+    # Definition of adapters on the server.
+    adapters:
+        # Name of the server interfaces that will be used in the description of each interface
+      - endpoint_ports: [PCI1, PCI2]
+        # Device ports where the server ports are connected.
+        switch_ports: [Ethernet5, Ethernet5]
+        # Device names where the server ports are connected.
+        switches: [dc1-leaf1a, dc1-leaf1b]
+        # VLANs that will be configured on these ports.
+        vlans: 11-12,21-22
+        # Native VLAN to be used on these ports.
+        native_vlan: 4092
+        # L2 mode of the port.
+        mode: trunk
+        # Spanning tree portfast configuration on this port.
+        spanning_tree_portfast: edge
+        # Definition of the pair of ports as port channel.
+        port_channel:
+          # The port-channel name on the endpoint that will be used in the port-channel description.
+          endpoint_port_channel: Bond1
+          # Port channel mode for LACP.
+          mode: active
+
+      - endpoint_ports: [iLO]
+        switch_ports: [Ethernet5]
+        switches: [dc1-leaf1c]
+        vlans: 11
+        mode: access
+        spanning_tree_portfast: edge
+
+  - name: dc1-leaf2-server1
+    adapters:
+      - endpoint_ports: [PCI1, PCI2]
+        switch_ports: [Ethernet5, Ethernet5]
+        switches: [dc1-leaf2a, dc1-leaf2b]
+        vlans: 11-12,21-22
+        native_vlan: 4092
+        mode: trunk
+        spanning_tree_portfast: edge
+        port_channel:
+          mode: active
+
+      - endpoint_ports: [iLO]
+        switch_ports: [Ethernet5]
+        switches: [dc1-leaf2c]
+        vlans: 11
+        mode: access
+        spanning_tree_portfast: edge
+
+</current_group_vars>
+
+<user_request>
+Add a second NTP server 2.pool.ntp.org
+</user_request>
+
+
+Output a JSON object with exactly these fields:
+{
+  "file_key":       "<one of: fabric | spines | l3leaves | netsvcs | endpoints>",
+  "context_file":   "<relative path, e.g. group_vars/FABRIC/fabric_variables.yml>",
+  "insertion_path": [<list of string keys and 0-based integer indices>],
+  "task_text":      "<precise, self-contained description of the change for the generation step>",
+  "confidence":     "<high | medium | low>",
+  "reasoning":      "<one sentence explaining the file/path choice>"
+}
+
+insertion_path rules
+────────────────────
+- String elements navigate dict keys.
+- Integer elements navigate list indices (0-based), based on the current file content.
+- The path points to the value being replaced or the list being appended to.
+
+Examples
+────────
+  "Add NTP server"              → ["ntp_settings", "servers"]
+  "Change spine BGP ASN"        → ["spine", "defaults", "bgp_as"]
+  "Change virtual router MAC"   → ["l3leaf", "defaults", "virtual_router_mac_address"]
+  "Add VRF to TENANT1"          → ["tenants", 0, "vrfs"]
+  "Add SVI to VRF10 in TENANT1" → ["tenants", 0, "vrfs", 0, "svis"]

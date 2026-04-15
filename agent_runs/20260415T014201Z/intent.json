@@ -1,0 +1,11 @@
+{
+  "file_key": "fabric",
+  "context_file": "group_vars/FABRIC/fabric_variables.yml",
+  "insertion_path": [
+    "ntp_settings",
+    "servers"
+  ],
+  "task_text": "Append a second NTP server entry with name '2.pool.ntp.org' to the ntp_settings.servers list, keeping the existing '0.pool.ntp.org' entry as the first (preferred) server.",
+  "confidence": "high",
+  "reasoning": "NTP server definitions live in ntp_settings.servers inside group_vars/FABRIC/fabric_variables.yml, and the path points to that list for appending the new entry."
+}

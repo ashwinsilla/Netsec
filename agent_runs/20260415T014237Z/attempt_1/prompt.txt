@@ -1,0 +1,1451 @@
+<schema_reference>
+$id: eos_designs
+$schema: avd_meta_schema
+type: dict
+allow_other_keys: true
+keys:
+  aaa_settings:
+    type: dict
+    keys:
+      enable_password:
+        type: dict
+        keys:
+          password:
+            type: str
+            description: 'SHA512 hashed password.
+
+              Takes precedence over `cleartext_password`.
+
+              This variable is sensitive and SHOULD be configured using some vault.'
+          cleartext_password:
+            type: str
+            description: 'Cleartext enable password.
+
+              Encrypted using `password_type` by AVD.
+
+              This variable is sensitive and SHOULD be configured using some vault
+              mechanism.'
+          password_type:
+            type: str
+            valid_values:
+            - sha512
+            default: sha512
+  l2vlans:
+    type: list
+    items:
+      type: dict
+      keys:
+        address_locking:
+          type: dict
+          $ref: eos_cli_config_gen#/keys/vlans/items/keys/address_locking/keys/address_family
+        vni_override:
+          type: int
+          convert_types:
+          - str
+          min: 1
+          max: 16777215
+          description: 'By default the VNI will be derived from mac_vrf_vni_base.
+
+            The vni_override, allows to override this value and statically define
+            it.
+
+            '
+        rt_override:
+          type: str
+          convert_types:
+          - int
+          description: "By default the MAC VRF RT will be derived from mac_vrf_id_base
+            + vlan_id.\nThe rt_override allows us to override this value and statically
+            define it.\nrt_override will default to vni_override if set.\nrt_override
+            supports two formats:\n  - A single number which will be used in the RT
+            fields instead of mac_vrf_id/mac_vrf_vni (see 'overlay_rt_type' for details).\n
+            \ - A full RT string with colon separator which will override the full
+            RT.\n"
+        rd_override:
+          type: str
+          convert_types:
+          - int
+          description: "By default the MAC VRF RD will be derived from mac_vrf_id_base
+            + vlan_id.\nThe rt_override allows us to override this value and statically
+            define it.\nrd_override will default to rt_override or vni_override if
+            set.\nrd_override supports two formats:\n  - A single number which will
+            be used in the RD assigned number field instead of mac_vrf_id/mac_vrf_vni
+            (see 'overlay_rd_type' for details).\n  - A full RD string with colon
+            separator which will override the full RD.\n"
+        vxlan:
+          type: bool
+          default: true
+          description: Extend this L2VLAN over VXLAN.
+        spanning_tree_priority:
+          type: int
+          convert_types:
+          - str
+          description: 'Setting spanning-tree priority per VLAN is only supported
+            with `spanning_tree_mode: rapid-pvst` under node type settings.
+
+            The default priority for rapid-PVST is set under the node type settings
+            with `spanning_tree_priority` (default=32768).'
+        evpn_vlan_bundle:
+          type: str
+          description: 'Name of a bundle defined under ''evpn_vlan_bundles'' to inherit
+            configuration.
+
+            This setting overrides "evpn_vlan_bundle" set at tenant level.
+
+            The common option "evpn_vlan_aware_bundles" is disregarded for this option.
+
+            '
+        pim_rp_addresses:
+          documentation_options:
+            table: network-services-multicast-settings
+          description: 'For each group of nodes, allow configuration of RP Addresses
+            & associated groups.
+
+            '
+          type: list
+          items:
+            type: dict
+            keys:
+              rps:
+                description: List of Rendevouz Points.
+                type: list
+                min_length: 1
+                items:
+                  type: str
+                  description: RP address.
+              nodes:
+                description: 'Restrict configuration to specific nodes.
+
+                  Configuration Will be applied to all nodes if not set.
+
+                  '
+                type: list
+                items:
+                  type: str
+              groups:
+                type: list
+                items:
+                  type: str
+                  description: Group_prefix/mask.
+              access_list_name:
+                type: str
+                convert_types:
+                - int
+                description: 'List of groups to associate with the RP address set
+                  in ''rp''.
+
+                  If access_list_name is set, a standard access-list will be configured
+                  matching these groups.
+
+                  Otherwise the groups are configured directly on the RP command.
+
+                  '
+        igmp_snooping_querier:
+          documentation_options:
+            table: network-services-multicast-settings
+          description: 'Enable IGMP snooping querier for each SVI/l2vlan within tenant,
+            by default using IP address of Loopback 0.
+
+            When enabled, IGMP snooping querier will only be configured on L3 devices,
+            i.e., uplink_type: p2p.
+
+            '
+          type: dict
+          keys:
+            enabled:
+              type: bool
+              description: Will be enabled automatically if "evpn_l2_multicast" is
+                enabled.
+            source_address:
+              type: str
+              description: 'The value of `source_address` will be interpreted according
+                to these rules:
+
+                - `vrf_router_id` will configure the VRF router ID address according
+                to `<network_services_keys.name>[].vrfs[].bgp.router_id`.
+
+                - `diagnostic_loopback` will configure the VRF Diagnostic Loopback.
+
+                - `main_router_id` will configure the Loopback0 IP address.
+
+                - An IPv4 address will be used directly as the source address.'
+              default: main_router_id
+            version:
+              type: int
+              description: IGMP Version (By default EOS uses IGMP version 2 for IGMP
+                querier).
+              convert_types:
+              - str
+              valid_values:
+              - 1
+              - 2
+              - 3
+        evpn_l2_multi_domain:
+          type: bool
+          default: true
+          description: Explicitly extend all VLANs/VLAN-Aware Bundles inside the tenant
+            to remote EVPN domains.
+        vrfs:
+          documentation_options:
+            table: network-services-vrfs-settings
+          type: list
+          primary_key: name
+          description: 'VRFs will only be configured on a node if any of the underlying
+            objects like `svis`, `l3_interfaces` or `l3_port_channels` apply to the
+            node.
+
+
+            It is recommended to only define a VRF in one Tenant. If the same VRF
+            name is used across multiple tenants and those tenants
+
+            are accepted by `filter.tenants` on the node, any object set under the
+            duplicate VRFs must either be unique or be an exact match.
+
+
+            VRF "default" is partially supported under network-services. Currently
+            the supported options for "default" vrf are route-target,
+
+            route-distinguisher settings, structured_config, raw_eos_cli in bgp and
+            SVIs are the only supported interface type.
+
+            Vlan-aware-bundles are supported as well inside default vrf. OSPF is not
+            supported currently.
+
+            '
+          items:
+            type: dict
+            keys:
+              name:
+                type: str
+                convert_types:
+                - int
+              address_families:
+                type: list
+                default:
+                - evpn
+                items:
+                  type: str
+                  valid_values:
+                  - evpn
+                  - vpn-ipv4
+                  - vpn-ipv6
+              description:
+                type: str
+                description: VRF description.
+              vrf_vni:
+                type: int
+                convert_types:
+                - str
+                min: 1
+                max: 16777215
+                description: 'Required if "vrf_id" is not set.
+
+                  The VRF VNI range is not limited, but if vrf_id is not set, "vrf_vni"
+                  is used for calculating MLAG iBGP peering vlan id.
+
+                  "vrf_vni" may also be used for VRF RD/RT ID. See "overlay_rd_type"
+                  and "overlay_rt_type" for details.
+
+                  See "mlag_ibgp_peering_vrfs.base_vlan" for details.
+
+                  If vrf_vni > 10000 make sure to adjust "mac_vrf_vni_base" accordingly
+                  to avoid overlap.
+
+                  '
+              vrf_id:
+                type: int
+                convert_types:
+                - str
+                description: 'Required if "vrf_vni" is not set.
+
+                  "vrf_id" is used as default value for "vrf_vni" and "ospf.process_id"
+                  unless those are set.
+
+                  "vrf_id" may also be used for VRF RD/RT ID. See "overlay_rd_type"
+                  and "overlay_rt_type" for details.
+
+                  "vrf_id" is preferred over "vrf_vni" for MLAG iBGP peering vlan,
+                  see "mlag_ibgp_peering_vrfs.base_vlan" for details.
+
+                  '
+              rd_override:
+                type: str
+                convert_types:
+                - int
+                description: "By default, the VRF RD will be derived from the pattern
+                  defined in `overlay_rd_type`.\nThe rd_override allows us to override
+                  this value and statically define it.\n\nrd_override supports two
+                  formats:\n  - A single number will be used in the RD assigned number
+                  subfield (second part of the RD).\n  - A full RD string with colon
+                  separator which will override the full RD.\n"
+              rt_override:
+                type: str
+                convert_types:
+                - int
+                description: "By default, the VRF RT will be derived from the pattern
+                  defined in `overlay_rt_type`.\nThe rt_override allows us to override
+                  this value and statically define it.\n\nrt_override supports two
+                  formats:\n  - A single number will be used in the RT assigned number
+                  subfield (second part of the RT).\n  - A full RT string with colon
+                  separator which will override the full RT.\n"
+              rt_import:
+                type: bool
+                description: 'Enable or disable route target import for the VRF for
+                  all address families.
+
+                  This setting applies only to the automatically generated route targets
+
+                  and does not affect any entries defined under `additional_route_targets`.
+
+                  '
+                default: true
+              rt_export:
+                type: bool
+                description: 'Enable or disable route target export for the VRF for
+                  all address families.
+
+                  This setting applies only to the automatically generated route targets
+
+                  and does not affect any entries defined under `additional_route_targets`.
+
+                  '
+                default: true
+              evpn_vlan_bundle:
+                type: str
+                description: 'Name of a bundle defined under ''evpn_vlan_bundles''
+                  which will be used for all SVIs under this VRF.
+
+                  This setting overrides "evpn_vlan_bundle" set at the Tenant level.
+
+                  The common option "evpn_vlan_aware_bundles" is disregarded for this
+                  option.
+
+                  '
+              mlag_ibgp_peering_ipv4_pool:
+                type: str
+                description: 'Comma separated list of prefixes (IPv4 address/Mask)
+                  or ranges (IPv4_address-IPv4_address).
+
+                  The subnet used for the iBGP peering in the VRF is derived from
+                  this pool based on the ID of the first MLAG switch.
+
+                  If not set, "mlag_peer_l3_ipv4_pool" or "mlag_peer_ipv4_pool" will
+                  be used.'
+                format: ipv4_pool
+              mlag_ibgp_peering_ipv6_pool:
+                type: str
+                description: 'Comma separated list of prefixes (IPv6 address/Mask)
+                  or ranges (IPv6_address-IPv6_address).
+
+                  The subnet used for the iBGP peering in the VRF is derived from
+                  this pool based on the ID of the first MLAG switch.
+
+                  If not set, "mlag_peer_l3_ipv6_pool" or "mlag_peer_ipv6_pool" will
+                  be used.'
+                format: ipv6_pool
+              ip_helpers:
+                type: list
+                primary_key: ip_helper
+                description: IP helper for DHCP relay.
+                items:
+                  type: dict
+                  keys:
+                    ip_helper:
+                      type: str
+                      description: IPv4 DHCP server IP.
+                    source_interface:
+                      type: str
+                      description: Interface name.
+                    source_vrf:
+                      type: str
+                      description: VRF to originate DHCP relay packets to DHCP server.
+                        If not set, uses current VRF.
+                      convert_types:
+                      - int
+              enable_mlag_ibgp_peering_vrfs:
+                type: bool
+                description: 'MLAG iBGP peering per VRF.
+
+                  By default an iBGP peering is configured per VRF between MLAG peers
+                  on separate VLANs.
+
+                  Setting `enable_mlag_ibgp_peering_vrfs: false` under a VRF overrides
+                  the tenant-wide setting.
+
+                  '
+              redistribute_mlag_ibgp_peering_vrfs:
+                type: bool
+                description: 'Redistribute the connected subnet for the MLAG iBGP
+                  peering per VRF into overlay BGP.
+
+                  By default the iBGP peering subnet is not redistributed into the
+                  overlay routing protocol per VRF.
+
+                  Setting `redistribute_mlag_ibgp_peering_vrfs` under a VRF overrides
+                  the tenant-wide setting.
+
+                  '
+              mlag_ibgp_peering_vlan:
+                type: int
+                convert_types:
+                - str
+                description: 'Manually define the VLAN used on the MLAG pair for the
+                  iBGP session.
+
+                  By default this parameter is calculated using the following formula:
+                  `<mlag_ibgp_peering_vrfs.base_vlan>` + `<vrf_id>` - 1.
+
+                  '
+                min: 1
+                max: 4096
+              vtep_diagnostic:
+                type: dict
+                description: 'Enable VTEP Network diagnostics.
+
+                  This will create a loopback with virtual source-nat enable to perform
+                  diagnostics from the switch.
+
+                  '
+                keys:
+                  loopback:
+                    type: int
+                    convert_types:
+                    - str
+                    description: 'Loopback interface number, required when vtep_diagnotics
+                      defined.
+
+                      '
+                    min: 2
+                    max: 2100
+                  loopback_description:
+                    type: str
+                    description: "Provide a custom description or description template
+                      to be used on the VRF diagnostic loopback interface.\nThis can
+                      be a template using the AVD string formatter syntax: https://avd.arista.com/stable/ansible_collections/arista/avd/roles/eos_designs/docs/how-to/custom-descriptions-names.html#avd-string-formatter-syntax.\nThe
+                      available template fields are:\n  - `interface`: The Loopback
+                      interface name.\n  - `vrf`: The VRF name.\n  - `tenant`: The
+                      tenant name.\n\nThe default description is set by `default_vrf_diag_loopback_description`.\nBy
+                      default the description is templated from the VRF name."
+                  loopback_ip_range:
+                    type: str
+                    description: 'IPv4_address/Mask.
+
+                      Loopback IPv4 range, a unique ip is derived from this range
+                      and assigned to each l3 leaf based on its unique id.
+
+                      If any `pod` under `loopback_ip_pools` matches the `pod_name`
+                      of the device, and is configured with an `ipv4_pool`, it takes
+                      precedence over `loopback_ipv4_range`.
+
+                      Loopback is not created unless `loopback_ip_range`, `loopback_ipv6_range`
+                      or `loopback_ip_pools` are set.
+
+                      '
+                  loopback_ipv6_range:
+                    type: str
+                    description: 'IPv6_address/Mask.
+
+                      Loopback IPv6 range, a unique IPv6 address is derived from this
+                      range and assigned to each L3 leaf based on its unique ID.
+
+                      If any `pod` under `loopback_ip_pools` matches the `pod_name`
+                      of the device, and is configured with an `ipv6_pool`, it takes
+                      precedence over `loopback_ipv6_range`.
+
+                      Loopback is not created unless `loopback_ip_range`, `loopback_ipv6_range`
+                      or `loopback_ip_pools` are set.
+
+                      '
+                  loopback_ip_pools:
+                    type: list
+                    description: 'For inventories with multiple PODs a loopback range
+                      can be set per POD to avoid overlaps.
+
+                      POD level pools take precedence over `loopback_ip_range` and
+                      `loopback_ipv6_range`.
+
+                      Loopback is not created unless `loopback_ip_range`, `loopback_ipv6_range`
+                      or `loopback_ip_pools` are set.
+
+                      '
+                    primary_key: pod
+                    items:
+                      type: dict
+                      keys:
+                        pod:
+                          type: str
+                          description: POD name.
+                        ipv4_pool:
+                          type: str
+                          description: Comma separated list of prefixes (IPv4 address/Mask)
+                            or ranges (IPv4_address-IPv4_address).
+                          format: ipv4_pool
+                        ipv6_pool:
+                          type: str
+                          description: Comma separated list of prefixes (IPv6 address/Mask)
+                            or ranges (IPv6_address-IPv6_address).
+                          format: ipv6_pool
+                  hardware_forwarding:
+                    type: bool
+                    description: 'Enable hardware forwarding for diagnostic loopbacks.
+                      This is required for correct forwarding in VRFs without physical
+                      interfaces.
+
+                      '
+              ospf:
+                documentation_options:
+                  table: network-services-vrfs-ospf-settings
+                type: dict
+                description: 'Router OSPF configuration.
+
+                  This will create an OSPF routing instance in the tenant VRF. If
+                  there is no nodes definition, the OSPF instance will be
+
+                  created on all leafs where the VRF is deployed. This will also cause
+                  automatic OSPF redistribution into BGP unless
+
+                  explicitly turned off with "redistribute_ospf: false".
+
+                  '
+                keys:
+                  enabled:
+                    type: bool
+                  process_id:
+                    type: int
+                    convert_types:
+                    - str
+                    description: If not set, "vrf_id" will be used.
+                  router_id:
+                    type: str
+                    description: 'Router ID to use for OSPF in this VRF.
+
+                      This can be an IPv4 address, "main_router_id", "none" or "diagnostic_loopback".
+
+                      - "main_router_id" will use the IP address of Loopback0 or the
+                      common `router general` Router ID if `use_router_general_for_router_id`
+                      is set."
+
+                      - "none" will not configure a OSPF Router ID for this VRF. EOS
+                      will use the main OSPF Router ID.
+
+                      - "diagnostic_loopback" will use the IP address of the VRF Diagnostic
+                      Loopback interface.'
+                    default: main_router_id
+                  max_lsa:
+                    type: int
+                    convert_types:
+                    - str
+                  bfd:
+                    type: bool
+                    default: false
+                  redistribute_bgp:
+                    type: dict
+                    keys:
+                      enabled:
+                        type: bool
+                        default: true
+                      route_map:
+                        type: str
+                        description: Route-map name.
+                  redistribute_connected:
+                    type: dict
+                    keys:
+                      enabled:
+                        type: bool
+                        default: false
+                      route_map:
+                        type: str
+                        description: Route-map name.
+                  authentication:
+                    type: str
+                    valid_values:
+                    - simple
+                    - message-digest
+                    description: 'Configure OSPF authentication for all interfaces
+                      under the VRF.
+
+                      Can be overridden at the interface level under `l3_interfaces`,
+                      `l3_port_channels` or `svis`.'
+                  cleartext_simple_auth_key:
+                    type: str
+                    description: 'Cleartext password used with simple authentication.
+
+                      To protect the password at rest it is strongly recommended to
+                      make use of a vault or similar.
+
+                      Configuration at the interface level under `l3_interfaces`,
+                      `l3_port_channels` or `svis` takes precedence.'
+                    min_length: 1
+                    max_length: 8
+                  message_digest_keys:
+                    type: list
+                    primary_key: id
+                    min_length: 1
+                    max_length: 2
+                    items:
+                      type: dict
+                      keys:
+                        id:
+                          type: int
+                          convert_types:
+                          - str
+                        hash_algorithm:
+                          type: str
+                          valid_values:
+                          - md5
+                          - sha1
+                          - sha256
+                          - sha384
+                          - sha512
+                          default: sha512
+                        cleartext_key:
+                          type: str
+                          required: true
+                          convert_types:
+                          - int
+                          description: 'Cleartext key for OSPF message-digest authentication
+
+                            To protect the password at rest it is strongly recommended
+                            to make use of a vault or similar.
+
+                            Configuration at the interface level under `l3_interfaces`,
+                            `l3_port_channels` or `svis` takes precedence.'
+                          min_length: 1
+                          max_length: 16
+                  nodes:
+                    type: list
+                    items:
+                      type: str
+                      description: Hostname.
+                  structured_config:
+                    type: dict
+                    relaxed_validation: true
+                    description: Custom structured config added under router_ospf.process_ids.[process_id=<process_id>]
+                      for the EOS Config schema.
+                    documentation_options:
+                      hide_keys: true
+                    $ref: eos_cli_config_gen#/keys/router_ospf/keys/process_ids/items
+              redistribute_ospf:
+                documentation_options:
+                  table: network-services-vrfs-ospf-settings
+                type: bool
+                default: true
+                description: Non-selectively enabling or disabling redistribute ospf
+                  inside the VRF.
+              evpn_l3_multicast:
+                documentation_options:
+                  table: network-services-multicast-settings
+                type: dict
+                description: 'Explicitly enable or disable evpn_l3_multicast to override
+                  setting of `<network_services_key>.[].evpn_l3_multicast.enabled`.
+
+                  Allow override of `<network_services_key>.[].evpn_l3_multicast`
+                  node_settings.
+
+                  Requires `evpn_multicast` to also be set to `true`.
+
+                  '
+                keys:
+                  enabled:
+                    type: bool
+                  evpn_underlay_l3_multicast_group:
+                    type: str
+                    description: 'IPv4 address of evpn underlay l3 multicast group.
+
+                      To override multicast range set using the formula < l3_multicast.evpn_underlay_l3_multicast_group_ipv4_pool
+                      > + < vrf_id - 1 > + < l3_multicast.evpn_underlay_l3_multicast_group_ipv4_pool_offset
+                      >.'
+                  evpn_peg:
+                    type: list
+                    description: For each group of nodes, allow configuration of EVPN
+                      PEG features.
+                    items:
+                      type: dict
+                      keys:
+                        nodes:
+                          type: list
+                          description: 'Restrict configuration to specific nodes.
+
+                            Will apply to all nodes with RP addresses configured if
+                            not set.
+
+                            '
+                          items:
+                            type: str
+                        transit:
+                          type: bool
+                          default: false
+                          description: Enable EVPN PEG transit mode.
+              pim_rp_addresses:
+                documentation_options:
+                  table: network-services-multicast-settings
+                description: 'For each group of nodes, allow configuration of RP Addresses
+                  & associated groups.
+
+                  '
+                type: list
+                items:
+                  type: dict
+                  keys:
+                    rps:
+                      description: A minimum of one RP must be specified.
+                      type: list
+                      items:
+                        type: str
+                        description: RP address.
+                    nodes:
+                      description: 'Restrict configuration to specific nodes.
+
+                        Configuration Will be applied to all nodes if not set.
+
+                        '
+                      type: list
+                      items:
+                        type: str
+                    groups:
+                      type: list
+                      items:
+                        type: str
+                        description: Group_prefix/mask.
+                    access_list_name:
+                      type: str
+                      convert_types:
+                      - int
+                      description: 'List of groups to associate with the RP addresses
+                        set in ''rps''.
+
+                        If access_list_name is set, a standard access-list will be
+                        configured matching these groups.
+
+                        Otherwise the groups are configured directly on the RP command.
+
+                        '
+              evpn_l2_multi_domain:
+                type: bool
+                description: 'Explicitly extend all VLANs/VLAN-Aware Bundles inside
+                  the VRF to remote EVPN domains.
+
+                  Overrides `<network_services_key>[].evpn_l2_multi_domain`.
+
+                  '
+              svis:
+                documentation_options:
+                  table: network-services-vrfs-svis-settings
+                type: list
+                primary_key: id
+                allow_duplicate_primary_key: true
+                description: 'List of SVIs.
+
+                  This will create both the L3 SVI and L2 VLAN based on filters applied
+                  to the node.
+
+                  '
+                items:
+                  $ref: eos_designs#/$defs/svi
+                  type: dict
+                  keys:
+                    id:
+                      type: int
+                      convert_types:
+                      - str
+                      description: SVI interface id and VLAN id.
+                      min: 1
+                      max: 4096
+                    name:
+                      type: str
+                      description: VLAN name.
+                      required: true
+                    address_locking:
+                      type: dict
+                      $ref: eos_cli_config_gen#/keys/vlans/items/keys/address_locking/keys/address_family
+                      description: To configure `address_locking.ipv4/v6`, you must
+                        define either `address_locking_settings.dhcp_servers_ipv4`
+                        or `address_locking_settings.locked_address.ipv4/v6_enforcement_disabled`.
+                    profile:
+                      type: str
+                      description: 'SVI profile name to apply.
+
+                        SVI can refer to one svi_profile which again can refer to
+                        another svi_profile to inherit settings in up to two levels
+                        (svi -> svi_profile -> svi_parent_profile).
+
+                        '
+                    tags:
+                      type: list
+                      description: 'Tags leveraged for networks services filtering.
+
+                        Tags are matched against "filter.tags" defined under node
+                        type settings.
+
+                        Tags are also matched against the "node_group" name under
+                        node type settings.
+
+                        '
+                      default:
+                      - all
+                      items:
+                        type: str
+                        convert_types:
+                        - int
+                        description: Tag value.
+                    evpn_vlan_bundle:
+                      type: str
+                      description: 'Name of a bundle defined under ''evpn_vlan_bundles''
+                        to inherit configuration.
+
+                        This setting overrides "evpn_vlan_bundle" set at the VRF or
+                        tenant level.
+
+                        The common option "evpn_vlan_aware_bundles" is disregarded
+                        for this option.
+
+                        '
+                    nodes:
+                      type: list
+                      primary_key: node
+                      items:
+                        type: dict
+                        $ref: eos_designs#/$defs/svi_settings
+                        keys:
+                          node:
+                            type: str
+                          tags:
+                            type: list
+                            description: 'Tags leveraged for networks services filtering.
+
+                              Tags are matched against "filter.tags" defined under
+                              node type settings.
+
+                              Tags are also matched against the "node_group" name
+                              under node type settings.
+
+                              '
+                            default:
+                            - all
+                            items:
+                              type: str
+                              convert_types:
+                              - int
+                              description: Tag value.
+
+                        '
+              bgp_peers:
+                documentation_options:
+                  table: network-services-vrfs-bgp-settings
+                type: list
+                primary_key: ip_address
+                allow_duplicate_primary_key: true
+                description: 'List of BGP peer definitions.
+
+                  This will configure BGP neighbors inside the tenant VRF for peering
+                  with external devices.
+
+                  The configured peer will automatically be activated for ipv4 or
+                  ipv6 address family based on the ip address.
+
+                  Note, only ipv4 and ipv6 address families are currently supported
+                  in eos_designs.
+
+                  For other address families, use custom_structured configuration
+                  with EOS Config schema.
+
+                  '
+                items:
+                  type: dict
+                  keys:
+                    ip_address:
+                      type: str
+                      description: IPv4_address or IPv6_address.
+                    peer_group:
+                      type: str
+                      description: Peer group name.
+                    remote_as:
+                      type: str
+                      convert_types:
+                      - int
+                      description: 'BGP AS <1-4294967295> or AS number in asdot notation
+                        "<1-65535>.<0-65535>".
+
+                        For asdot notation in YAML inputs, the value must be put in
+                        quotes, to prevent it from being interpreted as a float number.'
+                    description:
+                      type: str
+                    password:
+                      type: str
+                      description: 'Type 7 encrypted password.
+
+                        Takes precedence over `cleartext_password`.'
+                    cleartext_password:
+                      type: str
+                      description: 'BGP peer group cleartext password.
+
+                        To protect the password at rest it is strongly recommended
+                        to make use of a vault or similar.'
+                    send_community:
+                      type: str
+                      description: '''all'' or a combination of ''standard'', ''extended'',
+                        ''large'' and ''link-bandwidth (w/options)''.
+
+                        '
+                    next_hop_self:
+                      type: bool
+                    timers:
+                      type: str
+                      description: BGP Keepalive and Hold Timer values in seconds
+                        as string <0-3600> <0-3600>.
+                    maximum_routes:
+                      type: int
+                      convert_types:
+                      - str
+                      min: 0
+                      max: 4294967294
+                      description: Maximum number of routes (0 means unlimited).
+                    maximum_routes_warning_only:
+                      type: bool
+                    default_originate:
+                      type: dict
+                      keys:
+                        always:
+                          type: bool
+                    update_source:
+                      type: str
+                    ebgp_multihop:
+                      type: int
+                      convert_types:
+                      - str
+                      min: 1
+                      max: 255
+                      description: Time-to-live in range of hops.
+                    nodes:
+                      type: list
+                      items:
+                        type: str
+                      description: 'List of node names or regular expressions to match
+                        against hostnames.
+
+                        The regexes need to match full hostname and be enclosed in
+                        quotes, e.g ''DC1-BL[12]A''.
+
+                        Nodes is required to restrict configuration of BGP neighbors
+                        to certain nodes in the network.'
+                    set_ipv4_next_hop:
+                      type: str
+                      description: 'IPv4_address
+
+                        Next hop settings can be either ipv4 or ipv6 for one neighbor,
+                        this will be applied by a uniquely generated route-map per
+                        neighbor.
+
+                        Next hop takes precedence over route_map_out.
+
+                        '
+
+          always_configure_ip_routing:
+            documentation_options:
+              table: node-type-common-configuration
+            type: bool
+            default: false
+            description: 'Force configuration of "ip routing" even on L2 devices.
+
+              Use this to retain behavior of AVD versions below 4.0.0.
+
+              '
+          raw_eos_cli:
+            documentation_options:
+              table: node-type-common-configuration
+            description: EOS CLI rendered directly on the root level of the final
+              EOS configuration.
+            type: str
+          structured_config:
+            documentation_options:
+              table: node-type-common-configuration
+              hide_keys: true
+            description: Custom structured config for the EOS Config schema.
+            type: dict
+            relaxed_validation: true
+            $ref: eos_cli_config_gen#
+          uplink_type:
+            documentation_options:
+              table: node-type-uplink-configuration
+            type: str
+            valid_values:
+            - p2p
+            - port-channel
+            - p2p-vrfs
+            - lan
+            description: 'Override the default `uplink_type` set at the `node_type_key`
+              level.
+
+              `uplink_type` must be "p2p" if `vtep` or `underlay_router` is true for
+              the `node_type_key` definition.'
+          uplink_ipv4_pool:
+            documentation_options:
+              table: node-type-uplink-configuration
+            description: 'Comma separated list of prefixes (IPv4 address/Mask) or
+              ranges (IPv4_address-IPv4_address).
+
+              IPv4 subnets used to connect to uplink switches will be deviced from
+              this pool based on the node id,
+
+              uplink interface index, ''max_uplink_switches'' and ''max_parallel_uplinks''.'
+            type: str
+            format: ipv4_pool
+          uplink_ipv6_pool:
+            documentation_options:
+              table: node-type-uplink-configuration
+            description: 'Comma separated list of prefixes (IPv6 address/Mask) or
+              ranges (IPv6_address-IPv6_address).
+
+              IPv6 subnets used to connect to uplink switches will be deviced from
+              this pool based on the node id,
+
+              uplink interface index, ''max_uplink_switches'' and ''max_parallel_uplinks''.'
+            type: str
+            format: ipv6_pool
+          uplink_interfaces:
+            documentation_options:
+              table: node-type-uplink-configuration
+            description: 'Local uplink interfaces.
+
+              Each list item supports range syntax that can be expanded into a list
+              of interfaces.
+
+              If uplink_interfaces is not defined, platform-specific defaults (defined
+              under default_interfaces) will be used instead.
+
+              Please note that default_interfaces are not defined by default, you
+              should define these yourself.
+
+              '
+            type: list
+            items:
+              type: str
+              pattern: Ethernet.*
+          uplink_switch_interfaces:
+            documentation_options:
+              table: node-type-uplink-configuration
+            description: Interfaces located on uplink switches.
+            type: list
+            items:
+              type: str
+              pattern: Ethernet[\d/]+
+          uplink_switches:
+            documentation_options:
+              table: node-type-uplink-configuration
+            type: list
+            items:
+              type: str
+              required: true
+              description: 'Hostname of uplink switch.
+
+                If parallel uplinks are in use, update max_parallel_uplinks below
+                and specify each uplink switch multiple times.
+
+                e.g. uplink_switches: [ ''DC1-SPINE1'', ''DC1-SPINE1'', ''DC1-SPINE2'',
+                ''DC1-SPINE2'' ].
+
+                '
+          uplink_interface_speed:
+            documentation_options:
+              table: node-type-uplink-configuration
+            description: 'Set point-to-Point interface speed and will apply to uplink
+              interfaces on both ends.
+
+              (Uplink switch interface speed can be overridden with `uplink_switch_interface_speed`).
+
+              Speed should be set in the format `<interface_speed>` or `forced <interface_speed>`
+              or `auto <interface_speed>`.
+
+              '
+            type: str
+            $ref: eos_cli_config_gen#/keys/ethernet_interfaces/items/keys/speed
+          uplink_switch_interface_speed:
+            documentation_options:
+              table: node-type-uplink-configuration
+            description: 'Set point-to-Point interface speed for the uplink switch
+              interface only.
+
+              '
+            type: str
+            $ref: eos_cli_config_gen#/keys/ethernet_interfaces/items/keys/speed
+          uplink_mtu:
+            documentation_options:
+              table: node-type-uplink-configuration
+            description: Point-to-Point uplinks MTU in bytes. This setting overrides
+              the `p2p_uplinks_mtu` setting.
+            type: int
+            convert_types:
+            - str
+            min: 68
+            max: 65535
+          max_uplink_switches:
+            documentation_options:
+              table: node-type-uplink-configuration
+            type: int
+            convert_types:
+            - str
+            description: 'Maximum number of uplink switches.
+
+              Changing this value may change IP Addressing on uplinks.
+
+              Can be used to reserve IP space for future expansions.
+
+              '
+          max_parallel_uplinks:
+            documentation_options:
+              table: node-type-uplink-configuration
+            type: int
+            default: 1
+            convert_types:
+            - str
+            description: 'Number of parallel links towards uplink switches.
+
+              Changing this value may change interface naming on uplinks (and corresponding
+              downlinks).
+
+              Can be used to reserve interfaces for future parallel uplinks.
+
+              '
+          uplink_bfd:
+            documentation_options:
+              table: node-type-uplink-configuration
+            type: bool
+            default: false
+            description: Enable bfd on uplink interfaces.
+          uplink_native_vlan:
+            documentation_options:
+              table: node-type-uplink-configuration
+            type: int
+            convert_types:
+            - str
+            min: 1
+            max: 4094
+            description: 'Only applicable to switches with layer-2 port-channel uplinks.
+
+              A suspended (disabled) vlan will be created in both ends of the link
+              unless the vlan is defined under network services.
+
+              By default the uplink will not have a native_vlan configured, so EOS
+              defaults to vlan 1.
+
+              '
+          uplink_ptp:
+            documentation_options:
+              table: node-type-uplink-configuration
+            description: Enable PTP on all infrastructure links.
+            type: dict
+            keys:
+              enable:
+                type: bool
+                default: false
+          uplink_macsec:
+            documentation_options:
+              table: node-type-uplink-configuration
+            description: Enable MacSec on all uplinks.
+            type: dict
+            keys:
+              profile:
+                type: str
+          uplink_port_channel_id:
+            documentation_options:
+              table: node-type-uplink-configuration
+            type: int
+            convert_types:
+            - str
+            min: 1
+            max: 999999
+            description: "Only applicable for L2 switches with `uplink_type: port-channel`.\nBy
+              default the uplink Port-channel ID will be set to the number of the
+              lowest member interface defined under `uplink_interfaces`.\nFor example:\n
+              \ member ports [ Eth22, Eth23 ] -> ID 22\n  member ports [ Eth11/1,
+              Eth22/1 ] -> ID 111\nFor MLAG port-channels ID will be based on the
+              lowest member interface on the first MLAG switch.\nThis option overrides
+              the default behavior and statically sets the local Port-channel ID.\nNote!
+              Make sure the ID is unique and does not overlap with autogenerated Port-channel
+              IDs in the Network Services.\nNote! For MLAG pairs the ID must be between
+              1 and 2000 and both MLAG switches must have the same value.\n"
+          uplink_switch_port_channel_id:
+            documentation_options:
+              table: node-type-uplink-configuration
+            type: int
+            convert_types:
+            - str
+            min: 1
+            max: 999999
+            description: "Only applicable for L2 switches with `uplink_type: port-channel`.\nBy
+              default the uplink switch Port-channel ID will be set to the number
+              of the first interface defined under `uplink_switch_interfaces`.\nFor
+              example:\n  member ports [ Eth22, Eth23 ] -> ID 22\n  member ports [
+              Eth11/1, Eth22/1 ] -> ID 111\nFor MLAG port-channels ID will be based
+              on the lowest member interface on the first MLAG switch.\nThis option
+              overrides the default behavior and statically sets the Port-channel
+              ID on the uplink switch.\nNote! Make sure the ID is unique and does
+              not overlap with autogenerated Port-channel IDs in the Network Services.\nNote!
+              For MLAG pairs the ID must be between 1 and 2000 and both MLAG switches
+              must have the same value.\n"
+          uplink_ethernet_structured_config:
+            type: dict
+            $ref: eos_cli_config_gen#/keys/ethernet_interfaces/items
+            documentation_options:
+              table: node-type-uplink-configuration
+              hide_keys: true
+            relaxed_validation: true
+            description: Custom structured config applied to `uplink_interfaces`.
+          uplink_port_channel_structured_config:
+            type: dict
+            $ref: eos_cli_config_gen#/keys/port_channel_interfaces/items
+            documentation_options:
+              table: node-type-uplink-configuration
+              hide_keys: true
+            relaxed_validation: true
+            description: Custom structured config applied to the uplink Port-Channel
+              when using port-channel uplinks.
+          uplink_switch_ethernet_structured_config:
+            type: dict
+            $ref: eos_cli_config_gen#/keys/ethernet_interfaces/items
+            documentation_options:
+              table: node-type-uplink-configuration
+              hide_keys: true
+            relaxed_validation: true
+            description: Custom structured config applied to `uplink_switch_interfaces`
+              on the `uplink_switches`.
+          uplink_switch_port_channel_structured_config:
+            type: dict
+            $ref: eos_cli_config_gen#/keys/port_channel_interfaces/items
+            documentation_options:
+              table: node-type-uplink-configuration
+              hide_keys: true
+            relaxed_validation: true
+            description: Custom structured config applied to the Port-Channel on the
+              `uplink_switches` when using port-channel uplinks.
+          mlag_port_channel_structured_config:
+            $ref: eos_cli_config_gen#/keys/port_channel_interfaces/items
+            documentation_options:
+              table: node-type-l2-mlag-configuration
+              hide_keys: true
+            type: dict
+            relaxed_validation: true
+            description: 'Custom structured config applied to MLAG peer link port-channel
+              id.
+
+              Added under port_channel_interfaces.[name=<interface>] for the EOS Config
+              schema.
+
+              Overrides the settings on the port-channel interface level.
+
+              "mlag_port_channel_structured_config" is applied after "structured_config",
+              so it can override "structured_config" defined on node-level.
+
+              '
+          mlag_peer_vlan_structured_config:
+            $ref: eos_cli_config_gen#/keys/vlan_interfaces/items
+            documentation_options:
+              table: node-type-l2-mlag-configuration
+              hide_keys: true
+            type: dict
+            relaxed_validation: true
+            description: 'Custom structured config applied to MLAG Peer Link (control
+              link) SVI interface id.
+
+              Added under vlan_interfaces.[name=<interface>] for the EOS Config schema.
+
+              Overrides the settings on the vlan interface level.
+
+              "mlag_peer_vlan_structured_config" is applied after "structured_config",
+              so it can override "structured_config" defined on node-level.
+
+              '
+          mlag_peer_l3_vlan_structured_config:
+            $ref: eos_cli_config_gen#/keys/vlan_interfaces/items
+            documentation_options:
+              table: node-type-l2-mlag-configuration
+              hide_keys: true
+            type: dict
+            relaxed_validation: true
+            description: 'Custom structured config applied to MLAG underlay L3 peering
+              SVI interface id.
+
+              Added under vlan_interfaces.[name=<interface>] for the EOS Config schema.
+
+              Overrides the settings on the vlan interface level.
+
+              "mlag_peer_l3_vlan_structured_config" is applied after "structured_config",
+              so it can override "structured_config" defined on node-level.
+
+              '
+          short_esi:
+            documentation_options:
+              table: node-type-uplink-configuration
+            description: 'short_esi only valid for l2leaf devices using port-channel
+              uplink.
+
+              Setting short_esi to "auto" generates the short_esi automatically using
+              a hash of configuration elements.
+
+              < 0000:0000:0000 | auto >.
+
+              '
+            type: str
+          isis_system_id_prefix:
+            documentation_options:
+              table: node-type-isis-configuration
+            description: (4.4 hexadecimal).
+            type: str
+            pattern: '[0-9a-f]{4}\.[0-9a-f]{4}'
+          isis_maximum_paths:
+            documentation_options:
+              table: node-type-isis-configuration
+            description: Number of path to configure in ECMP for ISIS.
+            type: int
+            convert_types:
+            - str
+          is_type:
+            documentation_options:
+              table: node-type-isis-configuration
+            type: str
+            valid_values:
+            - level-1-2
+            - level-1
+            - level-2
+            description: Overrides `isis_default_is_type`.
+          node_sid_base:
+            documentation_options:
+              table: node-type-isis-configuration
+            description: Node-SID base for isis-sr underlay variants. Combined with
+              node id to generate ISIS-SR node-SID.
+            type: int
+            convert_types:
+            - str
+            default: 0
+          loopback_ipv4_pool:
+            documentation_options:
+              table: node-type-loopback-vtep-configuration
+            description: 'Comma separated list of prefixes (IPv4 address/Mask) or
+              ranges (IPv4_address-IPv4_address).
+
+              The IPv4 address used for Loopback0 will be derived from this pool based
+              on the node id and ''loopback_ipv4_offset''.'
+            type: str
+            format: ipv4_pool
+          loopback_ipv4_address:
+            documentation_options:
+              table: node-type-loopback-vtep-configuration
+            description: 'IPv4 address without mask for Loopback0.
+
+              When set, it takes precedence over `loopback_ipv4_pool`.
+
+              Note: AVD does not check for validity of the IPv4 address and does not
+              catch duplicates.'
+            type: str
+            format: ipv4
+  
+</schema_reference>
+
+<merge_target>
+context_file: group_vars/FABRIC/fabric_variables.yml
+insertion_path: ["ntp_settings","servers"]
+The tool walks the YAML root following insertion_path and replaces exactly one value with your JSON output.
+Shape rules:
+  (1) scalar field  → output the raw JSON scalar value.
+  (2) dict field    → output a JSON object `{...}`.
+  (3) list field    → output a JSON array `[...]` with ALL existing items plus your additions.
+Do NOT echo the top-level file key or content outside the replaced subtree.
+</merge_target>
+
+<configuration_context source="group_vars/FABRIC/fabric_variables.yml">
+---
+# Common AVD group variables
+fabric_name: FABRIC
+
+# Generate CSVs with fabric link info.
+eos_designs_documentation:
+  topology_csv: true
+  p2p_links_csv: true
+
+# Define underlay and overlay routing protocol to be used
+underlay_routing_protocol: ebgp
+overlay_routing_protocol: ebgp
+
+# Local users
+aaa_settings:
+  local_users:
+    # Username with no password configured
+    - name: admin
+      privilege: 15
+      role: network-admin
+      no_password: true
+    # Username with a password
+    - name: arista
+      privilege: 15
+      role: network-admin
+      sha512_password: "$6$Enl0WfE32FthwyiJ$yTyGaEJ2uPKLU.F7314YtB7J1jrzrMi7ogXIRTEHQfLdLgKWWmr1UvNlZLN6AyuxET7G5aH3AI9OYRzxVTkB1."
+
+# BGP peer groups passwords
+bgp_peer_groups:
+  # all passwords set to "arista"
+  evpn_overlay_peers:
+    password: Q4fqtbqcZ7oQuKfuWtNGRQ==
+  ipv4_underlay_peers:
+    password: 7x4B4rnJhZB438m9+BrBfQ==
+  mlag_ipv4_underlay_peer:
+    password: 4b21pAdCvWeAqpcKDFMdWw==
+
+# P2P interfaces MTU, includes VLANs 4093 and 4094 that are over peer-link
+# If you're running vEOS-lab or cEOS, you should use MTU of 1500 instead as shown in the following line
+# p2p_uplinks_mtu: 9214
+p2p_uplinks_mtu: 1500
+
+# Set default uplink, downlink, and MLAG interfaces based on node type
+default_interfaces:
+  - types: [spine]
+    platforms: [default]
+    uplink_interfaces: [Ethernet1-2]
+    downlink_interfaces: [Ethernet1-8]
+  - types: [l3leaf]
+    platforms: [default]
+    uplink_interfaces: [Ethernet1-2]
+    mlag_interfaces: [Ethernet3-4]
+    downlink_interfaces: [Ethernet8]
+  - types: [l2leaf]
+    platforms: [default]
+    uplink_interfaces: [Ethernet1-2]
+
+# CloudVision Portal definitions
+cv_settings:
+  onprem_clusters:
+    - name: primary
+      servers:
+        - name: 192.168.1.12
+  terminattr:
+    disable_aaa: true
+
+# DNS Server
+dns_settings:
+  servers:
+    - ip_address: 192.168.1.1
+
+# NTP Servers IP or DNS name, first NTP server will be preferred, and sourced from Management VRF
+ntp_settings:
+  server_vrf: use_mgmt_interface_vrf
+  servers:
+    - name: 0.pool.ntp.org
+</configuration_context>
+
+<task>
+Append a second NTP server entry with name '2.pool.ntp.org' to the ntp_settings.servers list (the first entry '0.pool.ntp.org' already exists and should remain).
+</task>
+
+<correction_notes>
+AVD schema for 'ntp_settings.servers':
+type: list  # The first server is always set as "preferred".
+items:
+  type: dict
+  optional_keys:  ['name', 'burst', 'iburst', 'key', 'maxpoll', 'minpoll', 'version']
+Keys not listed above will cause Ansible to fail with 'Invalid key'.
+</correction_notes>
+
+Before generating the JSON, open a <thinking> block to map the request to exact schema field names, verify required nesting layers, and check all keys are valid. After closing your </thinking> block, output the JSON.
+
+Subtree rule: output ONLY the JSON subtree that replaces the merge target (for list targets, include the full merged list after your edits).
+
+Remember: Output ONLY the raw JSON immediately after </thinking>. Any non-JSON text causes a fatal parse error.

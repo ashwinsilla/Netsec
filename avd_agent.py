@@ -93,7 +93,6 @@ AVD_SCHEMA_PICKLE = (
     REPO_ROOT / ".venv/lib/python3.11/site-packages"
     "/pyavd/_eos_designs/schema/eos_designs.schema.pickle"
 )
-SCHEMA_TEXT_PATH = REPO_ROOT / "phase 1" / "eos_designs.schema.yml"
 
 _THINK_STRIP = re.compile(r"<thinking>.*?</thinking>", re.IGNORECASE | re.DOTALL)
 _THINK_INNER = re.compile(r"<thinking>(.*?)</thinking>", re.IGNORECASE | re.DOTALL)
@@ -168,12 +167,6 @@ def _load_avd_schema() -> dict:
     return {}
 
 
-def _load_schema_text() -> str:
-    if SCHEMA_TEXT_PATH.exists():
-        return SCHEMA_TEXT_PATH.read_text(encoding="utf-8", errors="replace")
-    return ""
-
-
 def _walk_schema(schema: dict, path: list) -> dict | None:
     node = schema
     for seg in path:
@@ -224,6 +217,88 @@ def _schema_hint(schema: dict, insertion_path: list) -> str:
         f"AVD schema for '{path_str}':\n{body}\n"
         "Keys not listed above will cause Ansible to fail with 'Invalid key'."
     )
+
+
+def _yaml_compact(path: Path, max_depth: int = 3, max_list_items: int = 1) -> str:
+    """
+    Return a compact structural summary of a YAML file — roughly 10-20x fewer
+    tokens than the raw file.  Shows key names, scalar values (truncated), list
+    sizes, and the first list item so the model can understand navigable paths.
+
+    Used in the Phase 1 intent prompt instead of full file content.
+    """
+    import yaml
+
+    try:
+        with open(path, encoding="utf-8") as fh:
+            data = yaml.safe_load(fh) or {}
+    except Exception:
+        return "  <could not load file>"
+
+    lines: list[str] = []
+
+    def walk(node: Any, depth: int) -> None:
+        pad = "  " * depth
+        if isinstance(node, dict):
+            for k, v in node.items():
+                if isinstance(v, (dict, list)):
+                    if depth >= max_depth:
+                        if isinstance(v, dict):
+                            lines.append(f"{pad}{k}: {{{', '.join(str(kk) for kk in list(v)[:5])}{'…' if len(v)>5 else ''}}}")
+                        else:
+                            lines.append(f"{pad}{k}: [{len(v)} item(s)]")
+                    else:
+                        lines.append(f"{pad}{k}:")
+                        walk(v, depth + 1)
+                else:
+                    val = repr(v)
+                    lines.append(f"{pad}{k}: {val[:60]}{'…' if len(val)>60 else ''}")
+        elif isinstance(node, list):
+            if not node:
+                lines.append(f"{pad}(empty list)")
+                return
+            shown = node[:max_list_items]
+            for item in shown:
+                if isinstance(item, (dict, list)):
+                    lines.append(f"{pad}-")
+                    walk(item, depth + 1)
+                else:
+                    lines.append(f"{pad}- {repr(item)[:60]}")
+            remaining = len(node) - len(shown)
+            if remaining > 0:
+                lines.append(f"{pad}  … [{remaining} more item(s)]")
+
+    walk(data, 0)
+    return "\n".join(lines)
+
+
+def _extract_target_section(context_yaml: str, top_key: str) -> str:
+    """
+    Extract only the top-level section identified by top_key from a YAML string.
+    For example, if top_key='ntp_settings', returns just:
+        ntp_settings:
+          server_vrf: ...
+          servers: [...]
+
+    The generation model only needs the section it is editing, not the whole file.
+    Falls back to the full file content if extraction fails.
+    """
+    import yaml
+
+    try:
+        data = yaml.safe_load(context_yaml) or {}
+        if top_key in data:
+            import yaml as _y
+            return _y.dump(
+                {top_key: data[top_key]},
+                default_flow_style=False,
+                sort_keys=False,
+                allow_unicode=True,
+                width=1000,
+            )
+    except Exception:
+        pass
+    return context_yaml  # fallback: send full file
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -441,20 +516,19 @@ Examples
 def _build_intent_prompt(user_request: str) -> str:
     parts: list[str] = []
 
-    # File catalogue
+    # File catalogue + compact structural summary of each file.
+    # We send a key/type outline (~10-20x fewer tokens than raw YAML) so the
+    # model can identify the right file and insertion_path without receiving
+    # thousands of lines of config it doesn't need for routing.
     parts.append("<available_files>")
     for key, rel in FILE_MAP.items():
-        parts.append(f"  {key} ({rel}): {FILE_PURPOSES[key]}")
-    parts.append("</available_files>\n")
-
-    # Current content of all group_vars files
-    parts.append("<current_group_vars>")
-    for key, rel in FILE_MAP.items():
+        parts.append(f"\n  [{key}]  {rel}")
+        parts.append(f"  Purpose: {FILE_PURPOSES[key]}")
         path = REPO_ROOT / rel
         if path.is_file():
-            content = path.read_text(encoding="utf-8")
-            parts.append(f"\n# {rel}\n{content.rstrip()}")
-    parts.append("\n</current_group_vars>\n")
+            compact = _yaml_compact(path)
+            parts.append(f"  Current structure:\n{compact}")
+    parts.append("\n</available_files>\n")
 
     parts.append(f"<user_request>\n{user_request.strip()}\n</user_request>\n")
     parts.append(_INTENT_OUTPUT_SPEC)
@@ -514,20 +588,28 @@ _GEN_SYSTEM = (
 def _build_gen_prompt(
     intent: dict,
     context_yaml: str,
-    schema_text: str,
     schema_hint: str,
     errors: list[str],
     attempt: int,
 ) -> str:
+    """
+    Build the generation prompt for Phase 2.
+
+    Efficiency changes vs. original design:
+      - No full schema_text (53 KB) — replaced by targeted schema_hint (~0.5 KB).
+      - context_yaml is already the extracted target section, not the whole file.
+    """
     path_s        = json.dumps(intent["insertion_path"], separators=(",", ":"))
     context_file  = intent["context_file"]
+    insertion_path = intent["insertion_path"]
     parts: list[str] = []
 
-    # Full AVD schema (same block as experiment1 — required by all models)
-    if schema_text:
-        parts.append(f"<schema_reference>\n{schema_text}\n</schema_reference>\n")
+    # Targeted schema hint for the specific insertion_path (replaces 53 KB full schema).
+    # Tells the model exactly which keys are valid/required at this node.
+    if schema_hint:
+        parts.append(f"<schema_reference>\n{schema_hint}\n</schema_reference>\n")
 
-    # Merge target (verbatim experiment1 format — proven across all three models)
+    # Merge target — tells the model exactly where and how to insert
     parts.append(
         "<merge_target>\n"
         f"context_file: {context_file}\n"
@@ -542,9 +624,12 @@ def _build_gen_prompt(
         "</merge_target>\n"
     )
 
-    # Current config context
+    # Only the relevant section of the config file (not the whole file).
+    # If insertion_path starts with a known top-level key, context_yaml is
+    # already pre-extracted to just that section by _extract_target_section().
     parts.append(
-        f"<configuration_context source=\"{context_file}\">\n"
+        f"<configuration_context source=\"{context_file}\" "
+        f"section=\"{insertion_path[0] if insertion_path else 'root'}\">\n"
         f"{context_yaml.rstrip()}\n"
         "</configuration_context>\n"
     )
@@ -552,8 +637,8 @@ def _build_gen_prompt(
     # Task
     parts.append(f"<task>\n{intent['task_text']}\n</task>\n")
 
-    # Correction block — only when there are errors to feed back
-    if errors or schema_hint:
+    # Correction block — injected on retry attempts with Ansible error lines
+    if errors or (schema_hint and attempt > 1):
         correction: list[str] = []
         if errors:
             deduped   = list(dict.fromkeys(errors))
@@ -562,7 +647,7 @@ def _build_gen_prompt(
                 f"VALIDATION FAILED (attempt {attempt}) — your previous output caused these "
                 f"Ansible AVD errors. You MUST fix every one of them:\n{err_lines}"
             )
-        if schema_hint:
+        if schema_hint and attempt > 1:
             correction.append(schema_hint)
         parts.append(
             "<correction_notes>\n"
@@ -570,7 +655,7 @@ def _build_gen_prompt(
             + "\n</correction_notes>\n"
         )
 
-    # Terminal anchor (exact wording proven in experiment1)
+    # Terminal anchor (proven wording from experiment1)
     parts.append(
         "Before generating the JSON, open a <thinking> block to map the request to exact "
         "schema field names, verify required nesting layers, and check all keys are valid. "
@@ -593,7 +678,6 @@ async def _generate_and_validate(
     api_key: str,
     model: str,
     schema: dict,
-    schema_text: str,
     dry_run: bool,
     work_dir: Path,
 ) -> tuple[bool, str]:
@@ -612,7 +696,12 @@ async def _generate_and_validate(
     if not target.is_file():
         return False, f"Target file not found: {context_file}"
 
-    context_yaml = target.read_text(encoding="utf-8")
+    # Extract only the top-level section being edited — e.g. just the
+    # `ntp_settings:` block rather than the whole fabric_variables.yml.
+    full_yaml    = target.read_text(encoding="utf-8")
+    top_key      = str(insertion_path[0]) if insertion_path else ""
+    context_yaml = _extract_target_section(full_yaml, top_key) if top_key else full_yaml
+
     hint         = _schema_hint(schema, insertion_path)
     backup       = target.with_suffix(target.suffix + ".agent_bak")
 
@@ -629,9 +718,9 @@ async def _generate_and_validate(
             intent["task_text"][:72],
         )
 
-        # Build prompt
+        # Build prompt (targeted section + schema_hint only — no 53 KB full schema)
         prompt = _build_gen_prompt(
-            intent, context_yaml, schema_text, hint, errors, attempt
+            intent, context_yaml, hint, errors, attempt
         )
         (attempt_dir / "prompt.txt").write_text(prompt, encoding="utf-8")
 
@@ -722,10 +811,9 @@ async def _run_agent(user_request: str, args: argparse.Namespace) -> bool:
         )
         return False
 
-    model    = args.model
-    dry_run  = args.dry_run
-    schema   = _load_avd_schema()
-    sch_text = _load_schema_text()
+    model   = args.model
+    dry_run = args.dry_run
+    schema  = _load_avd_schema()
 
     # Working directory for all artifacts of this run
     ts       = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
@@ -781,7 +869,7 @@ async def _run_agent(user_request: str, args: argparse.Namespace) -> bool:
 
         success, msg = await _generate_and_validate(
             intent, session, api_key, model,
-            schema, sch_text, dry_run, work_dir,
+            schema, dry_run, work_dir,
         )
 
     # ── Final result ──────────────────────────────────────────────────────

@@ -1,0 +1,23 @@
+<thinking>
+The task is to append a new NTP server entry with name 'googe.ntp.com' to the existing list of NTP servers.
+
+Existing servers:
+1. `name: 0.pool.ntp.org`
+2. `name: google.ntp.com`
+3. `name: google.ntp.com` (duplicate via YAML anchor)
+4. `name: google.ntp.com` (duplicate via YAML anchor)
+
+I need to output the full merged list including all existing entries plus the new one with `name: googe.ntp.com`.
+
+The schema allows keys: `name`, `burst`, `iburst`, `key`, `maxpoll`, `minpoll`, `version`.
+
+Output should be a JSON array with all existing items plus the new entry.
+</thinking>
+
+[
+  {"name": "0.pool.ntp.org"},
+  {"name": "google.ntp.com"},
+  {"name": "google.ntp.com"},
+  {"name": "google.ntp.com"},
+  {"name": "googe.ntp.com"}
+]

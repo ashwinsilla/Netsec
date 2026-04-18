@@ -1,0 +1,16 @@
+<thinking>
+The task is to append a new NTP server entry with name 'google.ntp.com' to the existing list. The existing entries are:
+1. `name: 0.pool.ntp.org`
+2. `name: google.ntp.com`
+
+I need to preserve all existing entries and add a new one with `name: google.ntp.com`. So the final list will have three entries:
+1. `name: 0.pool.ntp.org`
+2. `name: google.ntp.com`
+3. `name: google.ntp.com`
+
+The schema allows keys: `name`, `burst`, `iburst`, `key`, `maxpoll`, `minpoll`, `version`. All other keys are invalid.
+
+The output should be a JSON array with all existing items plus the new addition.
+</thinking>
+
+[{"name":"0.pool.ntp.org"},{"name":"google.ntp.com"},{"name":"google.ntp.com"}]

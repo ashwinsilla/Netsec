@@ -1,0 +1,14 @@
+<thinking>
+The task is to replace the `ntp_settings.servers` list with a merged list containing both the existing entry and the new one.
+
+Existing entry: `{name: "0.pool.ntp.org"}`
+New entry: `{name: "google.ntp.com"}`
+
+The schema allows keys: `name`, `burst`, `iburst`, `key`, `maxpoll`, `minpoll`, `version`. No other keys allowed.
+
+The first server is always set as "preferred", so `0.pool.ntp.org` stays first.
+
+Output should be a JSON array with both entries.
+</thinking>
+
+[{"name": "0.pool.ntp.org"}, {"name": "google.ntp.com"}]

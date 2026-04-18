@@ -1,0 +1,52 @@
+<schema_reference>
+AVD schema for 'ntp_settings.servers':
+type: list  # The first server is always set as "preferred".
+items:
+  type: dict
+  optional_keys:  ['name', 'burst', 'iburst', 'key', 'maxpoll', 'minpoll', 'version']
+Keys not listed above will cause Ansible to fail with 'Invalid key'.
+</schema_reference>
+
+<merge_target>
+context_file: group_vars/FABRIC/fabric_variables.yml
+insertion_path: ["ntp_settings","servers"]
+The tool walks the YAML root following insertion_path and replaces exactly one value with your JSON output.
+Shape rules:
+  (1) scalar field  → output the raw JSON scalar value.
+  (2) dict field    → output a JSON object `{...}`.
+  (3) list field    → output a JSON array `[...]` with ALL existing items plus your additions.
+Do NOT echo the top-level file key or content outside the replaced subtree.
+</merge_target>
+
+<configuration_context source="group_vars/FABRIC/fabric_variables.yml" section="ntp_settings">
+ntp_settings:
+  server_vrf: use_mgmt_interface_vrf
+  servers:
+  - name: 0.pool.ntp.org
+  - name: google.ntp.com
+</configuration_context>
+
+<task>
+Append a new NTP server entry with name 'google.ntp.com' to the ntp_settings.servers list, preserving all existing entries.
+</task>
+
+<correction_notes>
+VALIDATION FAILED (attempt 2) — your previous output caused these Ansible AVD errors. You MUST fix every one of them:
+  [INTENT-CHECK FAILED]: Verify new NTP server 'google.ntp.com' is present in all device configurations — Pattern not found in 8 config(s): 'ntp server google\\.ntp\\.com'
+  [INTENT-CHECK FAILED]: Verify NTP server entry appears on dc1-spine1 — Pattern not found in 1 config(s): 'ntp server google\\.ntp\\.com'
+  [INTENT-CHECK FAILED]: Verify NTP server entry appears on dc1-spine2 — Pattern not found in 1 config(s): 'ntp server google\\.ntp\\.com'
+  [INTENT-CHECK FAILED]: Verify NTP server entry appears on dc1-leaf1a — Pattern not found in 1 config(s): 'ntp server google\\.ntp\\.com'
+
+AVD schema for 'ntp_settings.servers':
+type: list  # The first server is always set as "preferred".
+items:
+  type: dict
+  optional_keys:  ['name', 'burst', 'iburst', 'key', 'maxpoll', 'minpoll', 'version']
+Keys not listed above will cause Ansible to fail with 'Invalid key'.
+</correction_notes>
+
+Before generating the JSON, open a <thinking> block to map the request to exact schema field names, verify required nesting layers, and check all keys are valid. After closing your </thinking> block, output the JSON.
+
+Subtree rule: output ONLY the JSON subtree that replaces the merge target (for list targets, include the full merged list after your edits).
+
+Remember: Output ONLY the raw JSON immediately after </thinking>. Any non-JSON text causes a fatal parse error.

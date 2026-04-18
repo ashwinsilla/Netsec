@@ -1,0 +1,31 @@
+<thinking>
+The task is to append a new NTP server entry with name 'google.ntp.com' to the existing list, preserving all existing entries.
+
+Existing servers:
+1. `name: 0.pool.ntp.org`
+2. `name: google.ntp.com` (the &id001 anchor)
+3. `name: google.ntp.com` (the *id001 alias, which resolves to the same dict)
+
+So the existing list has three entries (two of which are google.ntp.com). I need to preserve all existing items and append a new one with `name: google.ntp.com`.
+
+Valid keys per schema: `name`, `burst`, `iburst`, `key`, `maxpoll`, `minpoll`, `version`.
+
+The output should be a JSON array with all existing items plus the new addition.
+
+Existing items:
+1. `{"name": "0.pool.ntp.org"}`
+2. `{"name": "google.ntp.com"}`
+3. `{"name": "google.ntp.com"}` (alias resolves to same)
+
+New item to append:
+4. `{"name": "google.ntp.com"}`
+
+So the full merged list:
+</thinking>
+
+[
+  {"name": "0.pool.ntp.org"},
+  {"name": "google.ntp.com"},
+  {"name": "google.ntp.com"},
+  {"name": "google.ntp.com"}
+]

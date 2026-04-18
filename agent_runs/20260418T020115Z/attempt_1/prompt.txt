@@ -1,0 +1,41 @@
+<schema_reference>
+AVD schema for 'ntp_settings.servers':
+type: list  # The first server is always set as "preferred".
+items:
+  type: dict
+  optional_keys:  ['name', 'burst', 'iburst', 'key', 'maxpoll', 'minpoll', 'version']
+Keys not listed above will cause Ansible to fail with 'Invalid key'.
+</schema_reference>
+
+<merge_target>
+context_file: group_vars/FABRIC/fabric_variables.yml
+insertion_path: ["ntp_settings","servers"]
+The tool walks the YAML root following insertion_path and replaces exactly one value with your JSON output.
+Shape rules:
+  (1) scalar field  → output the raw JSON scalar value.
+  (2) dict field    → output a JSON object `{...}`.
+  (3) list field    → output a JSON array `[...]` with ALL existing items plus your additions.
+Do NOT echo the top-level file key or content outside the replaced subtree.
+</merge_target>
+
+<configuration_context source="group_vars/FABRIC/fabric_variables.yml" section="ntp_settings">
+ntp_settings:
+  server_vrf: use_mgmt_interface_vrf
+  servers:
+  - name: 0.pool.ntp.org
+  - &id001
+    name: google.ntp.com
+  - *id001
+  - *id001
+  - name: googe.ntp.com
+</configuration_context>
+
+<task>
+Append a new NTP server entry with name 'time.google.com' to the ntp_settings.servers list, preserving all existing server entries.
+</task>
+
+Before generating the JSON, open a <thinking> block to map the request to exact schema field names, verify required nesting layers, and check all keys are valid. After closing your </thinking> block, output the JSON.
+
+Subtree rule: output ONLY the JSON subtree that replaces the merge target (for list targets, include the full merged list after your edits).
+
+Remember: Output ONLY the raw JSON immediately after </thinking>. Any non-JSON text causes a fatal parse error.

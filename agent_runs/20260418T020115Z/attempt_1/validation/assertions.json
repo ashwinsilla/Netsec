@@ -1,0 +1,22 @@
+{
+  "assertions": [
+    {
+      "type": "config_contains",
+      "pattern": "ntp server.*time\\.google\\.com",
+      "description": "Verify new NTP server 'time.google.com' is present in device configs",
+      "nodes": null
+    },
+    {
+      "type": "config_contains",
+      "pattern": "ntp server.*0\\.pool\\.ntp\\.org",
+      "description": "Verify existing NTP server '0.pool.ntp.org' is still present after appending new entry",
+      "nodes": null
+    },
+    {
+      "type": "config_contains",
+      "pattern": "ntp server.*google\\.ntp\\.com",
+      "description": "Verify existing NTP server 'google.ntp.com' entries are preserved after appending new entry",
+      "nodes": null
+    }
+  ]
+}

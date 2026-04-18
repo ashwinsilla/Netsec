@@ -1,0 +1,25 @@
+{
+  "results": [
+    {
+      "description": "New NTP server 'google.ntp.com' should be present in all device configs",
+      "passed": false,
+      "detail": "Pattern not found in 8 config(s): 'ntp server google\\\\.ntp\\\\.com'"
+    },
+    {
+      "description": "Existing NTP server '0.pool.ntp.org' should still be present in all device configs",
+      "passed": false,
+      "detail": "Pattern not found in 8 config(s): 'ntp server 0\\\\.pool\\\\.ntp\\\\.org'"
+    },
+    {
+      "description": "Both NTP server entries should coexist in device configs",
+      "passed": false,
+      "detail": "Pattern not found in 8 config(s): 'ntp server (?:google\\\\.ntp\\\\.com|0\\\\.pool\\\\.ntp\\\\.org)'"
+    }
+  ],
+  "failures": [
+    "New NTP server 'google.ntp.com' should be present in all device configs \u2014 Pattern not found in 8 config(s): 'ntp server google\\\\.ntp\\\\.com'",
+    "Existing NTP server '0.pool.ntp.org' should still be present in all device configs \u2014 Pattern not found in 8 config(s): 'ntp server 0\\\\.pool\\\\.ntp\\\\.org'",
+    "Both NTP server entries should coexist in device configs \u2014 Pattern not found in 8 config(s): 'ntp server (?:google\\\\.ntp\\\\.com|0\\\\.pool\\\\.ntp\\\\.org)'"
+  ],
+  "warnings": []
+}

@@ -1,0 +1,31 @@
+{
+  "results": [
+    {
+      "description": "New NTP server 'google.ntp.com' should be present in all device configs",
+      "passed": false,
+      "detail": "Pattern not found in 8 config(s): 'ntp server google\\\\.ntp\\\\.com'"
+    },
+    {
+      "description": "Existing NTP server '0.pool.ntp.org' should still be present in all device configs",
+      "passed": false,
+      "detail": "Pattern not found in 8 config(s): 'ntp server 0\\\\.pool\\\\.ntp\\\\.org'"
+    },
+    {
+      "description": "Verify google.ntp.com NTP entry appears on spine nodes",
+      "passed": false,
+      "detail": "Pattern not found in 2 config(s): 'ntp server google\\\\.ntp\\\\.com'"
+    },
+    {
+      "description": "Verify google.ntp.com NTP entry appears on leaf nodes",
+      "passed": false,
+      "detail": "Pattern not found in 6 config(s): 'ntp server google\\\\.ntp\\\\.com'"
+    }
+  ],
+  "failures": [
+    "New NTP server 'google.ntp.com' should be present in all device configs \u2014 Pattern not found in 8 config(s): 'ntp server google\\\\.ntp\\\\.com'",
+    "Existing NTP server '0.pool.ntp.org' should still be present in all device configs \u2014 Pattern not found in 8 config(s): 'ntp server 0\\\\.pool\\\\.ntp\\\\.org'",
+    "Verify google.ntp.com NTP entry appears on spine nodes \u2014 Pattern not found in 2 config(s): 'ntp server google\\\\.ntp\\\\.com'",
+    "Verify google.ntp.com NTP entry appears on leaf nodes \u2014 Pattern not found in 6 config(s): 'ntp server google\\\\.ntp\\\\.com'"
+  ],
+  "warnings": []
+}

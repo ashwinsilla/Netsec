@@ -1,0 +1,38 @@
+{
+  "assertions": [
+    {
+      "type": "config_contains",
+      "pattern": "ntp server google\\.ntp\\.com",
+      "description": "New NTP server 'google.ntp.com' should be present in all device configs",
+      "nodes": null
+    },
+    {
+      "type": "config_contains",
+      "pattern": "ntp server 0\\.pool\\.ntp\\.org",
+      "description": "Existing NTP server '0.pool.ntp.org' should still be present in all device configs",
+      "nodes": null
+    },
+    {
+      "type": "config_contains",
+      "pattern": "ntp server google\\.ntp\\.com",
+      "description": "Verify google.ntp.com NTP entry appears on spine nodes",
+      "nodes": [
+        "dc1-spine1",
+        "dc1-spine2"
+      ]
+    },
+    {
+      "type": "config_contains",
+      "pattern": "ntp server google\\.ntp\\.com",
+      "description": "Verify google.ntp.com NTP entry appears on leaf nodes",
+      "nodes": [
+        "dc1-leaf1a",
+        "dc1-leaf1b",
+        "dc1-leaf1c",
+        "dc1-leaf2a",
+        "dc1-leaf2b",
+        "dc1-leaf2c"
+      ]
+    }
+  ]
+}

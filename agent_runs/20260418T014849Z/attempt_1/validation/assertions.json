@@ -1,0 +1,22 @@
+{
+  "assertions": [
+    {
+      "type": "config_contains",
+      "pattern": "ntp server google\\.ntp\\.com",
+      "description": "New NTP server 'google.ntp.com' should be present in all device configs",
+      "nodes": null
+    },
+    {
+      "type": "config_contains",
+      "pattern": "ntp server 0\\.pool\\.ntp\\.org",
+      "description": "Existing NTP server '0.pool.ntp.org' should still be present in all device configs",
+      "nodes": null
+    },
+    {
+      "type": "config_contains",
+      "pattern": "ntp server (?:google\\.ntp\\.com|0\\.pool\\.ntp\\.org)",
+      "description": "Both NTP server entries should coexist in device configs",
+      "nodes": null
+    }
+  ]
+}

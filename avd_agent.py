@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import contextvars
 import json
 import logging
 import os
@@ -41,7 +42,8 @@ import shutil
 import subprocess
 import sys
 import time
-from datetime import datetime
+from datetime import datetime, timezone
+from typing import Any
 from pathlib import Path
 
 import aiohttp
@@ -106,6 +108,21 @@ log = logging.getLogger(__name__)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
+# Web-emit hook — set per async task so the web UI can receive structured events
+# without any coupling to stdout.  CLI code paths leave this as None.
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Callable[[event_type: str, message: str], None]
+_web_emit: contextvars.ContextVar = contextvars.ContextVar("web_emit", default=None)
+
+
+def _emit(event_type: str, msg: str) -> None:
+    fn = _web_emit.get()
+    if fn is not None:
+        fn(event_type, msg)
+
+
+# ──────────────────────────────────────────────────────────────────────────────
 # Terminal helpers
 # ──────────────────────────────────────────────────────────────────────────────
 
@@ -128,18 +145,34 @@ RESET  = _c("\033[0m")
 def _print_step(label: str, detail: str = "") -> None:
     d = f"  {DIM}{detail}{RESET}" if detail else ""
     print(f"  {CYAN}▶{RESET} {label}{d}")
+    _emit("step", f"{label}  {detail}".strip())
 
 
-def _print_ok(msg: str)   -> None: print(f"  {GREEN}✓{RESET} {msg}")
-def _print_fail(msg: str) -> None: print(f"  {RED}✗{RESET} {msg}")
-def _print_warn(msg: str) -> None: print(f"  {YELLOW}!{RESET} {msg}")
-def _print_info(msg: str) -> None: print(f"    {DIM}{msg}{RESET}")
+def _print_ok(msg: str) -> None:
+    print(f"  {GREEN}✓{RESET} {msg}")
+    _emit("ok", msg)
+
+
+def _print_fail(msg: str) -> None:
+    print(f"  {RED}✗{RESET} {msg}")
+    _emit("fail", msg)
+
+
+def _print_warn(msg: str) -> None:
+    print(f"  {YELLOW}!{RESET} {msg}")
+    _emit("warn", msg)
+
+
+def _print_info(msg: str) -> None:
+    print(f"    {DIM}{msg}{RESET}")
+    _emit("info", msg)
 
 
 def _banner(title: str) -> None:
     print(f"\n{CYAN}{BOLD}{'─' * 52}{RESET}")
     print(f"{CYAN}{BOLD}  {title}{RESET}")
     print(f"{CYAN}{BOLD}{'─' * 52}{RESET}")
+    _emit("banner", title)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -909,7 +942,7 @@ async def _generate_and_validate(
 
         # Parse JSON
         try:
-            parsed, json_str, = _parse_json(raw)[:2]
+            parsed, _ = _parse_json(raw)[:2]
             (attempt_dir / "parsed.json").write_text(
                 json.dumps(parsed, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
             )
@@ -1029,7 +1062,7 @@ async def _run_agent(user_request: str, args: argparse.Namespace) -> bool:
     schema  = _load_avd_schema()
 
     # Working directory for all artifacts of this run
-    ts       = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+    ts       = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     work_dir = RUNS_DIR / ts
     work_dir.mkdir(parents=True, exist_ok=True)
 

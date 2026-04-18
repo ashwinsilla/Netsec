@@ -1,0 +1,32 @@
+{
+  "assertions": [
+    {
+      "type": "config_contains",
+      "pattern": "ntp server googe\\.ntp\\.com",
+      "description": "Verify new NTP server 'googe.ntp.com' is present in device configurations",
+      "nodes": null
+    },
+    {
+      "type": "config_contains",
+      "pattern": "ntp server googe\\.ntp\\.com",
+      "description": "Verify new NTP server entry appears on spine nodes",
+      "nodes": [
+        "dc1-spine1",
+        "dc1-spine2"
+      ]
+    },
+    {
+      "type": "config_contains",
+      "pattern": "ntp server googe\\.ntp\\.com",
+      "description": "Verify new NTP server entry appears on leaf nodes",
+      "nodes": [
+        "dc1-leaf1a",
+        "dc1-leaf1b",
+        "dc1-leaf1c",
+        "dc1-leaf2a",
+        "dc1-leaf2b",
+        "dc1-leaf2c"
+      ]
+    }
+  ]
+}

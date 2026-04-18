@@ -1,0 +1,112 @@
+<available_files>
+  (RAG retrieved 2 most relevant file(s) for this request — full structure shown below; remaining files listed briefly.)
+
+
+  [fabric]  group_vars/FABRIC/fabric_variables.yml  ← RAG match
+  Purpose: Fabric-wide settings: NTP (ntp_settings), DNS (dns_settings), BGP peer groups (bgp_peer_groups), AAA (aaa_settings), p2p_uplinks_mtu, timezone.
+  Current structure:
+fabric_name: 'FABRIC'
+eos_designs_documentation:
+  topology_csv: True
+  p2p_links_csv: True
+underlay_routing_protocol: 'ebgp'
+overlay_routing_protocol: 'ebgp'
+aaa_settings:
+  local_users:
+    -
+      name: 'admin'
+      privilege: 15
+      role: 'network-admin'
+      no_password: True
+      … [1 more item(s)]
+bgp_peer_groups:
+  evpn_overlay_peers:
+    password: 'Q4fqtbqcZ7oQuKfuWtNGRQ=='
+  ipv4_underlay_peers:
+    password: '7x4B4rnJhZB438m9+BrBfQ=='
+  mlag_ipv4_underlay_peer:
+    password: '4b21pAdCvWeAqpcKDFMdWw=='
+p2p_uplinks_mtu: 9214
+default_interfaces:
+  -
+    types:
+      - 'spine'
+    platforms:
+      - 'default'
+    uplink_interfaces:
+      - 'Ethernet1-2'
+    downlink_interfaces:
+      - 'Ethernet1-8'
+    … [2 more item(s)]
+cv_settings:
+  onprem_clusters:
+    -
+      name: 'primary'
+      servers: [1 item(s)]
+  terminattr:
+    disable_aaa: True
+dns_settings:
+  servers:
+    -
+      ip_address: '192.168.1.1'
+ntp_settings:
+  server_vrf: 'use_mgmt_interface_vrf'
+  servers:
+    -
+      name: '0.pool.ntp.org'
+      … [1 more item(s)]
+
+  [endpoints]  group_vars/CONNECTED_ENDPOINTS/connected_endpoints.yml  ← RAG match
+  Purpose: Connected endpoints: servers list with adapter definitions.
+  Current structure:
+servers:
+  -
+    name: 'dc1-leaf1-server1'
+    adapters:
+      -
+        endpoint_ports: [2 item(s)]
+        switch_ports: [2 item(s)]
+        switches: [2 item(s)]
+        vlans: '11-12,21-22'
+        native_vlan: 4092
+        mode: 'trunk'
+        spanning_tree_portfast: 'edge'
+        port_channel: {endpoint_port_channel, mode}
+        … [1 more item(s)]
+    … [1 more item(s)]
+
+  Other files (not retrieved — no detailed structure sent):
+    [spines] group_vars/DC1_SPINES/spines.yml: Spine nodes (spine.nodes) and spine defaults: BGP ASN (spine.defaults.bgp_as), platform, loopback pools.
+    [l3leaves] group_vars/DC1_L3_LEAVES/l3_leaves.yml: L3 leaf node groups (l3leaf.node_groups) and defaults (l3leaf.defaults): virtual_router_mac_address, spanning_tree_mode/priority, uplink settings, MLAG.
+    [netsvcs] group_vars/NETWORK_SERVICES/network_services.yml: Network services: tenants list, VRFs, VLANs, SVIs, IP helpers, L2 VLANs.
+
+</available_files>
+
+<user_request>
+add ntp server google.ntp.com
+</user_request>
+
+
+Output a JSON object with exactly these fields:
+{
+  "file_key":       "<one of: fabric | spines | l3leaves | netsvcs | endpoints>",
+  "context_file":   "<relative path, e.g. group_vars/FABRIC/fabric_variables.yml>",
+  "insertion_path": [<list of string keys and 0-based integer indices>],
+  "task_text":      "<precise, self-contained description of the change for the generation step>",
+  "confidence":     "<high | medium | low>",
+  "reasoning":      "<one sentence explaining the file/path choice>"
+}
+
+insertion_path rules
+────────────────────
+- String elements navigate dict keys.
+- Integer elements navigate list indices (0-based), based on the current file content.
+- The path points to the value being replaced or the list being appended to.
+
+Examples
+────────
+  "Add NTP server"              → ["ntp_settings", "servers"]
+  "Change spine BGP ASN"        → ["spine", "defaults", "bgp_as"]
+  "Change virtual router MAC"   → ["l3leaf", "defaults", "virtual_router_mac_address"]
+  "Add VRF to TENANT1"          → ["tenants", 0, "vrfs"]
+  "Add SVI to VRF10 in TENANT1" → ["tenants", 0, "vrfs", 0, "svis"]

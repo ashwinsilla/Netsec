@@ -70,10 +70,17 @@ Available assertion types — output ONLY types from this list:
    {"type":"config_contains","pattern":"<regex>","description":"...","nodes":["dc1-spine1"] or null}
    Use for: NTP server lines, DNS name-server lines, MTU values, spanning-tree mode,
             virtual-router MAC, hostname, VRF instance, VLAN definitions, BGP AS in config.
+   PATTERN RULE: EOS often inserts qualifiers between the command keyword and the value
+   (e.g. "vrf MGMT", "prefer", interface names). Always use `.*` between the command
+   prefix and the specific value so qualifiers are not accidentally required.
+   Good: "ntp server.*google\\.ntp\\.com"   Bad: "ntp server google\\.ntp\\.com"
+   Good: "ip name-server.*8\\.8\\.8\\.8"    Bad: "ip name-server 8\\.8\\.8\\.8"
+   Good: "router bgp.*65000"                Bad: "router bgp 65000"
 
 2. config_absent
    Pattern MUST NOT appear in any EOS config (useful to confirm old value is gone).
    {"type":"config_absent","pattern":"<regex>","description":"...","nodes":null}
+   Apply the same `.*` rule as config_contains.
 
 3. batfish_bgp_as  [requires Batfish]
    Verify BGP AS number on nodes matching node_regex.
@@ -104,12 +111,77 @@ _ASSERT_GEN_SYSTEM = (
 )
 
 
+def _sample_config_lines(task_text: str, max_lines: int = 20) -> str:
+    """
+    Return a small sample of relevant lines from one device config so the LLM
+    knows the exact EOS syntax to match in config_contains patterns.
+
+    Grabs lines from dc1-spine1.cfg (fallback: first .cfg found) that contain
+    any significant word from task_text (length > 3, non-numeric).
+    """
+    if not INTENDED_CONFIGS.is_dir():
+        return ""
+
+    cfg_file = INTENDED_CONFIGS / "dc1-spine1.cfg"
+    if not cfg_file.is_file():
+        candidates = list(INTENDED_CONFIGS.glob("*.cfg"))
+        if not candidates:
+            return ""
+        cfg_file = candidates[0]
+
+    try:
+        lines = cfg_file.read_text(encoding="utf-8").splitlines()
+    except Exception:
+        return ""
+
+    # Extract two tiers of keywords from the task text:
+    #   tier1 — specific values: dotted hostnames/IPs, long words (>5 chars), known net terms
+    #   tier2 — medium words (>3 chars) for fallback
+    NET_TERMS = {"ntp", "bgp", "dns", "mtu", "vrf", "vlan", "svi", "mlag", "ospf", "evpn"}
+    all_words = re.split(r"\W+", task_text)
+    tier1 = [w.lower() for w in all_words
+             if (len(w) > 5 and not w.isdigit()) or w.lower() in NET_TERMS
+             or re.search(r"\d", w)]  # words with digits (IPs, ASNs, pool names)
+    tier2 = [w.lower() for w in all_words if len(w) > 3 and not w.isdigit()]
+    # Also include any dotted tokens (hostnames like google.ntp.com)
+    dotted = re.findall(r"[\w\-]+(?:\.[\w\-]+){1,}", task_text)
+    tier1 = list(dict.fromkeys(tier1 + [d.lower() for d in dotted]))
+
+    words = tier1 if tier1 else tier2
+    if not words:
+        return ""
+
+    # Collect matching lines, prioritising tier1 matches
+    tier1_set = set(tier1)
+    matched_t1: list[str] = []
+    matched_t2: list[str] = []
+    for line in lines:
+        ll = line.lower()
+        if any(w in ll for w in tier1_set):
+            matched_t1.append(line)
+        elif tier2 and any(w in ll for w in tier2):
+            matched_t2.append(line)
+
+    matched = (matched_t1 + matched_t2)[:max_lines]
+
+    if not matched:
+        return ""
+
+    return (
+        f"\nSample lines from {cfg_file.name} (actual EOS syntax — use these as pattern reference):\n"
+        + "\n".join(f"  {l}" for l in matched)
+        + "\n"
+    )
+
+
 def _build_assertion_prompt(task_text: str, intent: dict, node_names: list[str]) -> str:
-    nodes_str = ", ".join(node_names) if node_names else "dc1-spine1, dc1-spine2, dc1-leaf1a, dc1-leaf1b"
-    path_str  = " → ".join(str(s) for s in intent.get("insertion_path", []))
+    nodes_str   = ", ".join(node_names) if node_names else "dc1-spine1, dc1-spine2, dc1-leaf1a, dc1-leaf1b"
+    path_str    = " → ".join(str(s) for s in intent.get("insertion_path", []))
+    config_hint = _sample_config_lines(task_text)
     return (
         f"{_ASSERTION_CATALOGUE}\n"
-        f"Available device nodes: {nodes_str}\n\n"
+        f"Available device nodes: {nodes_str}\n"
+        f"{config_hint}\n"
         f"Task: {task_text}\n"
         f"AVD file: {intent.get('context_file', '?')}  |  insertion_path: {path_str}\n\n"
         "Generate 2–5 assertions that directly verify this specific change was applied.\n"
@@ -118,7 +190,10 @@ def _build_assertion_prompt(task_text: str, intent: dict, node_names: list[str])
         "  - Add a config_absent assertion when the old value should disappear.\n"
         "  - Use batfish_* only for BGP/VRF/routing changes where config text alone is ambiguous.\n"
         "  - patterns in config_contains/config_absent are Python re.IGNORECASE regexes.\n"
-        "  - Escape regex special chars in IP addresses (use r'\\.' for literal dots).\n\n"
+        "  - Use `.*` between the command prefix and the value in every config_contains /\n"
+        "    config_absent pattern — this handles VRF names, 'prefer', and other EOS qualifiers\n"
+        "    that appear between the keyword and the value.  See catalogue rule 1 for examples.\n"
+        "  - Escape regex special chars in hostnames/IPs (use r'\\.' for literal dots).\n\n"
         'Output ONLY: {"assertions": [...]}'
     )
 
@@ -219,6 +294,18 @@ def _load_configs(nodes: list[str] | None) -> dict[str, str]:
     return result
 
 
+def _relax_pattern(pattern: str) -> str:
+    """
+    Insert `.*` between whitespace-separated tokens so qualifiers like
+    'vrf MGMT' or 'prefer' that EOS places between a command and its value
+    don't cause false negatives.
+
+    e.g. 'ntp server google\\.ntp\\.com'  →  'ntp.*server.*google\\.ntp\\.com'
+    """
+    tokens = pattern.split()
+    return ".*".join(tokens) if len(tokens) > 1 else pattern
+
+
 def _run_config_contains(assertion: dict) -> tuple[bool, str]:
     pattern = assertion.get("pattern", "")
     nodes   = assertion.get("nodes")  # None → all nodes
@@ -235,6 +322,22 @@ def _run_config_contains(assertion: dict) -> tuple[bool, str]:
     matches = [name for name, text in configs.items() if rx.search(text)]
     if matches:
         return True, f"Matched in {len(matches)}/{len(configs)} node(s): {', '.join(sorted(matches)[:5])}"
+
+    # Strict match failed — try relaxed version with .* between tokens so EOS
+    # qualifiers like 'vrf MGMT' or 'prefer' don't cause false negatives.
+    relaxed = _relax_pattern(pattern)
+    if relaxed != pattern:
+        try:
+            rx2 = re.compile(relaxed, re.IGNORECASE)
+            matches2 = [name for name, text in configs.items() if rx2.search(text)]
+            if matches2:
+                return True, (
+                    f"Matched (relaxed pattern) in {len(matches2)}/{len(configs)} node(s): "
+                    f"{', '.join(sorted(matches2)[:5])}"
+                )
+        except re.error:
+            pass
+
     return False, f"Pattern not found in {len(configs)} config(s): {pattern!r}"
 
 

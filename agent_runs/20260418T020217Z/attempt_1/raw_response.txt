@@ -1,0 +1,16 @@
+<thinking>
+The task is to replace the entire `ntp_settings.servers` list with only a single entry for `0.pool.ntp.org`, removing all other entries.
+
+Looking at the existing configuration, the `0.pool.ntp.org` entry only has the `name` key with no other key/value pairs. So I need to preserve exactly that.
+
+The schema allows these optional keys: `name`, `burst`, `iburst`, `key`, `maxpoll`, `minpoll`, `version`.
+
+The output should be a JSON array with a single item:
+```json
+[{"name": "0.pool.ntp.org"}]
+```
+
+This is a list field, so I output a JSON array with ALL existing items I want to keep (just the one entry).
+</thinking>
+
+[{"name": "0.pool.ntp.org"}]

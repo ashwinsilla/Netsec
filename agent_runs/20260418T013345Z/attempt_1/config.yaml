@@ -9,7 +9,7 @@ spine:
     # Pool of IPv4 addresses to configure interface Loopback0 used for BGP EVPN sessions
     loopback_ipv4_pool: 10.255.0.0/27
     # Autonous System Number for BGP
-    bgp_as: 65000
+    bgp_as: 64000
   # Define variables per node
   nodes:
     # The Node Name is used as "hostname"

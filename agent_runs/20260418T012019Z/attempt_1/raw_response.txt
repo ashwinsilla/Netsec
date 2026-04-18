@@ -1,0 +1,5 @@
+<thinking>
+The task is to change the BGP ASN from 65100 to 65000. The insertion_path is ["spine","defaults","bgp_as"], which targets a scalar field (integer). So I need to output the raw JSON scalar value: 65000.
+</thinking>
+
+65000

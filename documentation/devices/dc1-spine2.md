@@ -111,7 +111,6 @@ NTP servers VRF: MGMT
 | Server | Preferred | Burst | iBurst | Version | Min Poll | Max Poll | Local-interface | Key |
 | ------ | --------- | ----- | ------ | ------- | -------- | -------- | --------------- | --- |
 | 0.pool.ntp.org | True | - | - | - | - | - | - | - |
-| 2.pool.ntp.org | - | - | - | - | - | - | - | - |
 
 #### NTP Device Configuration
 
@@ -119,7 +118,6 @@ NTP servers VRF: MGMT
 !
 ntp local-interface vrf MGMT Management1
 ntp server vrf MGMT 0.pool.ntp.org prefer
-ntp server vrf MGMT 2.pool.ntp.org
 ```
 
 ### Management API HTTP
@@ -359,7 +357,7 @@ ASN Notation: asplain
 
 | BGP AS | Router ID |
 | ------ | --------- |
-| 65100 | 10.255.0.2 |
+| 64000 | 10.255.0.2 |
 
 | BGP Tuning |
 | ---------- |
@@ -413,7 +411,7 @@ ASN Notation: asplain
 
 ```eos
 !
-router bgp 65100
+router bgp 64000
    router-id 10.255.0.2
    no bgp default ipv4-unicast
    maximum-paths 4

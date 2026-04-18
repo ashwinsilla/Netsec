@@ -126,7 +126,6 @@ NTP servers VRF: MGMT
 | Server | Preferred | Burst | iBurst | Version | Min Poll | Max Poll | Local-interface | Key |
 | ------ | --------- | ----- | ------ | ------- | -------- | -------- | --------------- | --- |
 | 0.pool.ntp.org | True | - | - | - | - | - | - | - |
-| 2.pool.ntp.org | - | - | - | - | - | - | - | - |
 
 #### NTP Device Configuration
 
@@ -134,7 +133,6 @@ NTP servers VRF: MGMT
 !
 ntp local-interface vrf MGMT Management1
 ntp server vrf MGMT 0.pool.ntp.org prefer
-ntp server vrf MGMT 2.pool.ntp.org
 ```
 
 ### Management API HTTP
@@ -730,11 +728,11 @@ ASN Notation: asplain
 
 | Neighbor | Remote AS | VRF | Shutdown | Send-community | Maximum-routes | Allowas-in | BFD | RIB Pre-Policy Retain | Route-Reflector Client | Passive | TTL Max Hops |
 | -------- | --------- | --- | -------- | -------------- | -------------- | ---------- | --- | --------------------- | ---------------------- | ------- | ------------ |
-| 10.255.0.1 | 65100 | default | - | Inherited from peer group EVPN-OVERLAY-PEERS | Inherited from peer group EVPN-OVERLAY-PEERS | - | Inherited from peer group EVPN-OVERLAY-PEERS | - | - | - | - |
-| 10.255.0.2 | 65100 | default | - | Inherited from peer group EVPN-OVERLAY-PEERS | Inherited from peer group EVPN-OVERLAY-PEERS | - | Inherited from peer group EVPN-OVERLAY-PEERS | - | - | - | - |
+| 10.255.0.1 | 64000 | default | - | Inherited from peer group EVPN-OVERLAY-PEERS | Inherited from peer group EVPN-OVERLAY-PEERS | - | Inherited from peer group EVPN-OVERLAY-PEERS | - | - | - | - |
+| 10.255.0.2 | 64000 | default | - | Inherited from peer group EVPN-OVERLAY-PEERS | Inherited from peer group EVPN-OVERLAY-PEERS | - | Inherited from peer group EVPN-OVERLAY-PEERS | - | - | - | - |
 | 10.255.1.101 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | default | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
-| 10.255.255.8 | 65100 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
-| 10.255.255.10 | 65100 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
+| 10.255.255.8 | 64000 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
+| 10.255.255.10 | 64000 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
 | 10.255.1.101 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | VRF10 | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
 | 10.255.1.101 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | VRF11 | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
 
@@ -792,18 +790,18 @@ router bgp 65102
    neighbor MLAG-IPv4-UNDERLAY-PEER send-community
    neighbor MLAG-IPv4-UNDERLAY-PEER maximum-routes 256000
    neighbor 10.255.0.1 peer group EVPN-OVERLAY-PEERS
-   neighbor 10.255.0.1 remote-as 65100
+   neighbor 10.255.0.1 remote-as 64000
    neighbor 10.255.0.1 description dc1-spine1_Loopback0
    neighbor 10.255.0.2 peer group EVPN-OVERLAY-PEERS
-   neighbor 10.255.0.2 remote-as 65100
+   neighbor 10.255.0.2 remote-as 64000
    neighbor 10.255.0.2 description dc1-spine2_Loopback0
    neighbor 10.255.1.101 peer group MLAG-IPv4-UNDERLAY-PEER
    neighbor 10.255.1.101 description dc1-leaf2b_Vlan4093
    neighbor 10.255.255.8 peer group IPv4-UNDERLAY-PEERS
-   neighbor 10.255.255.8 remote-as 65100
+   neighbor 10.255.255.8 remote-as 64000
    neighbor 10.255.255.8 description dc1-spine1_Ethernet3
    neighbor 10.255.255.10 peer group IPv4-UNDERLAY-PEERS
-   neighbor 10.255.255.10 remote-as 65100
+   neighbor 10.255.255.10 remote-as 64000
    neighbor 10.255.255.10 description dc1-spine2_Ethernet3
    redistribute connected route-map RM-CONN-2-BGP
    !

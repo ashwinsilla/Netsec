@@ -108,7 +108,6 @@ ntp:
   servers:
   - name: 0.pool.ntp.org
     preferred: true
-  - name: 2.pool.ntp.org
   vrf: MGMT
 prefix_lists:
 - name: PL-LOOPBACKS-EVPN-OVERLAY
@@ -128,7 +127,7 @@ router_bfd:
     min_rx: 300
     multiplier: 3
 router_bgp:
-  as: '65100'
+  as: '64000'
   router_id: 10.255.0.1
   maximum_paths:
     paths: 4

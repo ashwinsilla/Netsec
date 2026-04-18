@@ -1,0 +1,29 @@
+{
+  "results": [
+    {
+      "description": "Verify p2p uplink interfaces on leaf nodes have MTU 9214",
+      "passed": false,
+      "detail": "22 interface(s) have wrong MTU (expected 9214): [Interface(hostname='dc1-leaf1a', interface='Ethernet3'), Interface(hostname='dc1-leaf1a', interface='Ethernet4'), Interface(hostname='dc1-leaf1a', interface='Ethernet5')]"
+    },
+    {
+      "description": "Verify p2p uplink interfaces on spine nodes have MTU 9214",
+      "passed": false,
+      "detail": "No interfaces matched node='.*spine.*' iface='Ethernet.*'"
+    },
+    {
+      "description": "Verify MTU 9214 appears in device configs for p2p uplinks",
+      "passed": true,
+      "detail": "Matched in 6/8 node(s): dc1-leaf1a, dc1-leaf1b, dc1-leaf2a, dc1-leaf2b, dc1-spine1"
+    },
+    {
+      "description": "Verify old MTU value of 1500 is no longer present in any device config",
+      "passed": true,
+      "detail": "Pattern correctly absent from all 8 config(s)"
+    }
+  ],
+  "failures": [
+    "Verify p2p uplink interfaces on leaf nodes have MTU 9214 \u2014 22 interface(s) have wrong MTU (expected 9214): [Interface(hostname='dc1-leaf1a', interface='Ethernet3'), Interface(hostname='dc1-leaf1a', interface='Ethernet4'), Interface(hostname='dc1-leaf1a', interface='Ethernet5')]",
+    "Verify p2p uplink interfaces on spine nodes have MTU 9214 \u2014 No interfaces matched node='.*spine.*' iface='Ethernet.*'"
+  ],
+  "warnings": []
+}

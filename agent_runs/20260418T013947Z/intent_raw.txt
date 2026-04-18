@@ -1,0 +1,5 @@
+<thinking>
+The user wants to change p2p_uplinks_mtu from 1500 to 9214. This is in the fabric_variables.yml file under the key p2p_uplinks_mtu.
+</thinking>
+
+{"file_key":"fabric","context_file":"group_vars/FABRIC/fabric_variables.yml","insertion_path":["p2p_uplinks_mtu"],"task_text":"Change the value of p2p_uplinks_mtu from 1500 to 9214.","confidence":"high","reasoning":"The p2p_uplinks_mtu key is a top-level setting in the fabric-wide variables file (group_vars/FABRIC/fabric_variables.yml) and is explicitly listed in its current structure as 1500."}

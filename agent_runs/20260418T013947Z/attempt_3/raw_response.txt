@@ -1,0 +1,5 @@
+<thinking>
+The task is simple: change p2p_uplinks_mtu from 1500 to 9214. This is a scalar integer field. I need to output just the raw integer value 9214.
+</thinking>
+
+9214

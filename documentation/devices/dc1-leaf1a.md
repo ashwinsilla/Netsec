@@ -343,8 +343,8 @@ vlan 4094
 
 | Interface | Description | Channel Group | IP Address | VRF | MTU | Shutdown | ACL In | ACL Out |
 | --------- | ----------- | ------------- | ---------- | --- | --- | -------- | ------ | ------- |
-| Ethernet1 | P2P_dc1-spine1_Ethernet1 | - | 10.255.255.1/31 | default | 1500 | False | - | - |
-| Ethernet2 | P2P_dc1-spine2_Ethernet1 | - | 10.255.255.3/31 | default | 1500 | False | - | - |
+| Ethernet1 | P2P_dc1-spine1_Ethernet1 | - | 10.255.255.1/31 | default | 9214 | False | - | - |
+| Ethernet2 | P2P_dc1-spine2_Ethernet1 | - | 10.255.255.3/31 | default | 9214 | False | - | - |
 
 #### Ethernet Interfaces Device Configuration
 
@@ -353,14 +353,14 @@ vlan 4094
 interface Ethernet1
    description P2P_dc1-spine1_Ethernet1
    no shutdown
-   mtu 1500
+   mtu 9214
    no switchport
    ip address 10.255.255.1/31
 !
 interface Ethernet2
    description P2P_dc1-spine2_Ethernet1
    no shutdown
-   mtu 1500
+   mtu 9214
    no switchport
    ip address 10.255.255.3/31
 !
@@ -486,10 +486,10 @@ interface Loopback11
 | Vlan12 | VRF10_VLAN12 | VRF10 | - | False |
 | Vlan21 | VRF11_VLAN21 | VRF11 | - | False |
 | Vlan22 | VRF11_VLAN22 | VRF11 | - | False |
-| Vlan3009 | MLAG_L3_VRF_VRF10 | VRF10 | 1500 | False |
-| Vlan3010 | MLAG_L3_VRF_VRF11 | VRF11 | 1500 | False |
-| Vlan4093 | MLAG_L3 | default | 1500 | False |
-| Vlan4094 | MLAG | default | 1500 | False |
+| Vlan3009 | MLAG_L3_VRF_VRF10 | VRF10 | 9214 | False |
+| Vlan3010 | MLAG_L3_VRF_VRF11 | VRF11 | 9214 | False |
+| Vlan4093 | MLAG_L3 | default | 9214 | False |
+| Vlan4094 | MLAG | default | 9214 | False |
 
 ##### IPv4
 
@@ -535,27 +535,27 @@ interface Vlan22
 interface Vlan3009
    description MLAG_L3_VRF_VRF10
    no shutdown
-   mtu 1500
+   mtu 9214
    vrf VRF10
    ip address 10.255.1.96/31
 !
 interface Vlan3010
    description MLAG_L3_VRF_VRF11
    no shutdown
-   mtu 1500
+   mtu 9214
    vrf VRF11
    ip address 10.255.1.96/31
 !
 interface Vlan4093
    description MLAG_L3
    no shutdown
-   mtu 1500
+   mtu 9214
    ip address 10.255.1.96/31
 !
 interface Vlan4094
    description MLAG
    no shutdown
-   mtu 1500
+   mtu 9214
    no autostate
    ip address 10.255.1.64/31
 ```
@@ -728,11 +728,11 @@ ASN Notation: asplain
 
 | Neighbor | Remote AS | VRF | Shutdown | Send-community | Maximum-routes | Allowas-in | BFD | RIB Pre-Policy Retain | Route-Reflector Client | Passive | TTL Max Hops |
 | -------- | --------- | --- | -------- | -------------- | -------------- | ---------- | --- | --------------------- | ---------------------- | ------- | ------------ |
-| 10.255.0.1 | 64000 | default | - | Inherited from peer group EVPN-OVERLAY-PEERS | Inherited from peer group EVPN-OVERLAY-PEERS | - | Inherited from peer group EVPN-OVERLAY-PEERS | - | - | - | - |
-| 10.255.0.2 | 64000 | default | - | Inherited from peer group EVPN-OVERLAY-PEERS | Inherited from peer group EVPN-OVERLAY-PEERS | - | Inherited from peer group EVPN-OVERLAY-PEERS | - | - | - | - |
+| 10.255.0.1 | 65000 | default | - | Inherited from peer group EVPN-OVERLAY-PEERS | Inherited from peer group EVPN-OVERLAY-PEERS | - | Inherited from peer group EVPN-OVERLAY-PEERS | - | - | - | - |
+| 10.255.0.2 | 65000 | default | - | Inherited from peer group EVPN-OVERLAY-PEERS | Inherited from peer group EVPN-OVERLAY-PEERS | - | Inherited from peer group EVPN-OVERLAY-PEERS | - | - | - | - |
 | 10.255.1.97 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | default | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
-| 10.255.255.0 | 64000 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
-| 10.255.255.2 | 64000 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
+| 10.255.255.0 | 65000 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
+| 10.255.255.2 | 65000 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
 | 10.255.1.97 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | VRF10 | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
 | 10.255.1.97 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | VRF11 | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
 
@@ -790,18 +790,18 @@ router bgp 65101
    neighbor MLAG-IPv4-UNDERLAY-PEER send-community
    neighbor MLAG-IPv4-UNDERLAY-PEER maximum-routes 256000
    neighbor 10.255.0.1 peer group EVPN-OVERLAY-PEERS
-   neighbor 10.255.0.1 remote-as 64000
+   neighbor 10.255.0.1 remote-as 65000
    neighbor 10.255.0.1 description dc1-spine1_Loopback0
    neighbor 10.255.0.2 peer group EVPN-OVERLAY-PEERS
-   neighbor 10.255.0.2 remote-as 64000
+   neighbor 10.255.0.2 remote-as 65000
    neighbor 10.255.0.2 description dc1-spine2_Loopback0
    neighbor 10.255.1.97 peer group MLAG-IPv4-UNDERLAY-PEER
    neighbor 10.255.1.97 description dc1-leaf1b_Vlan4093
    neighbor 10.255.255.0 peer group IPv4-UNDERLAY-PEERS
-   neighbor 10.255.255.0 remote-as 64000
+   neighbor 10.255.255.0 remote-as 65000
    neighbor 10.255.255.0 description dc1-spine1_Ethernet1
    neighbor 10.255.255.2 peer group IPv4-UNDERLAY-PEERS
-   neighbor 10.255.255.2 remote-as 64000
+   neighbor 10.255.255.2 remote-as 65000
    neighbor 10.255.255.2 description dc1-spine2_Ethernet1
    redistribute connected route-map RM-CONN-2-BGP
    !

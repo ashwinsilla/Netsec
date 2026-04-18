@@ -1,0 +1,23 @@
+{
+  "assertions": [
+    {
+      "type": "batfish_interface_mtu",
+      "node_regex": ".*",
+      "interface_regex": "Ethernet.*",
+      "mtu": 9214,
+      "description": "Verify all P2P uplink Ethernet interfaces have MTU set to 9214 after the change"
+    },
+    {
+      "type": "config_contains",
+      "pattern": "mtu 9214",
+      "description": "Verify MTU 9214 appears in device configs for P2P uplink interfaces",
+      "nodes": null
+    },
+    {
+      "type": "config_absent",
+      "pattern": "mtu 1500",
+      "description": "Verify old MTU value of 1500 no longer appears in any device config",
+      "nodes": null
+    }
+  ]
+}

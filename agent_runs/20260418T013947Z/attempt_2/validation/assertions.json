@@ -1,0 +1,30 @@
+{
+  "assertions": [
+    {
+      "type": "batfish_interface_mtu",
+      "node_regex": ".*leaf.*",
+      "interface_regex": "Ethernet.*",
+      "mtu": 9214,
+      "description": "Verify p2p uplink interfaces on leaf nodes have MTU 9214"
+    },
+    {
+      "type": "batfish_interface_mtu",
+      "node_regex": ".*spine.*",
+      "interface_regex": "Ethernet.*",
+      "mtu": 9214,
+      "description": "Verify p2p uplink interfaces on spine nodes have MTU 9214"
+    },
+    {
+      "type": "config_contains",
+      "pattern": "mtu 9214",
+      "description": "Verify MTU 9214 appears in device configs for p2p uplinks",
+      "nodes": null
+    },
+    {
+      "type": "config_absent",
+      "pattern": "mtu 1500",
+      "description": "Verify old MTU value of 1500 is no longer present in any device config",
+      "nodes": null
+    }
+  ]
+}

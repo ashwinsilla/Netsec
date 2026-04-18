@@ -233,10 +233,10 @@ vlan internal order ascending range 1006 1199
 
 | Interface | Description | Channel Group | IP Address | VRF | MTU | Shutdown | ACL In | ACL Out |
 | --------- | ----------- | ------------- | ---------- | --- | --- | -------- | ------ | ------- |
-| Ethernet1 | P2P_dc1-leaf1a_Ethernet2 | - | 10.255.255.2/31 | default | 1500 | False | - | - |
-| Ethernet2 | P2P_dc1-leaf1b_Ethernet2 | - | 10.255.255.6/31 | default | 1500 | False | - | - |
-| Ethernet3 | P2P_dc1-leaf2a_Ethernet2 | - | 10.255.255.10/31 | default | 1500 | False | - | - |
-| Ethernet4 | P2P_dc1-leaf2b_Ethernet2 | - | 10.255.255.14/31 | default | 1500 | False | - | - |
+| Ethernet1 | P2P_dc1-leaf1a_Ethernet2 | - | 10.255.255.2/31 | default | 9214 | False | - | - |
+| Ethernet2 | P2P_dc1-leaf1b_Ethernet2 | - | 10.255.255.6/31 | default | 9214 | False | - | - |
+| Ethernet3 | P2P_dc1-leaf2a_Ethernet2 | - | 10.255.255.10/31 | default | 9214 | False | - | - |
+| Ethernet4 | P2P_dc1-leaf2b_Ethernet2 | - | 10.255.255.14/31 | default | 9214 | False | - | - |
 
 #### Ethernet Interfaces Device Configuration
 
@@ -245,28 +245,28 @@ vlan internal order ascending range 1006 1199
 interface Ethernet1
    description P2P_dc1-leaf1a_Ethernet2
    no shutdown
-   mtu 1500
+   mtu 9214
    no switchport
    ip address 10.255.255.2/31
 !
 interface Ethernet2
    description P2P_dc1-leaf1b_Ethernet2
    no shutdown
-   mtu 1500
+   mtu 9214
    no switchport
    ip address 10.255.255.6/31
 !
 interface Ethernet3
    description P2P_dc1-leaf2a_Ethernet2
    no shutdown
-   mtu 1500
+   mtu 9214
    no switchport
    ip address 10.255.255.10/31
 !
 interface Ethernet4
    description P2P_dc1-leaf2b_Ethernet2
    no shutdown
-   mtu 1500
+   mtu 9214
    no switchport
    ip address 10.255.255.14/31
 ```
@@ -357,7 +357,7 @@ ASN Notation: asplain
 
 | BGP AS | Router ID |
 | ------ | --------- |
-| 64000 | 10.255.0.2 |
+| 65000 | 10.255.0.2 |
 
 | BGP Tuning |
 | ---------- |
@@ -411,7 +411,7 @@ ASN Notation: asplain
 
 ```eos
 !
-router bgp 64000
+router bgp 65000
    router-id 10.255.0.2
    no bgp default ipv4-unicast
    maximum-paths 4

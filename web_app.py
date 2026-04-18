@@ -1,18 +1,24 @@
 #!/usr/bin/env python3
 """
-AVD Agent — Web UI
+AVD Agent — Web UI with CVP-style Change Control
 
-Single-file FastAPI app.  Serves a browser UI at http://localhost:8000 so
-network engineers can run the agent without touching the CLI.
+Workflow
+────────
+1. Engineer submits a change request in the browser.
+2. A git branch  avd/change/<run_id>  is created from main.
+3. The AVD agent runs on that branch (YAML edit → Ansible build → Batfish validation).
+4. On success, all changes are committed to the branch.
+5. A per-device diff (group_vars + intended/configs) is shown in the browser.
+6. Engineer clicks Approve → branch merged to main.
+   Engineer clicks Reject  → branch deleted, working tree restored to main.
+
+Only one run can execute at a time (git requires an exclusive working tree).
 
 Usage
 ─────
   source .venv/bin/activate
-  python3 web_app.py              # starts on http://localhost:8000
-  python3 web_app.py --port 9000  # custom port
-
-Progress is streamed live via Server-Sent Events.  Each run gets its own
-event stream so multiple engineers can work concurrently.
+  python3 web_app.py              # http://localhost:8000
+  python3 web_app.py --port 9000
 """
 
 from __future__ import annotations
@@ -20,10 +26,9 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import subprocess
 import uuid
-from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
@@ -32,17 +37,25 @@ from pydantic import BaseModel
 
 import avd_agent as _agent
 
-# ── App ───────────────────────────────────────────────────────────────────────
+# ── Constants ─────────────────────────────────────────────────────────────────
+
+REPO_ROOT = _agent.REPO_ROOT
+RUNS_DIR  = _agent.RUNS_DIR
+BASE_BRANCH = "main"
 
 app = FastAPI(title="AVD Agent", docs_url=None, redoc_url=None)
 
-RUNS_DIR = _agent.RUNS_DIR
+# Serialises agent runs — only one at a time (shared working tree)
+_run_lock: asyncio.Lock = asyncio.Lock()
 
-# run_id → asyncio.Queue of SSE event strings (None = stream closed)
+# run_id → runtime state dict
+_run_states: dict[str, dict] = {}
+
+# run_id → SSE queue
 _queues: dict[str, asyncio.Queue] = {}
 
 
-# ── Request / response models ─────────────────────────────────────────────────
+# ── Pydantic models ───────────────────────────────────────────────────────────
 
 class RunRequest(BaseModel):
     request:         str
@@ -50,21 +63,81 @@ class RunRequest(BaseModel):
     dry_run:         bool = False
     skip_validation: bool = False
     batfish_host:    str  = "localhost"
-    yes:             bool = True   # web UI always skips the confirmation prompt
 
 
-class RunInfo(BaseModel):
-    run_id:    str
-    ts:        str
-    request:   str
-    model:     str
-    success:   bool | None
-    work_dir:  str
+# ── Git helpers ───────────────────────────────────────────────────────────────
+
+def _git(*args: str) -> tuple[int, str, str]:
+    r = subprocess.run(
+        ["git"] + list(args),
+        cwd=str(REPO_ROOT), capture_output=True, text=True,
+    )
+    return r.returncode, r.stdout.strip(), r.stderr.strip()
 
 
-# ── SSE helpers ───────────────────────────────────────────────────────────────
+def _current_branch() -> str:
+    _, out, _ = _git("rev-parse", "--abbrev-ref", "HEAD")
+    return out
 
-def _sse(event_type: str, data: Any) -> str:
+
+def _create_branch(run_id: str) -> tuple[bool, str]:
+    branch = f"avd/change/{run_id}"
+    rc, _, err = _git("checkout", "-b", branch, BASE_BRANCH)
+    if rc != 0:
+        # Fallback: branch from HEAD if BASE_BRANCH doesn't exist yet
+        rc2, _, err2 = _git("checkout", "-b", branch)
+        if rc2 != 0:
+            return False, err2
+    return True, branch
+
+
+def _commit_changes(task_text: str) -> tuple[bool, str]:
+    _git("add", "group_vars/", "intended/")
+    rc, out, err = _git(
+        "commit", "-m", f"avd: {task_text[:72]}",
+        "--author", "AVD Agent <avd-agent@local>",
+    )
+    if rc != 0:
+        if "nothing to commit" in (out + err).lower():
+            return True, "nothing-to-commit"
+        return False, err
+    return True, out
+
+
+def _get_diff(branch: str) -> str:
+    """Unified diff between BASE_BRANCH and branch for YAML + device configs."""
+    _, out, _ = _git(
+        "diff", f"{BASE_BRANCH}...{branch}",
+        "--", "group_vars/", "intended/configs/",
+    )
+    return out
+
+
+def _merge_to_main(branch: str) -> tuple[bool, str]:
+    rc, _, err = _git("checkout", BASE_BRANCH)
+    if rc != 0:
+        return False, f"checkout {BASE_BRANCH} failed: {err}"
+    rc2, out2, err2 = _git(
+        "merge", "--no-ff", branch,
+        "-m", f"Merge {branch} into {BASE_BRANCH}",
+    )
+    if rc2 != 0:
+        _git("merge", "--abort")
+        _git("checkout", BASE_BRANCH)
+        return False, f"merge failed: {err2}"
+    _git("branch", "-d", branch)
+    return True, out2
+
+
+def _discard_branch(branch: str) -> None:
+    """Checkout BASE_BRANCH and delete the feature branch."""
+    _git("checkout", BASE_BRANCH)
+    _git("branch", "-D", branch)
+
+
+# ── SSE helper ────────────────────────────────────────────────────────────────
+
+def _sse(event_type: str, data: object) -> str:
     return f"data: {json.dumps({'type': event_type, 'msg': data})}\n\n"
 
 
@@ -72,41 +145,75 @@ def _sse(event_type: str, data: Any) -> str:
 
 @app.post("/api/run")
 async def start_run(body: RunRequest) -> dict:
-    """Start an agent run and return a run_id to stream progress from."""
     api_key = _agent._load_api_key()
     if not api_key:
-        raise HTTPException(status_code=400, detail="OPENROUTER_API_KEY not set in .env")
+        raise HTTPException(400, "OPENROUTER_API_KEY not set in .env")
+
+    if _run_lock.locked():
+        raise HTTPException(409, "Another run is in progress. Please wait.")
 
     run_id = uuid.uuid4().hex[:10]
     queue: asyncio.Queue = asyncio.Queue()
     _queues[run_id] = queue
+    _run_states[run_id] = {"status": "running", "branch": None, "task_text": body.request, "diff": ""}
 
-    # Build a minimal args namespace matching what _run_agent expects
-    args = argparse.Namespace(
-        model           = body.model,
-        dry_run         = body.dry_run,
-        yes             = True,
-        intent_only     = False,
-        verbose         = False,
-        skip_validation = body.skip_validation,
-        batfish_host    = body.batfish_host,
+    import argparse as _ap
+    args = _ap.Namespace(
+        model=body.model, dry_run=body.dry_run, yes=True,
+        intent_only=False, verbose=False,
+        skip_validation=body.skip_validation,
+        batfish_host=body.batfish_host,
     )
 
     async def run() -> None:
-        # Wire up the emit callback for this task's context
-        def emit(event_type: str, msg: str) -> None:
-            queue.put_nowait(_sse(event_type, msg))
+        async with _run_lock:
+            state = _run_states[run_id]
 
-        token = _agent._web_emit.set(emit)
-        try:
-            success = await _agent._run_agent(body.request, args)
+            # ── 1. Create feature branch ──────────────────────────────────
+            ok, branch = _create_branch(run_id)
+            if not ok:
+                queue.put_nowait(_sse("fail", f"Could not create branch: {branch}"))
+                queue.put_nowait(_sse("done", {"success": False}))
+                state["status"] = "failed"
+                return
+
+            state["branch"] = branch
+            queue.put_nowait(_sse("branch", branch))
+            queue.put_nowait(_sse("info", f"Branch created: {branch}"))
+
+            # ── 2. Run the agent ──────────────────────────────────────────
+            def emit(etype: str, msg: str) -> None:
+                queue.put_nowait(_sse(etype, msg))
+
+            token = _agent._web_emit.set(emit)
+            try:
+                success = await _agent._run_agent(body.request, args)
+            except Exception as exc:
+                success = False
+                queue.put_nowait(_sse("fail", f"Agent error: {exc}"))
+            finally:
+                _agent._web_emit.reset(token)
+
+            # ── 3. On success: commit + capture diff ──────────────────────
+            if success:
+                ok_commit, _ = _commit_changes(body.request)
+                if ok_commit:
+                    diff = _get_diff(branch)
+                    state.update({"status": "pending_approval", "diff": diff})
+                    queue.put_nowait(_sse("pending_approval", {
+                        "run_id": run_id,
+                        "branch": branch,
+                        "has_diff": bool(diff.strip()),
+                    }))
+                else:
+                    state["status"] = "failed"
+                    queue.put_nowait(_sse("warn", "Changes validated but could not be committed."))
+            else:
+                # Clean up the branch on failure
+                _discard_branch(branch)
+                state["status"] = "failed"
+
             queue.put_nowait(_sse("done", {"success": success}))
-        except Exception as exc:
-            queue.put_nowait(_sse("fail", f"Unhandled error: {exc}"))
-            queue.put_nowait(_sse("done", {"success": False}))
-        finally:
-            _agent._web_emit.reset(token)
-            # Leave queue in dict so /stream can drain it; GC after client disconnects
 
     asyncio.create_task(run())
     return {"run_id": run_id}
@@ -114,13 +221,11 @@ async def start_run(body: RunRequest) -> dict:
 
 @app.get("/api/stream/{run_id}")
 async def stream_run(run_id: str) -> StreamingResponse:
-    """SSE stream for a running agent task."""
     queue = _queues.get(run_id)
     if queue is None:
-        raise HTTPException(status_code=404, detail="run_id not found")
+        raise HTTPException(404, "run_id not found")
 
     async def generate():
-        # Send a keepalive comment immediately so the browser opens the stream
         yield ": keepalive\n\n"
         while True:
             try:
@@ -129,57 +234,78 @@ async def stream_run(run_id: str) -> StreamingResponse:
                 if '"type": "done"' in chunk:
                     break
             except asyncio.TimeoutError:
-                yield ": keepalive\n\n"  # prevent proxy/browser timeout
-
+                yield ": keepalive\n\n"
         _queues.pop(run_id, None)
 
     return StreamingResponse(
         generate(),
         media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "X-Accel-Buffering": "no",
-        },
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
 
 
-@app.get("/api/runs")
-async def list_runs() -> list[RunInfo]:
-    """Return the 20 most recent agent runs from agent_runs/."""
-    runs: list[RunInfo] = []
-    if not RUNS_DIR.is_dir():
-        return runs
+@app.get("/api/runs/{run_id}/diff")
+async def get_diff(run_id: str) -> dict:
+    state = _run_states.get(run_id)
+    if not state:
+        raise HTTPException(404, "run_id not found")
+    return {
+        "diff":   state.get("diff", ""),
+        "branch": state.get("branch", ""),
+        "status": state.get("status", ""),
+    }
 
-    dirs = sorted(RUNS_DIR.iterdir(), key=lambda p: p.name, reverse=True)[:20]
-    for d in dirs:
+
+@app.post("/api/runs/{run_id}/approve")
+async def approve_run(run_id: str) -> dict:
+    state = _run_states.get(run_id)
+    if not state or state["status"] != "pending_approval":
+        raise HTTPException(409, "No pending approval for this run.")
+    ok, msg = _merge_to_main(state["branch"])
+    if not ok:
+        raise HTTPException(500, f"Merge failed: {msg}")
+    state["status"] = "approved"
+    return {"status": "approved", "branch": state["branch"]}
+
+
+@app.post("/api/runs/{run_id}/reject")
+async def reject_run(run_id: str) -> dict:
+    state = _run_states.get(run_id)
+    if not state or state["status"] not in ("pending_approval",):
+        raise HTTPException(409, "Nothing to reject for this run.")
+    _discard_branch(state["branch"])
+    state["status"] = "rejected"
+    return {"status": "rejected"}
+
+
+@app.get("/api/runs")
+async def list_runs() -> list:
+    if not RUNS_DIR.is_dir():
+        return []
+    runs = []
+    for d in sorted(RUNS_DIR.iterdir(), key=lambda p: p.name, reverse=True)[:20]:
         manifest = d / "intent.json"
         if not manifest.is_file():
             continue
         try:
             intent = json.loads(manifest.read_text())
-            # Look for a passed/failed marker in any attempt's ansible_output
-            success: bool | None = None
+            success = None
             for attempt in sorted(d.glob("attempt_*/ansible_output.txt")):
-                text = attempt.read_text(errors="ignore")
-                if "failed=0" in text and "unreachable=0" in text:
+                txt = attempt.read_text(errors="ignore")
+                if "failed=0" in txt and "unreachable=0" in txt:
                     success = True
-                elif "failed=" in text:
+                elif "failed=" in txt:
                     success = False
-            runs.append(RunInfo(
-                run_id   = d.name,
-                ts       = d.name,
-                request  = intent.get("task_text", ""),
-                model    = intent.get("model", ""),
-                success  = success,
-                work_dir = str(d),
-            ))
+            runs.append({"run_id": d.name, "ts": d.name,
+                         "request": intent.get("task_text", ""),
+                         "success": success})
         except Exception:
             continue
     return runs
 
 
 @app.get("/api/models")
-async def list_models() -> list[str]:
+async def list_models() -> list:
     return [
         "anthropic/claude-sonnet-4.6",
         "openai/gpt-5.4",
@@ -187,369 +313,416 @@ async def list_models() -> list[str]:
     ]
 
 
-# ── Embedded HTML UI ──────────────────────────────────────────────────────────
+# ── Embedded HTML ─────────────────────────────────────────────────────────────
 
-_HTML = """<!DOCTYPE html>
+_HTML = r"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AVD Agent</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0f1117;color:#e2e8f0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+header{background:#1a1d27;border-bottom:1px solid #2d3148;padding:13px 22px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+header h1{font-size:1.05rem;font-weight:600;color:#a5b4fc}
+header span{font-size:.78rem;color:#475569}
+.main{display:flex;flex:1;overflow:hidden}
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #0f1117;
-    color: #e2e8f0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
+/* ── left panel ── */
+.left{width:340px;min-width:280px;background:#1a1d27;border-right:1px solid #2d3148;display:flex;flex-direction:column;padding:18px;gap:14px;overflow-y:auto;flex-shrink:0}
+label{font-size:.78rem;color:#94a3b8;display:block;margin-bottom:4px}
+textarea{width:100%;min-height:100px;background:#0f1117;border:1px solid #2d3148;border-radius:6px;color:#e2e8f0;font-size:.88rem;padding:9px 11px;resize:vertical;outline:none;transition:border-color .15s}
+textarea:focus{border-color:#6366f1}
+select,input[type=text]{width:100%;background:#0f1117;border:1px solid #2d3148;border-radius:6px;color:#e2e8f0;font-size:.83rem;padding:7px 9px;outline:none}
+select:focus,input[type=text]:focus{border-color:#6366f1}
+.row{display:flex;align-items:center;gap:8px}
+.row label{margin:0;cursor:pointer}
+input[type=checkbox]{accent-color:#6366f1;width:13px;height:13px;cursor:pointer}
+.btn{width:100%;padding:9px;border:none;border-radius:6px;font-size:.9rem;font-weight:600;cursor:pointer;transition:background .15s,opacity .15s}
+.btn-run{background:#6366f1;color:#fff}
+.btn-run:hover{background:#4f46e5}
+.btn-run:disabled{opacity:.45;cursor:not-allowed}
+.lock-msg{font-size:.75rem;color:#f59e0b;text-align:center;display:none}
+.hist h3{font-size:.75rem;color:#475569;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.hist-item{padding:7px 9px;border-radius:5px;background:#0f1117;border:1px solid #2d3148;margin-bottom:5px;font-size:.75rem}
+.hist-req{color:#cbd5e1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-meta{color:#475569;margin-top:2px}
+.badge{display:inline-block;border-radius:3px;padding:1px 5px;font-size:.68rem;font-weight:700;margin-right:3px}
+.ok{background:#14532d;color:#86efac}.fail{background:#450a0a;color:#fca5a5}.pending{background:#1e1b4b;color:#a5b4fc}
 
-  header {
-    background: #1a1d27;
-    border-bottom: 1px solid #2d3148;
-    padding: 14px 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  header h1 { font-size: 1.1rem; font-weight: 600; color: #a5b4fc; letter-spacing: .03em; }
-  header span { font-size: .8rem; color: #64748b; }
+/* ── right panel ── */
+.right{flex:1;display:flex;flex-direction:column;overflow:hidden}
 
-  .container { display: flex; flex: 1; gap: 0; overflow: hidden; }
+/* log */
+.log-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;transition:flex .3s}
+.log-hdr{padding:10px 18px;border-bottom:1px solid #2d3148;display:flex;align-items:center;gap:10px;font-size:.82rem;color:#64748b;background:#1a1d27;flex-shrink:0}
+.branch-tag{font-family:monospace;font-size:.75rem;background:#1e1b4b;color:#818cf8;border:1px solid #3730a3;border-radius:4px;padding:2px 7px}
+#log{flex:1;overflow-y:auto;padding:14px 18px;font-family:"JetBrains Mono","Fira Code",Menlo,monospace;font-size:.8rem;line-height:1.75;background:#0f1117}
+.l-banner{margin:10px 0 4px;color:#818cf8;font-weight:700;border-bottom:1px solid #2d3148;padding-bottom:3px}
+.l-step{color:#38bdf8}.l-ok{color:#4ade80}.l-fail{color:#f87171}.l-warn{color:#fbbf24}.l-info{color:#475569}
+.l-done-ok{color:#4ade80;font-weight:700;margin-top:8px}.l-done-fail{color:#f87171;font-weight:700;margin-top:8px}
 
-  /* ── Left panel ── */
-  .panel-left {
-    width: 380px;
-    min-width: 320px;
-    background: #1a1d27;
-    border-right: 1px solid #2d3148;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    gap: 16px;
-    overflow-y: auto;
-  }
+/* placeholder */
+.ph{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;color:#334155}
+.ph p{font-size:.82rem}
 
-  label { font-size: .8rem; color: #94a3b8; display: block; margin-bottom: 5px; }
+/* ── diff / approval panel ── */
+.approval{flex-shrink:0;border-top:2px solid #6366f1;background:#0f1117;display:none;flex-direction:column;max-height:55vh}
+.approval.open{display:flex}
+.apr-hdr{padding:10px 18px;background:#1a1d27;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.apr-hdr span{font-size:.88rem;font-weight:600;color:#a5b4fc;flex:1}
+.apr-hdr .sub{font-size:.75rem;color:#64748b}
+.btn-approve{background:#15803d;color:#fff;padding:7px 20px;font-size:.85rem;font-weight:600;border:none;border-radius:5px;cursor:pointer;transition:background .15s}
+.btn-approve:hover{background:#166534}
+.btn-reject{background:#991b1b;color:#fff;padding:7px 18px;font-size:.85rem;font-weight:600;border:none;border-radius:5px;cursor:pointer;margin-left:6px;transition:background .15s}
+.btn-reject:hover{background:#7f1d1d}
+.btn-approve:disabled,.btn-reject:disabled{opacity:.45;cursor:not-allowed}
 
-  textarea {
-    width: 100%;
-    min-height: 110px;
-    background: #0f1117;
-    border: 1px solid #2d3148;
-    border-radius: 6px;
-    color: #e2e8f0;
-    font-size: .9rem;
-    padding: 10px 12px;
-    resize: vertical;
-    outline: none;
-    transition: border-color .15s;
-  }
-  textarea:focus { border-color: #6366f1; }
-
-  select, input[type=text] {
-    width: 100%;
-    background: #0f1117;
-    border: 1px solid #2d3148;
-    border-radius: 6px;
-    color: #e2e8f0;
-    font-size: .85rem;
-    padding: 8px 10px;
-    outline: none;
-  }
-  select:focus, input[type=text]:focus { border-color: #6366f1; }
-
-  .row { display: flex; align-items: center; gap: 10px; }
-  .row label { margin: 0; cursor: pointer; }
-  input[type=checkbox] { accent-color: #6366f1; width: 14px; height: 14px; cursor: pointer; }
-
-  .btn-run {
-    width: 100%;
-    padding: 10px;
-    background: #6366f1;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    font-size: .95rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background .15s, opacity .15s;
-  }
-  .btn-run:hover { background: #4f46e5; }
-  .btn-run:disabled { opacity: .5; cursor: not-allowed; }
-
-  /* History list */
-  .history h3 { font-size: .8rem; color: #64748b; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
-  .history-item {
-    padding: 8px 10px;
-    border-radius: 5px;
-    background: #0f1117;
-    border: 1px solid #2d3148;
-    margin-bottom: 6px;
-    font-size: .78rem;
-    cursor: pointer;
-  }
-  .history-item:hover { border-color: #6366f1; }
-  .hist-req { color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .hist-meta { color: #475569; margin-top: 3px; }
-  .badge { display: inline-block; border-radius: 3px; padding: 1px 5px; font-size: .7rem; font-weight: 600; margin-right: 4px; }
-  .badge-ok   { background: #14532d; color: #86efac; }
-  .badge-fail { background: #450a0a; color: #fca5a5; }
-  .badge-run  { background: #1e1b4b; color: #a5b4fc; }
-
-  /* ── Right panel — log ── */
-  .panel-right {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  .log-header {
-    padding: 12px 20px;
-    border-bottom: 1px solid #2d3148;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: .85rem;
-    color: #64748b;
-    background: #1a1d27;
-  }
-  .log-header .run-id { font-family: monospace; color: #94a3b8; }
-
-  #log {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px 20px;
-    font-family: "JetBrains Mono", "Fira Code", "Menlo", monospace;
-    font-size: .82rem;
-    line-height: 1.7;
-    background: #0f1117;
-  }
-
-  .log-banner {
-    margin: 12px 0 6px;
-    color: #818cf8;
-    font-weight: 700;
-    border-bottom: 1px solid #2d3148;
-    padding-bottom: 4px;
-  }
-  .log-step { color: #38bdf8; }
-  .log-ok   { color: #4ade80; }
-  .log-fail { color: #f87171; }
-  .log-warn { color: #fbbf24; }
-  .log-info { color: #64748b; }
-  .log-done-ok   { color: #4ade80; font-weight: 700; margin-top: 10px; }
-  .log-done-fail { color: #f87171; font-weight: 700; margin-top: 10px; }
-
-  .placeholder {
-    color: #334155;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    gap: 8px;
-  }
-  .placeholder svg { opacity: .3; }
-  .placeholder p { font-size: .85rem; }
+/* diff viewer */
+.diff-container{overflow-y:auto;flex:1;padding:0}
+.diff-file{border-bottom:1px solid #1e293b}
+.diff-file-hdr{padding:6px 16px;background:#161b27;font-family:monospace;font-size:.75rem;color:#94a3b8;cursor:pointer;display:flex;align-items:center;gap:8px;user-select:none}
+.diff-file-hdr:hover{background:#1e2740}
+.diff-file-hdr .fname{color:#93c5fd;flex:1}
+.diff-file-hdr .toggle{color:#475569;font-size:.7rem}
+.diff-lines{overflow:hidden}
+.diff-lines.collapsed{display:none}
+.diff-line{font-family:"JetBrains Mono","Fira Code",Menlo,monospace;font-size:.75rem;line-height:1.5;padding:0 16px;white-space:pre;display:flex}
+.diff-line.add{background:#0d2615;color:#4ade80}
+.diff-line.del{background:#2c0b0b;color:#f87171}
+.diff-line.hunk{background:#1a1d27;color:#64748b}
+.diff-line.ctx{color:#4b5563}
+.diff-line .ln{color:#374151;min-width:26px;margin-right:10px;user-select:none;flex-shrink:0}
+.no-diff{padding:20px 18px;font-size:.82rem;color:#475569}
 </style>
 </head>
 <body>
 
 <header>
   <h1>AVD Agent</h1>
-  <span>Arista Validated Designs — natural-language configuration</span>
+  <span>Arista Validated Designs — change control</span>
 </header>
 
-<div class="container">
+<div class="main">
 
-  <!-- Left: form + history -->
-  <div class="panel-left">
-
+  <!-- ── Left: form ── -->
+  <div class="left">
     <div>
       <label for="req">Change request</label>
-      <textarea id="req" placeholder="e.g. Change p2p_uplinks_mtu from 1500 to 9214"></textarea>
+      <textarea id="req" placeholder="e.g. Add NTP server 2.pool.ntp.org&#10;e.g. Change BGP ASN for spines to 65000"></textarea>
     </div>
-
     <div>
       <label for="model">Model</label>
       <select id="model"></select>
     </div>
-
     <div>
       <label for="bf-host">Batfish host</label>
       <input type="text" id="bf-host" value="localhost">
     </div>
-
-    <div style="display:flex; gap:20px">
-      <div class="row">
-        <input type="checkbox" id="dry-run">
-        <label for="dry-run">Dry run</label>
-      </div>
-      <div class="row">
-        <input type="checkbox" id="skip-val">
-        <label for="skip-val">Skip validation</label>
-      </div>
+    <div style="display:flex;gap:20px">
+      <div class="row"><input type="checkbox" id="dry-run"><label for="dry-run">Dry run</label></div>
+      <div class="row"><input type="checkbox" id="skip-val"><label for="skip-val">Skip validation</label></div>
     </div>
+    <button class="btn btn-run" id="btn-run" onclick="submitRun()">Submit Change</button>
+    <div class="lock-msg" id="lock-msg">⚠ Another run is in progress</div>
 
-    <button class="btn-run" id="btn-run" onclick="submitRun()">Run Agent</button>
-
-    <div class="history" id="history-panel">
+    <div class="hist">
       <h3>Recent runs</h3>
-      <div id="history-list"><span style="color:#475569;font-size:.78rem">Loading…</span></div>
+      <div id="hist-list"><span style="color:#475569;font-size:.75rem">Loading…</span></div>
     </div>
-
   </div>
 
-  <!-- Right: live log -->
-  <div class="panel-right">
-    <div class="log-header">
-      <span>Output</span>
-      <span class="run-id" id="run-id-label"></span>
-    </div>
-    <div id="log">
-      <div class="placeholder">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/>
-        </svg>
-        <p>Submit a request to see live output here</p>
+  <!-- ── Right: log + approval ── -->
+  <div class="right">
+
+    <div class="log-wrap" id="log-wrap">
+      <div class="log-hdr">
+        <span>Agent log</span>
+        <span id="branch-tag" class="branch-tag" style="display:none"></span>
+      </div>
+      <div id="log">
+        <div class="ph">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" opacity=".3">
+            <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/>
+          </svg>
+          <p>Submit a change request to begin</p>
+        </div>
       </div>
     </div>
-  </div>
 
+    <!-- Approval / diff panel (hidden until run succeeds) -->
+    <div class="approval" id="approval">
+      <div class="apr-hdr">
+        <span>Review changes</span>
+        <span class="sub" id="apr-branch"></span>
+        <button class="btn-approve" id="btn-approve" onclick="approveRun()">✓ Approve &amp; Merge</button>
+        <button class="btn-reject"  id="btn-reject"  onclick="rejectRun()">✗ Reject</button>
+      </div>
+      <div class="diff-container" id="diff-container">
+        <div class="no-diff">Loading diff…</div>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <script>
-const log = document.getElementById('log');
-const btn = document.getElementById('btn-run');
+let currentRunId = null;
+let evtSrc = null;
 
-// Load model list
-fetch('/api/models').then(r => r.json()).then(models => {
-  const sel = document.getElementById('model');
-  models.forEach((m, i) => {
-    const opt = document.createElement('option');
-    opt.value = m; opt.textContent = m;
-    if (i === 0) opt.selected = true;
-    sel.appendChild(opt);
+// ── Model list ────────────────────────────────────────────────────────────────
+fetch('/api/models').then(r=>r.json()).then(models=>{
+  const sel=document.getElementById('model');
+  models.forEach((m,i)=>{
+    const o=document.createElement('option');
+    o.value=m;o.textContent=m;if(i===0)o.selected=true;
+    sel.appendChild(o);
   });
 });
 
-// Load history
-function loadHistory() {
-  fetch('/api/runs').then(r => r.json()).then(runs => {
-    const el = document.getElementById('history-list');
-    if (!runs.length) { el.innerHTML = '<span style="color:#475569;font-size:.78rem">No runs yet</span>'; return; }
-    el.innerHTML = runs.map(r => `
-      <div class="history-item" title="${r.work_dir}">
-        <div class="hist-req">${escHtml(r.request || '(unknown)')}</div>
+// ── History ───────────────────────────────────────────────────────────────────
+function loadHistory(){
+  fetch('/api/runs').then(r=>r.json()).then(runs=>{
+    const el=document.getElementById('hist-list');
+    if(!runs.length){el.innerHTML='<span style="color:#475569;font-size:.75rem">No runs yet</span>';return;}
+    el.innerHTML=runs.map(r=>`
+      <div class="hist-item">
+        <div class="hist-req">${esc(r.request||'(unknown)')}</div>
         <div class="hist-meta">
-          ${r.success === true  ? '<span class="badge badge-ok">PASS</span>'  : ''}
-          ${r.success === false ? '<span class="badge badge-fail">FAIL</span>' : ''}
-          ${r.success === null  ? '<span class="badge badge-run">—</span>'  : ''}
-          ${escHtml(r.ts)}
+          ${r.success===true?'<span class="badge ok">PASS</span>':''}
+          ${r.success===false?'<span class="badge fail">FAIL</span>':''}
+          ${r.success===null?'<span class="badge pending">—</span>':''}
+          ${esc(r.ts)}
         </div>
       </div>`).join('');
   });
 }
 loadHistory();
 
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function appendLog(cls,icon,msg){
+  const d=document.createElement('div');
+  d.className=cls;
+  d.textContent=(icon?icon+' ':'')+msg;
+  const log=document.getElementById('log');
+  log.appendChild(d);
+  log.scrollTop=log.scrollHeight;
 }
 
-function appendLog(cls, icon, msg) {
-  const div = document.createElement('div');
-  div.className = cls;
-  div.textContent = (icon ? icon + ' ' : '') + msg;
-  log.appendChild(div);
-  log.scrollTop = log.scrollHeight;
-}
+// ── Submit ────────────────────────────────────────────────────────────────────
+async function submitRun(){
+  const req=document.getElementById('req').value.trim();
+  if(!req){alert('Please enter a change request.');return;}
 
-async function submitRun() {
-  const req = document.getElementById('req').value.trim();
-  if (!req) { alert('Please enter a change request.'); return; }
+  const btn=document.getElementById('btn-run');
+  btn.disabled=true;
 
-  btn.disabled = true;
-  log.innerHTML = '';
+  // Reset UI
+  document.getElementById('log').innerHTML='';
+  document.getElementById('approval').classList.remove('open');
+  document.getElementById('branch-tag').style.display='none';
+  currentRunId=null;
+  if(evtSrc){evtSrc.close();evtSrc=null;}
 
-  const body = {
+  const body={
     request:         req,
     model:           document.getElementById('model').value,
     dry_run:         document.getElementById('dry-run').checked,
     skip_validation: document.getElementById('skip-val').checked,
-    batfish_host:    document.getElementById('bf-host').value.trim() || 'localhost',
+    batfish_host:    document.getElementById('bf-host').value.trim()||'localhost',
   };
 
   let runId;
-  try {
-    const res = await fetch('/api/run', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-    if (!res.ok) {
-      const err = await res.json();
-      appendLog('log-fail', '✗', err.detail || 'Server error');
-      btn.disabled = false;
-      return;
+  try{
+    const res=await fetch('/api/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!res.ok){
+      const err=await res.json();
+      if(res.status===409){
+        document.getElementById('lock-msg').style.display='block';
+        setTimeout(()=>document.getElementById('lock-msg').style.display='none',4000);
+      }else{
+        appendLog('l-fail','✗',err.detail||'Server error');
+      }
+      btn.disabled=false;return;
     }
-    const data = await res.json();
-    runId = data.run_id;
-  } catch(e) {
-    appendLog('log-fail', '✗', 'Could not reach server: ' + e);
-    btn.disabled = false;
-    return;
-  }
+    const data=await res.json();
+    runId=currentRunId=data.run_id;
+  }catch(e){appendLog('l-fail','✗','Could not reach server: '+e);btn.disabled=false;return;}
 
-  document.getElementById('run-id-label').textContent = 'run: ' + runId;
-
-  const evtSrc = new EventSource('/api/stream/' + runId);
-
-  evtSrc.onmessage = (e) => {
-    let ev;
-    try { ev = JSON.parse(e.data); } catch { return; }
-
-    const { type, msg } = ev;
-
-    if (type === 'banner') {
-      appendLog('log-banner', '──', msg);
-    } else if (type === 'step') {
-      appendLog('log-step', '▶', msg);
-    } else if (type === 'ok') {
-      appendLog('log-ok', '✓', msg);
-    } else if (type === 'fail') {
-      appendLog('log-fail', '✗', msg);
-    } else if (type === 'warn') {
-      appendLog('log-warn', '!', msg);
-    } else if (type === 'info') {
-      appendLog('log-info', ' ', msg);
-    } else if (type === 'done') {
-      const success = msg && msg.success;
-      appendLog(
-        success ? 'log-done-ok' : 'log-done-fail',
-        success ? '✓' : '✗',
-        success ? 'Done — change applied successfully.' : 'Run finished with errors.',
-      );
-      evtSrc.close();
-      btn.disabled = false;
+  // Stream events
+  evtSrc=new EventSource('/api/stream/'+runId);
+  evtSrc.onmessage=e=>{
+    let ev;try{ev=JSON.parse(e.data);}catch{return;}
+    const{type,msg}=ev;
+    if(type==='banner')    appendLog('l-banner','──',msg);
+    else if(type==='step') appendLog('l-step','▶',msg);
+    else if(type==='ok')   appendLog('l-ok','✓',msg);
+    else if(type==='fail') appendLog('l-fail','✗',msg);
+    else if(type==='warn') appendLog('l-warn','!',msg);
+    else if(type==='info') appendLog('l-info',' ',msg);
+    else if(type==='branch'){
+      const tag=document.getElementById('branch-tag');
+      tag.textContent=msg;tag.style.display='';
+    }
+    else if(type==='pending_approval'){
+      loadDiff(runId,msg.branch);
+    }
+    else if(type==='done'){
+      const ok=msg&&msg.success;
+      appendLog(ok?'l-done-ok':'l-done-fail',ok?'✓':'✗',
+        ok?'Validation passed — review changes below before merging to main.'
+          :'Run finished with errors.');
+      evtSrc.close();evtSrc=null;
+      btn.disabled=false;
       loadHistory();
     }
   };
-
-  evtSrc.onerror = () => {
-    appendLog('log-fail', '✗', 'Stream disconnected.');
-    evtSrc.close();
-    btn.disabled = false;
+  evtSrc.onerror=()=>{
+    appendLog('l-fail','✗','Stream disconnected.');
+    evtSrc.close();evtSrc=null;btn.disabled=false;
   };
 }
 
-// Allow Ctrl+Enter to submit
-document.getElementById('req').addEventListener('keydown', e => {
-  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) submitRun();
+// ── Diff loader ───────────────────────────────────────────────────────────────
+async function loadDiff(runId, branch){
+  document.getElementById('apr-branch').textContent=branch;
+  document.getElementById('approval').classList.add('open');
+  document.getElementById('btn-approve').disabled=false;
+  document.getElementById('btn-reject').disabled=false;
+
+  const res=await fetch(`/api/runs/${runId}/diff`);
+  const data=await res.json();
+  renderDiff(data.diff);
+}
+
+function renderDiff(raw){
+  const container=document.getElementById('diff-container');
+  if(!raw||!raw.trim()){
+    container.innerHTML='<div class="no-diff">No file changes detected.</div>';
+    return;
+  }
+
+  // Split into per-file blocks
+  const fileBlocks=raw.split(/^(?=diff --git )/m).filter(Boolean);
+  container.innerHTML='';
+
+  fileBlocks.forEach(block=>{
+    const lines=block.split('\n');
+    // Extract filename from "diff --git a/... b/..."
+    const header=lines[0]||'';
+    const fnMatch=header.match(/diff --git a\/.+? b\/(.+)/);
+    const fname=fnMatch?fnMatch[1]:header;
+
+    // Count additions/deletions for badge
+    let adds=0,dels=0;
+    lines.forEach(l=>{if(l.startsWith('+')&&!l.startsWith('+++'))adds++;else if(l.startsWith('-')&&!l.startsWith('---'))dels++;});
+
+    const fileDiv=document.createElement('div');
+    fileDiv.className='diff-file';
+
+    const hdr=document.createElement('div');
+    hdr.className='diff-file-hdr';
+    hdr.innerHTML=`<span class="fname">${esc(fname)}</span>`
+      +`<span style="color:#4ade80;font-size:.7rem">+${adds}</span>`
+      +`<span style="color:#f87171;font-size:.7rem;margin-left:6px">-${dels}</span>`
+      +`<span class="toggle">▾</span>`;
+
+    const linesDiv=document.createElement('div');
+    linesDiv.className='diff-lines';
+
+    // Render lines (skip the first 4 meta lines: diff, index, ---, +++)
+    let skip=4;
+    lines.forEach(line=>{
+      if(skip-->0)return;
+      const ld=document.createElement('div');
+      if(line.startsWith('@@')){
+        ld.className='diff-line hunk';
+        ld.textContent=line;
+      }else if(line.startsWith('+')){
+        ld.className='diff-line add';
+        ld.innerHTML=`<span class="ln">+</span>${esc(line.slice(1))}`;
+      }else if(line.startsWith('-')){
+        ld.className='diff-line del';
+        ld.innerHTML=`<span class="ln">-</span>${esc(line.slice(1))}`;
+      }else{
+        ld.className='diff-line ctx';
+        ld.innerHTML=`<span class="ln"> </span>${esc(line.slice(1))}`;
+      }
+      linesDiv.appendChild(ld);
+    });
+
+    // Toggle collapse
+    hdr.addEventListener('click',()=>{
+      const collapsed=linesDiv.classList.toggle('collapsed');
+      hdr.querySelector('.toggle').textContent=collapsed?'▸':'▾';
+    });
+
+    fileDiv.appendChild(hdr);
+    fileDiv.appendChild(linesDiv);
+    container.appendChild(fileDiv);
+  });
+}
+
+// ── Approve / Reject ──────────────────────────────────────────────────────────
+async function approveRun(){
+  if(!currentRunId)return;
+  const btnA=document.getElementById('btn-approve');
+  const btnR=document.getElementById('btn-reject');
+  btnA.disabled=btnR.disabled=true;
+  btnA.textContent='Merging…';
+
+  try{
+    const res=await fetch(`/api/runs/${currentRunId}/approve`,{method:'POST'});
+    if(res.ok){
+      appendLog('l-done-ok','✓','Change approved and merged to main.');
+      document.getElementById('approval').classList.remove('open');
+      loadHistory();
+    }else{
+      const err=await res.json();
+      appendLog('l-fail','✗','Merge failed: '+(err.detail||'unknown error'));
+      btnA.disabled=btnR.disabled=false;
+      btnA.textContent='✓ Approve & Merge';
+    }
+  }catch(e){
+    appendLog('l-fail','✗','Request failed: '+e);
+    btnA.disabled=btnR.disabled=false;
+    btnA.textContent='✓ Approve & Merge';
+  }
+}
+
+async function rejectRun(){
+  if(!currentRunId)return;
+  if(!confirm('Reject this change? The branch will be deleted and the working tree restored to main.'))return;
+  const btnA=document.getElementById('btn-approve');
+  const btnR=document.getElementById('btn-reject');
+  btnA.disabled=btnR.disabled=true;
+  btnR.textContent='Rejecting…';
+
+  try{
+    const res=await fetch(`/api/runs/${currentRunId}/reject`,{method:'POST'});
+    if(res.ok){
+      appendLog('l-warn','!','Change rejected. Branch deleted, main restored.');
+      document.getElementById('approval').classList.remove('open');
+      loadHistory();
+    }else{
+      const err=await res.json();
+      appendLog('l-fail','✗','Reject failed: '+(err.detail||'unknown'));
+      btnA.disabled=btnR.disabled=false;
+      btnR.textContent='✗ Reject';
+    }
+  }catch(e){
+    appendLog('l-fail','✗','Request failed: '+e);
+    btnA.disabled=btnR.disabled=false;
+    btnR.textContent='✗ Reject';
+  }
+}
+
+// Cmd/Ctrl+Enter to submit
+document.getElementById('req').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&(e.ctrlKey||e.metaKey))submitRun();
 });
 </script>
 </body>
@@ -566,11 +739,11 @@ async def index() -> str:
 
 def main() -> None:
     p = argparse.ArgumentParser(description="AVD Agent Web UI")
-    p.add_argument("--host", default="127.0.0.1", help="Bind host (default: 127.0.0.1)")
-    p.add_argument("--port", type=int, default=8000, help="Port (default: 8000)")
-    args = p.parse_args()
-    print(f"AVD Agent UI → http://{args.host}:{args.port}")
-    uvicorn.run(app, host=args.host, port=args.port, log_level="warning")
+    p.add_argument("--host", default="127.0.0.1")
+    p.add_argument("--port", type=int, default=8000)
+    a = p.parse_args()
+    print(f"AVD Agent UI → http://{a.host}:{a.port}")
+    uvicorn.run(app, host=a.host, port=a.port, log_level="warning")
 
 
 if __name__ == "__main__":

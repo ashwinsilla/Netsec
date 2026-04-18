@@ -174,13 +174,38 @@ def _sample_config_lines(task_text: str, max_lines: int = 20) -> str:
     )
 
 
+def _affected_nodes(intent: dict, all_nodes: list[str]) -> list[str]:
+    """
+    Derive which device nodes are affected by the AVD file being changed.
+    Maps group_vars directory name → node name patterns.
+    Falls back to all nodes if no mapping found.
+    """
+    context_file = intent.get("context_file", "")
+    cf_upper = context_file.upper()
+
+    if "L2_LEAVES" in cf_upper or "L2LEAVES" in cf_upper:
+        return [n for n in all_nodes if re.search(r"leaf\d+c", n)]
+    if "L3_LEAVES" in cf_upper or "L3LEAVES" in cf_upper:
+        return [n for n in all_nodes if re.search(r"leaf\d+[ab]", n)]
+    if "SPINE" in cf_upper:
+        return [n for n in all_nodes if "spine" in n]
+    if "CONNECTED_ENDPOINTS" in cf_upper or "TENANTS" in cf_upper:
+        # These affect all leaf configs
+        return [n for n in all_nodes if "leaf" in n]
+    return all_nodes  # fallback: check all
+
+
 def _build_assertion_prompt(task_text: str, intent: dict, node_names: list[str]) -> str:
-    nodes_str   = ", ".join(node_names) if node_names else "dc1-spine1, dc1-spine2, dc1-leaf1a, dc1-leaf1b"
+    all_nodes   = node_names if node_names else ["dc1-spine1", "dc1-spine2", "dc1-leaf1a", "dc1-leaf1b", "dc1-leaf2a", "dc1-leaf2b"]
+    scoped      = _affected_nodes(intent, all_nodes)
+    nodes_str   = ", ".join(all_nodes)
+    scoped_str  = ", ".join(scoped) if scoped else nodes_str
     path_str    = " → ".join(str(s) for s in intent.get("insertion_path", []))
     config_hint = _sample_config_lines(task_text)
     return (
         f"{_ASSERTION_CATALOGUE}\n"
-        f"Available device nodes: {nodes_str}\n"
+        f"All device nodes in the fabric: {nodes_str}\n"
+        f"Nodes affected by THIS change (scope assertions here): {scoped_str}\n"
         f"{config_hint}\n"
         f"Task: {task_text}\n"
         f"AVD file: {intent.get('context_file', '?')}  |  insertion_path: {path_str}\n\n"
@@ -193,7 +218,10 @@ def _build_assertion_prompt(task_text: str, intent: dict, node_names: list[str])
         "  - Use `.*` between the command prefix and the value in every config_contains /\n"
         "    config_absent pattern — this handles VRF names, 'prefer', and other EOS qualifiers\n"
         "    that appear between the keyword and the value.  See catalogue rule 1 for examples.\n"
-        "  - Escape regex special chars in hostnames/IPs (use r'\\.' for literal dots).\n\n"
+        "  - Escape regex special chars in hostnames/IPs (use r'\\.' for literal dots).\n"
+        "  - IMPORTANT: set 'nodes' on EVERY assertion to the list of affected nodes above.\n"
+        "    Do NOT set nodes to null — unscoped checks will incorrectly flag devices that\n"
+        "    belong to a different group and legitimately have different configuration.\n\n"
         'Output ONLY: {"assertions": [...]}'
     )
 

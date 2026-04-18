@@ -1,0 +1,11 @@
+{
+  "file_key": "fabric",
+  "context_file": "group_vars/FABRIC/fabric_variables.yml",
+  "insertion_path": [
+    "ntp_settings",
+    "servers"
+  ],
+  "task_text": "Append a new NTP server entry to the ntp_settings.servers list with name: 'googe.ntp.com' (preserving all existing server entries).",
+  "confidence": "high",
+  "reasoning": "NTP server definitions live in the ntp_settings.servers list inside group_vars/FABRIC/fabric_variables.yml, which is the fabric-wide settings file."
+}

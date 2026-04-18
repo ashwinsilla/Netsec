@@ -1,0 +1,25 @@
+{
+  "results": [
+    {
+      "description": "Verify new NTP server 'google.ntp.com' is present in device configurations",
+      "passed": false,
+      "detail": "Pattern not found in 8 config(s): 'ntp server google\\\\.ntp\\\\.com'"
+    },
+    {
+      "description": "Verify NTP server entry appears on spine nodes",
+      "passed": false,
+      "detail": "Pattern not found in 2 config(s): 'ntp server google\\\\.ntp\\\\.com'"
+    },
+    {
+      "description": "Verify NTP server entry appears on leaf nodes",
+      "passed": false,
+      "detail": "Pattern not found in 6 config(s): 'ntp server google\\\\.ntp\\\\.com'"
+    }
+  ],
+  "failures": [
+    "Verify new NTP server 'google.ntp.com' is present in device configurations \u2014 Pattern not found in 8 config(s): 'ntp server google\\\\.ntp\\\\.com'",
+    "Verify NTP server entry appears on spine nodes \u2014 Pattern not found in 2 config(s): 'ntp server google\\\\.ntp\\\\.com'",
+    "Verify NTP server entry appears on leaf nodes \u2014 Pattern not found in 6 config(s): 'ntp server google\\\\.ntp\\\\.com'"
+  ],
+  "warnings": []
+}

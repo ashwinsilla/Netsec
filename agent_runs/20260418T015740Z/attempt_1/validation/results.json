@@ -1,0 +1,31 @@
+{
+  "results": [
+    {
+      "description": "Verify the new NTP server 'googe.ntp.com' is present in all device configurations",
+      "passed": false,
+      "detail": "Pattern not found in 8 config(s): 'ntp server googe\\\\.ntp\\\\.com'"
+    },
+    {
+      "description": "Verify the new NTP server entry appears on dc1-spine1",
+      "passed": false,
+      "detail": "Pattern not found in 1 config(s): 'ntp server googe\\\\.ntp\\\\.com'"
+    },
+    {
+      "description": "Verify the new NTP server entry appears on dc1-spine2",
+      "passed": false,
+      "detail": "Pattern not found in 1 config(s): 'ntp server googe\\\\.ntp\\\\.com'"
+    },
+    {
+      "description": "Verify the new NTP server entry appears on dc1-leaf1a",
+      "passed": false,
+      "detail": "Pattern not found in 1 config(s): 'ntp server googe\\\\.ntp\\\\.com'"
+    }
+  ],
+  "failures": [
+    "Verify the new NTP server 'googe.ntp.com' is present in all device configurations \u2014 Pattern not found in 8 config(s): 'ntp server googe\\\\.ntp\\\\.com'",
+    "Verify the new NTP server entry appears on dc1-spine1 \u2014 Pattern not found in 1 config(s): 'ntp server googe\\\\.ntp\\\\.com'",
+    "Verify the new NTP server entry appears on dc1-spine2 \u2014 Pattern not found in 1 config(s): 'ntp server googe\\\\.ntp\\\\.com'",
+    "Verify the new NTP server entry appears on dc1-leaf1a \u2014 Pattern not found in 1 config(s): 'ntp server googe\\\\.ntp\\\\.com'"
+  ],
+  "warnings": []
+}

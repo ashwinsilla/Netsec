@@ -1,0 +1,11 @@
+<thinking>
+The task is to output the full merged list for `ntp_settings.servers`, which should contain both the existing entry `0.pool.ntp.org` and the new entry `google.ntp.com`.
+
+Schema valid keys for each server item: `name`, `burst`, `iburst`, `key`, `maxpoll`, `minpoll`, `version`.
+
+The output should be a JSON array with both entries:
+1. `{"name": "0.pool.ntp.org"}` (existing, kept as preferred since it's first)
+2. `{"name": "google.ntp.com"}` (new addition)
+</thinking>
+
+[{"name":"0.pool.ntp.org"},{"name":"google.ntp.com"}]

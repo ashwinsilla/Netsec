@@ -1,0 +1,28 @@
+{
+  "results": [
+    {
+      "description": "Verify both spines now use BGP ASN 65000 after the change from 65100",
+      "passed": null,
+      "detail": "Batfish not available \u2014 skipped"
+    },
+    {
+      "description": "Verify spine configs contain the new BGP ASN 65000",
+      "passed": true,
+      "detail": "Matched in 2/2 node(s): dc1-spine1, dc1-spine2"
+    },
+    {
+      "description": "Verify the old BGP ASN 65100 no longer appears in spine configs",
+      "passed": true,
+      "detail": "Pattern correctly absent from all 2 config(s)"
+    },
+    {
+      "description": "Verify BGP sessions between spines and leaves are still established after ASN change",
+      "passed": null,
+      "detail": "Batfish not available \u2014 skipped"
+    }
+  ],
+  "failures": [],
+  "warnings": [
+    "Batfish assertions skipped (service not running). Start with: docker run -d -p 9996:9996 -p 9997:9997 batfish/batfish"
+  ]
+}

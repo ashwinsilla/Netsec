@@ -1,0 +1,19 @@
+<thinking>
+The task is to append a new NTP server entry with name 'google.ntp.com' to the existing list, keeping '0.pool.ntp.org' intact.
+
+The insertion_path targets `ntp_settings.servers`, which is a list field. So I need to output a JSON array with ALL existing items plus the new addition.
+
+Existing items:
+- `{"name": "0.pool.ntp.org"}`
+
+New item to add:
+- `{"name": "google.ntp.com"}`
+
+Valid keys per schema: `name`, `burst`, `iburst`, `key`, `maxpoll`, `minpoll`, `version`
+
+Both entries only use `name`, which is valid.
+
+The first server is always set as "preferred", so `0.pool.ntp.org` remains first (preferred), and `google.ntp.com` is appended second.
+</thinking>
+
+[{"name": "0.pool.ntp.org"}, {"name": "google.ntp.com"}]

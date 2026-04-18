@@ -1,0 +1,5 @@
+<thinking>
+The user wants to add an NTP server "time.google.com" to the NTP settings. This is clearly in the fabric variables file under ntp_settings.servers.
+</thinking>
+
+{"file_key":"fabric","context_file":"group_vars/FABRIC/fabric_variables.yml","insertion_path":["ntp_settings","servers"],"task_text":"Append a new NTP server entry with name 'time.google.com' to the ntp_settings.servers list, preserving all existing server entries.","confidence":"high","reasoning":"NTP server configuration lives in ntp_settings.servers within group_vars/FABRIC/fabric_variables.yml, which is the fabric-wide settings file."}

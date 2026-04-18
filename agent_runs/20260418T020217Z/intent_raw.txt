@@ -1,0 +1,5 @@
+<thinking>
+The user wants to remove all NTP servers except for `0.pool.ntp.org`. This is in the fabric_variables.yml file under `ntp_settings.servers`. The insertion_path should point to the `servers` list under `ntp_settings`, as we're replacing/modifying that list to keep only the one entry.
+</thinking>
+
+{"file_key":"fabric","context_file":"group_vars/FABRIC/fabric_variables.yml","insertion_path":["ntp_settings","servers"],"task_text":"Replace the entire ntp_settings.servers list so that it contains only a single entry for '0.pool.ntp.org', removing all other NTP server entries. Preserve all existing key/value pairs for the '0.pool.ntp.org' entry exactly as they are.","confidence":"high","reasoning":"NTP server configuration lives in the ntp_settings.servers list inside group_vars/FABRIC/fabric_variables.yml, which is the fabric-wide settings file confirmed by the RAG match."}

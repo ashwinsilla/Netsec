@@ -1,0 +1,23 @@
+{
+  "results": [
+    {
+      "description": "All P2P uplink Ethernet interfaces should have MTU 9214 after the change",
+      "passed": false,
+      "detail": "22 interface(s) have wrong MTU (expected 9214): [Interface(hostname='dc1-leaf1a', interface='Ethernet3'), Interface(hostname='dc1-leaf1a', interface='Ethernet4'), Interface(hostname='dc1-leaf1a', interface='Ethernet5')]"
+    },
+    {
+      "description": "MTU 9214 should appear in device configs for P2P uplink interfaces",
+      "passed": true,
+      "detail": "Matched in 6/8 node(s): dc1-leaf1a, dc1-leaf1b, dc1-leaf2a, dc1-leaf2b, dc1-spine1"
+    },
+    {
+      "description": "Old MTU value of 1500 should no longer appear in any device config",
+      "passed": true,
+      "detail": "Pattern correctly absent from all 8 config(s)"
+    }
+  ],
+  "failures": [
+    "All P2P uplink Ethernet interfaces should have MTU 9214 after the change \u2014 22 interface(s) have wrong MTU (expected 9214): [Interface(hostname='dc1-leaf1a', interface='Ethernet3'), Interface(hostname='dc1-leaf1a', interface='Ethernet4'), Interface(hostname='dc1-leaf1a', interface='Ethernet5')]"
+  ],
+  "warnings": []
+}

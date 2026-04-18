@@ -1,0 +1,26 @@
+{
+  "results": [
+    {
+      "description": "Verify that 0.pool.ntp.org NTP server entry is present in all device configs",
+      "passed": true,
+      "detail": "Matched in 8/8 node(s): dc1-leaf1a, dc1-leaf1b, dc1-leaf1c, dc1-leaf2a, dc1-leaf2b"
+    },
+    {
+      "description": "Verify that 1.pool.ntp.org NTP server entry has been removed from all device configs",
+      "passed": true,
+      "detail": "Pattern correctly absent from all 8 config(s)"
+    },
+    {
+      "description": "Verify that 2.pool.ntp.org NTP server entry has been removed from all device configs",
+      "passed": true,
+      "detail": "Pattern correctly absent from all 8 config(s)"
+    },
+    {
+      "description": "Verify that 3.pool.ntp.org NTP server entry has been removed from all device configs",
+      "passed": true,
+      "detail": "Pattern correctly absent from all 8 config(s)"
+    }
+  ],
+  "failures": [],
+  "warnings": []
+}

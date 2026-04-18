@@ -1,0 +1,35 @@
+<merge_target>
+context_file: group_vars/DC1_SPINES/spines.yml
+insertion_path: ["spine","defaults","bgp_as"]
+The tool walks the YAML root following insertion_path and replaces exactly one value with your JSON output.
+Shape rules:
+  (1) scalar field  → output the raw JSON scalar value.
+  (2) dict field    → output a JSON object `{...}`.
+  (3) list field    → output a JSON array `[...]` with ALL existing items plus your additions.
+Do NOT echo the top-level file key or content outside the replaced subtree.
+</merge_target>
+
+<configuration_context source="group_vars/DC1_SPINES/spines.yml" section="spine">
+spine:
+  defaults:
+    platform: cEOSLab
+    loopback_ipv4_pool: 10.255.0.0/27
+    bgp_as: 65100
+  nodes:
+  - name: dc1-spine1
+    id: 1
+    mgmt_ip: 172.16.1.11/24
+  - name: dc1-spine2
+    id: 2
+    mgmt_ip: 172.16.1.12/24
+</configuration_context>
+
+<task>
+Change the BGP ASN for all spines by updating the value at spine.defaults.bgp_as from 65100 to 65000.
+</task>
+
+Before generating the JSON, open a <thinking> block to map the request to exact schema field names, verify required nesting layers, and check all keys are valid. After closing your </thinking> block, output the JSON.
+
+Subtree rule: output ONLY the JSON subtree that replaces the merge target (for list targets, include the full merged list after your edits).
+
+Remember: Output ONLY the raw JSON immediately after </thinking>. Any non-JSON text causes a fatal parse error.

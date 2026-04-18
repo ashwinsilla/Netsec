@@ -1,0 +1,39 @@
+<schema_reference>
+AVD schema for 'p2p_uplinks_mtu':
+type: int  # Point to Point Links MTU.
+Keys not listed above will cause Ansible to fail with 'Invalid key'.
+</schema_reference>
+
+<merge_target>
+context_file: group_vars/FABRIC/fabric_variables.yml
+insertion_path: ["p2p_uplinks_mtu"]
+The tool walks the YAML root following insertion_path and replaces exactly one value with your JSON output.
+Shape rules:
+  (1) scalar field  → output the raw JSON scalar value.
+  (2) dict field    → output a JSON object `{...}`.
+  (3) list field    → output a JSON array `[...]` with ALL existing items plus your additions.
+Do NOT echo the top-level file key or content outside the replaced subtree.
+</merge_target>
+
+<configuration_context source="group_vars/FABRIC/fabric_variables.yml" section="p2p_uplinks_mtu">
+p2p_uplinks_mtu: 1500
+</configuration_context>
+
+<task>
+Change the value of p2p_uplinks_mtu from 1500 to 9214.
+</task>
+
+<correction_notes>
+VALIDATION FAILED (attempt 2) — your previous output caused these Ansible AVD errors. You MUST fix every one of them:
+  [INTENT-CHECK FAILED]: All P2P uplink Ethernet interfaces should have MTU 9214 after the change — 22 interface(s) have wrong MTU (expected 9214): [Interface(hostname='dc1-leaf1a', interface='Ethernet3'), Interface(hostname='dc1-leaf1a', interface='Ethernet4'), Interface(hostname='dc1-leaf1a', interface='Ethernet5')]
+
+AVD schema for 'p2p_uplinks_mtu':
+type: int  # Point to Point Links MTU.
+Keys not listed above will cause Ansible to fail with 'Invalid key'.
+</correction_notes>
+
+Before generating the JSON, open a <thinking> block to map the request to exact schema field names, verify required nesting layers, and check all keys are valid. After closing your </thinking> block, output the JSON.
+
+Subtree rule: output ONLY the JSON subtree that replaces the merge target (for list targets, include the full merged list after your edits).
+
+Remember: Output ONLY the raw JSON immediately after </thinking>. Any non-JSON text causes a fatal parse error.

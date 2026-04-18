@@ -18,17 +18,21 @@ Usage
 
 Flags
 ─────
-  --dry-run       Generate and validate, but do NOT permanently apply the change.
-  --intent-only   Preview which file/path the agent maps to, then stop.
-  --model MODEL   OpenRouter model ID (default: anthropic/claude-sonnet-4.6).
-  -y / --yes      Skip the confirmation prompt after intent resolution.
-  -v / --verbose  DEBUG logging.
+  --dry-run           Generate and validate, but do NOT permanently apply the change.
+  --intent-only       Preview which file/path the agent maps to, then stop.
+  --model MODEL       OpenRouter model ID (default: anthropic/claude-sonnet-4.6).
+  -y / --yes          Skip the confirmation prompt after intent resolution.
+  -v / --verbose      DEBUG logging.
+  --skip-validation   Skip Phase 3 intent-verification assertions.
+  --batfish-host H    Batfish service host (default: localhost). Batfish assertions
+                      are skipped automatically when the service is unreachable.
 """
 
 from __future__ import annotations
 
 import argparse
 import asyncio
+import contextvars
 import json
 import logging
 import os
@@ -38,13 +42,15 @@ import shutil
 import subprocess
 import sys
 import time
-from datetime import datetime
+from datetime import datetime, timezone
+from typing import Any
 from pathlib import Path
 
 import aiohttp
 from dotenv import load_dotenv
 
 from subtree_merge import merge_yaml_file
+from batfish_validator import validate_intent
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Paths and constants
@@ -102,6 +108,21 @@ log = logging.getLogger(__name__)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
+# Web-emit hook — set per async task so the web UI can receive structured events
+# without any coupling to stdout.  CLI code paths leave this as None.
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Callable[[event_type: str, message: str], None]
+_web_emit: contextvars.ContextVar = contextvars.ContextVar("web_emit", default=None)
+
+
+def _emit(event_type: str, msg: str) -> None:
+    fn = _web_emit.get()
+    if fn is not None:
+        fn(event_type, msg)
+
+
+# ──────────────────────────────────────────────────────────────────────────────
 # Terminal helpers
 # ──────────────────────────────────────────────────────────────────────────────
 
@@ -124,18 +145,34 @@ RESET  = _c("\033[0m")
 def _print_step(label: str, detail: str = "") -> None:
     d = f"  {DIM}{detail}{RESET}" if detail else ""
     print(f"  {CYAN}▶{RESET} {label}{d}")
+    _emit("step", f"{label}  {detail}".strip())
 
 
-def _print_ok(msg: str)   -> None: print(f"  {GREEN}✓{RESET} {msg}")
-def _print_fail(msg: str) -> None: print(f"  {RED}✗{RESET} {msg}")
-def _print_warn(msg: str) -> None: print(f"  {YELLOW}!{RESET} {msg}")
-def _print_info(msg: str) -> None: print(f"    {DIM}{msg}{RESET}")
+def _print_ok(msg: str) -> None:
+    print(f"  {GREEN}✓{RESET} {msg}")
+    _emit("ok", msg)
+
+
+def _print_fail(msg: str) -> None:
+    print(f"  {RED}✗{RESET} {msg}")
+    _emit("fail", msg)
+
+
+def _print_warn(msg: str) -> None:
+    print(f"  {YELLOW}!{RESET} {msg}")
+    _emit("warn", msg)
+
+
+def _print_info(msg: str) -> None:
+    print(f"    {DIM}{msg}{RESET}")
+    _emit("info", msg)
 
 
 def _banner(title: str) -> None:
     print(f"\n{CYAN}{BOLD}{'─' * 52}{RESET}")
     print(f"{CYAN}{BOLD}  {title}{RESET}")
     print(f"{CYAN}{BOLD}{'─' * 52}{RESET}")
+    _emit("banner", title)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -849,6 +886,8 @@ async def _generate_and_validate(
     schema: dict,
     dry_run: bool,
     work_dir: Path,
+    skip_validation: bool = False,
+    batfish_host: str = "localhost",
 ) -> tuple[bool, str]:
     """
     Runs the generate → validate → feedback loop.
@@ -876,7 +915,7 @@ async def _generate_and_validate(
 
     errors: list[str] = []
     final_ok  = False
-    final_msg = f"All {MAX_RETRIES} attempts failed."
+    final_msg: str | None = None  # set explicitly on success or specific failure
 
     for attempt in range(1, MAX_RETRIES + 1):
         attempt_dir = work_dir / f"attempt_{attempt}"
@@ -903,7 +942,7 @@ async def _generate_and_validate(
 
         # Parse JSON
         try:
-            parsed, json_str, = _parse_json(raw)[:2]
+            parsed, _ = _parse_json(raw)[:2]
             (attempt_dir / "parsed.json").write_text(
                 json.dumps(parsed, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
             )
@@ -937,14 +976,52 @@ async def _generate_and_validate(
 
         if ok_build:
             _print_ok(f"Build passed on attempt {attempt}.")
-            if dry_run:
-                if backup.is_file():
-                    shutil.copy2(backup, target)
-                _print_info("Dry-run mode: baseline restored — change NOT permanently applied.")
-            else:
-                _print_info(f"Change written to {context_file}")
-            final_ok  = True
-            final_msg = f"Build passed on attempt {attempt}."
+
+            # ── Phase 3: intent verification ──────────────────────────────
+            val_ok = True
+            if not skip_validation:
+                _print_step("Running Phase 3 intent-verification assertions …")
+                val_result = await validate_intent(
+                    intent["task_text"], intent,
+                    session, api_key, model,
+                    attempt_dir,
+                    batfish_host=batfish_host,
+                )
+                for w in val_result.warnings:
+                    _print_warn(w)
+                for s in val_result.skipped:
+                    _print_info(f"(skipped) {s}")
+
+                if val_result.passed:
+                    _print_ok("Intent verification passed.")
+                else:
+                    _print_fail(f"Intent verification failed — {len(val_result.failures)} assertion(s):")
+                    for line in val_result.failures[:5]:
+                        _print_info(line)
+                    val_ok = False
+                    if attempt < MAX_RETRIES:
+                        _print_info("Feeding intent-check failures into the next attempt …")
+                        # Restore baseline so next attempt starts clean
+                        if backup.is_file():
+                            shutil.copy2(backup, target)
+                        errors = val_result.as_error_lines()
+                        continue
+                    # Last attempt: still failed validation — report it
+                    final_ok  = False
+                    final_msg = (
+                        f"Build passed but intent verification failed on all {MAX_RETRIES} attempts.\n"
+                        + "\n".join(f"  {f}" for f in val_result.failures[:8])
+                    )
+
+            if val_ok:
+                if dry_run:
+                    if backup.is_file():
+                        shutil.copy2(backup, target)
+                    _print_info("Dry-run mode: baseline restored — change NOT permanently applied.")
+                else:
+                    _print_info(f"Change written to {context_file}")
+                final_ok  = True
+                final_msg = f"Build passed on attempt {attempt}."
             break
         else:
             _print_fail(f"Build failed — {len(new_errors)} error(s):")
@@ -958,12 +1035,12 @@ async def _generate_and_validate(
     if backup.is_file():
         backup.unlink(missing_ok=True)
 
-    if not final_ok:
+    if not final_ok and final_msg is None:
         final_msg = (
             f"All {MAX_RETRIES} attempts failed.\n"
             + "\n".join(f"  {e}" for e in errors[:8])
         )
-    return final_ok, final_msg
+    return final_ok, final_msg or ""
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -985,7 +1062,7 @@ async def _run_agent(user_request: str, args: argparse.Namespace) -> bool:
     schema  = _load_avd_schema()
 
     # Working directory for all artifacts of this run
-    ts       = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+    ts       = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     work_dir = RUNS_DIR / ts
     work_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1033,12 +1110,14 @@ async def _run_agent(user_request: str, args: argparse.Namespace) -> bool:
             print(f"\n  {DIM}(--intent-only: stopping here){RESET}\n")
             return True
 
-        # ── Phase 2: Generate + validate ──────────────────────────────────
+        # ── Phase 2 + 3: Generate, validate YAML schema, verify intent ───────
         _banner("Phase 2 — Generating and validating")
 
         success, msg = await _generate_and_validate(
             intent, session, api_key, model,
             schema, dry_run, work_dir,
+            skip_validation=args.skip_validation,
+            batfish_host=args.batfish_host,
         )
 
     # ── Final result ──────────────────────────────────────────────────────
@@ -1087,6 +1166,14 @@ def main() -> None:
     p.add_argument(
         "-v", "--verbose", action="store_true",
         help="Enable DEBUG logging.",
+    )
+    p.add_argument(
+        "--skip-validation", action="store_true",
+        help="Skip Phase 3 intent-verification assertions.",
+    )
+    p.add_argument(
+        "--batfish-host", default="localhost", metavar="HOST",
+        help="Batfish service host for Phase 3 network-semantic assertions (default: localhost).",
     )
     args = p.parse_args()
 

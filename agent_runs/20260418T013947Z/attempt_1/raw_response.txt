@@ -1,0 +1,5 @@
+<thinking>
+The task is to change p2p_uplinks_mtu from 1500 to 9214. This is a scalar integer field. The insertion_path targets this scalar directly, so I output the raw JSON scalar value: 9214.
+</thinking>
+
+9214

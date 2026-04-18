@@ -1,0 +1,34 @@
+{
+  "assertions": [
+    {
+      "type": "batfish_bgp_as",
+      "node_regex": ".*spine.*",
+      "asn": 64000,
+      "description": "Verify both spines now use BGP ASN 64000 after the change from 65000"
+    },
+    {
+      "type": "config_contains",
+      "pattern": "router bgp 64000",
+      "description": "Verify spine configs contain the new BGP ASN 64000",
+      "nodes": [
+        "dc1-spine1",
+        "dc1-spine2"
+      ]
+    },
+    {
+      "type": "config_absent",
+      "pattern": "router bgp 65000",
+      "description": "Verify old BGP ASN 65000 is no longer present in spine configs",
+      "nodes": [
+        "dc1-spine1",
+        "dc1-spine2"
+      ]
+    },
+    {
+      "type": "batfish_bgp_session",
+      "node_regex": ".*spine.*",
+      "remote_node_regex": ".*leaf.*",
+      "description": "Verify BGP sessions between spines and leaves are still established after ASN change"
+    }
+  ]
+}

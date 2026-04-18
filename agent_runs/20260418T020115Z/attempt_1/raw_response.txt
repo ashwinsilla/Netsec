@@ -1,0 +1,26 @@
+<thinking>
+The task is to append a new NTP server entry with name 'time.google.com' to the existing list, preserving all existing entries.
+
+Existing servers:
+1. name: 0.pool.ntp.org
+2. name: google.ntp.com
+3. name: google.ntp.com (anchor repeat)
+4. name: google.ntp.com (anchor repeat)
+5. name: googe.ntp.com
+
+New entry to add:
+- name: time.google.com
+
+Schema valid keys: name, burst, iburst, key, maxpoll, minpoll, version
+
+Output is a JSON array with all existing items plus the new one.
+</thinking>
+
+[
+  {"name": "0.pool.ntp.org"},
+  {"name": "google.ntp.com"},
+  {"name": "google.ntp.com"},
+  {"name": "google.ntp.com"},
+  {"name": "googe.ntp.com"},
+  {"name": "time.google.com"}
+]

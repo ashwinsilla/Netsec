@@ -1,0 +1,31 @@
+{
+  "results": [
+    {
+      "description": "VLAN 20 definition exists in device config",
+      "passed": true,
+      "detail": "Matched in 6/8 node(s): dc1-leaf1a, dc1-leaf1b, dc1-leaf1c, dc1-leaf2a, dc1-leaf2b"
+    },
+    {
+      "description": "SVI interface for VLAN 20 is configured",
+      "passed": true,
+      "detail": "Matched in 4/6 node(s): dc1-leaf1a, dc1-leaf1b, dc1-leaf2a, dc1-leaf2b"
+    },
+    {
+      "description": "VLAN 20 SVI has a virtual IP address configured under VRF10",
+      "passed": true,
+      "detail": "Matched in 4/6 node(s): dc1-leaf1a, dc1-leaf1b, dc1-leaf2a, dc1-leaf2b"
+    },
+    {
+      "description": "VLAN 20 SVI is associated with VRF10",
+      "passed": true,
+      "detail": "Matched in 4/6 node(s): dc1-leaf1a, dc1-leaf1b, dc1-leaf2a, dc1-leaf2b"
+    },
+    {
+      "description": "VRF10 exists on all leaf nodes to host the new VLAN 20 SVI",
+      "passed": true,
+      "detail": "VRF 'VRF10' active (has routes) on: ['dc1-leaf1a', 'dc1-leaf1b', 'dc1-leaf2a', 'dc1-leaf2b']"
+    }
+  ],
+  "failures": [],
+  "warnings": []
+}

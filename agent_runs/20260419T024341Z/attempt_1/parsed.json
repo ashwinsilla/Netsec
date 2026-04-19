@@ -1,0 +1,20 @@
+[
+  {
+    "id": 11,
+    "name": "VRF10_VLAN11",
+    "enabled": true,
+    "ip_address_virtual": "10.10.11.1/24"
+  },
+  {
+    "id": 12,
+    "name": "VRF10_VLAN12",
+    "enabled": true,
+    "ip_address_virtual": "10.10.12.1/24"
+  },
+  {
+    "id": 20,
+    "name": "VLAN20",
+    "enabled": true,
+    "ip_address_virtual": "10.10.20.1/24"
+  }
+]

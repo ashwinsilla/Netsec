@@ -270,6 +270,7 @@ vlan internal order ascending range 1006 1199
 | 10 | VLAN10 | - |
 | 11 | VRF10_VLAN11 | - |
 | 12 | VRF10_VLAN12 | - |
+| 20 | VLAN20 | - |
 | 21 | VRF11_VLAN21 | - |
 | 22 | VRF11_VLAN22 | - |
 | 3009 | MLAG_L3_VRF_VRF10 | MLAG |
@@ -291,6 +292,9 @@ vlan 11
 !
 vlan 12
    name VRF10_VLAN12
+!
+vlan 20
+   name VLAN20
 !
 vlan 21
    name VRF11_VLAN21
@@ -334,7 +338,7 @@ vlan 4094
 | Ethernet3 | MLAG_dc1-leaf1b_Ethernet3 | *trunk | *- | *- | *MLAG | 3 |
 | Ethernet4 | MLAG_dc1-leaf1b_Ethernet4 | *trunk | *- | *- | *MLAG | 3 |
 | Ethernet5 | SERVER_dc1-leaf1-server1_PCI1 | *trunk | *11-12,21-22 | *4092 | *- | 5 |
-| Ethernet8 | L2_dc1-leaf1c_Ethernet1 | *trunk | *10-12,21-22,3401-3402 | *- | *- | 8 |
+| Ethernet8 | L2_dc1-leaf1c_Ethernet1 | *trunk | *10-12,20-22,3401-3402 | *- | *- | 8 |
 
 *Inherited from Port-Channel Interface
 
@@ -394,7 +398,7 @@ interface Ethernet8
 | --------- | ----------- | ---- | ----- | ----------- | ----------- | --------------------- | ------------------ | ------- | -------- |
 | Port-Channel3 | MLAG_dc1-leaf1b_Port-Channel3 | trunk | - | - | MLAG | - | - | - | - |
 | Port-Channel5 | SERVER_dc1-leaf1-server1_Bond1 | trunk | 11-12,21-22 | 4092 | - | - | - | 5 | - |
-| Port-Channel8 | L2_dc1-leaf1c_Port-Channel1 | trunk | 10-12,21-22,3401-3402 | - | - | - | - | 8 | - |
+| Port-Channel8 | L2_dc1-leaf1c_Port-Channel1 | trunk | 10-12,20-22,3401-3402 | - | - | - | - | 8 | - |
 
 #### Port-Channel Interfaces Device Configuration
 
@@ -420,7 +424,7 @@ interface Port-Channel5
 interface Port-Channel8
    description L2_dc1-leaf1c_Port-Channel1
    no shutdown
-   switchport trunk allowed vlan 10-12,21-22,3401-3402
+   switchport trunk allowed vlan 10-12,20-22,3401-3402
    switchport mode trunk
    switchport
    mlag 8
@@ -484,6 +488,7 @@ interface Loopback11
 | Vlan10 | VLAN10 | default | - | False |
 | Vlan11 | VRF10_VLAN11 | VRF10 | - | False |
 | Vlan12 | VRF10_VLAN12 | VRF10 | - | False |
+| Vlan20 | VLAN20 | VRF10 | - | False |
 | Vlan21 | VRF11_VLAN21 | VRF11 | - | False |
 | Vlan22 | VRF11_VLAN22 | VRF11 | - | False |
 | Vlan3009 | MLAG_L3_VRF_VRF10 | VRF10 | 9214 | False |
@@ -498,6 +503,7 @@ interface Loopback11
 | Vlan10 | default | - | 10.10.10.1/24 | - | - | - |
 | Vlan11 | VRF10 | - | 10.10.11.1/24 | - | - | - |
 | Vlan12 | VRF10 | - | 10.10.12.1/24 | - | - | - |
+| Vlan20 | VRF10 | - | 10.10.20.1/24 | - | - | - |
 | Vlan21 | VRF11 | - | 10.10.21.1/24 | - | - | - |
 | Vlan22 | VRF11 | - | 10.10.22.1/24 | - | - | - |
 | Vlan3009 | VRF10 | 10.255.1.96/31 | - | - | - | - |
@@ -525,6 +531,12 @@ interface Vlan12
    no shutdown
    vrf VRF10
    ip address virtual 10.10.12.1/24
+!
+interface Vlan20
+   description VLAN20
+   no shutdown
+   vrf VRF10
+   ip address virtual 10.10.20.1/24
 !
 interface Vlan21
    description VRF11_VLAN21
@@ -583,6 +595,7 @@ interface Vlan4094
 | 10 | 10010 | - | - |
 | 11 | 10011 | - | - |
 | 12 | 10012 | - | - |
+| 20 | 10020 | - | - |
 | 21 | 10021 | - | - |
 | 22 | 10022 | - | - |
 | 3401 | 13401 | - | - |
@@ -608,6 +621,7 @@ interface Vxlan1
    vxlan vlan 10 vni 10010
    vxlan vlan 11 vni 10011
    vxlan vlan 12 vni 10012
+   vxlan vlan 20 vni 10020
    vxlan vlan 21 vni 10021
    vxlan vlan 22 vni 10022
    vxlan vlan 3401 vni 13401
@@ -761,6 +775,7 @@ ASN Notation: asplain
 | 10 | 10.255.0.3:10010 | 10010:10010 | - | - | learned |
 | 11 | 10.255.0.3:10011 | 10011:10011 | - | - | learned |
 | 12 | 10.255.0.3:10012 | 10012:10012 | - | - | learned |
+| 20 | 10.255.0.3:10020 | 10020:10020 | - | - | learned |
 | 21 | 10.255.0.3:10021 | 10021:10021 | - | - | learned |
 | 22 | 10.255.0.3:10022 | 10022:10022 | - | - | learned |
 | 3401 | 10.255.0.3:13401 | 13401:13401 | - | - | learned |
@@ -831,6 +846,11 @@ router bgp 65101
    vlan 12
       rd 10.255.0.3:10012
       route-target both 10012:10012
+      redistribute learned
+   !
+   vlan 20
+      rd 10.255.0.3:10020
+      route-target both 10020:10020
       redistribute learned
    !
    vlan 21

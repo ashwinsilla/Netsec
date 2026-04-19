@@ -87,7 +87,7 @@ def _create_branch(run_id: str) -> tuple[bool, str]:
 
 
 def _commit_changes(task_text: str) -> tuple[bool, str]:
-    _git("add", "group_vars/", "intended/")
+    _git("add", "group_vars/", "intended/", "documentation/")
     rc, out, err = _git(
         "commit", "-m", f"avd: {task_text[:72]}",
         "--author", "AVD Agent <avd-agent@local>",
@@ -110,18 +110,26 @@ def _commit_run_artifacts(run_id: str) -> None:
         return
     _, current_branch, _ = _git("rev-parse", "--abbrev-ref", "HEAD")
     current_branch = current_branch.strip()
+    stashed = False
     try:
         if current_branch != BASE_BRANCH:
-            rc, _, _ = _git("checkout", BASE_BRANCH)
+            # Stash any dirty tracked files so checkout doesn't fail
+            _, stash_out, _ = _git("stash", "--include-untracked", "--",
+                                   "group_vars/", "intended/", "documentation/")
+            stashed = "No local changes" not in stash_out
+            rc, _, err = _git("checkout", BASE_BRANCH)
             if rc != 0:
+                log.warning("_commit_run_artifacts: checkout failed: %s", err)
                 return
         _git("add", str(run_dir))
         rc2, _, err = _git("commit", "-m", f"agent_runs: save logs for run {run_id}")
         if rc2 != 0 and "nothing to commit" not in err.lower():
-            log.warning("_commit_run_artifacts failed: %s", err)
+            log.warning("_commit_run_artifacts commit failed: %s", err)
     finally:
         if current_branch != BASE_BRANCH:
             _git("checkout", current_branch)
+            if stashed:
+                _git("stash", "pop")
 
 
 def _get_diff(branch: str) -> str:
@@ -200,7 +208,8 @@ def _discard_branch(branch: str) -> None:
     untracked files that were only added in the discarded branch."""
     _git("checkout", BASE_BRANCH)
     _git("branch", "-D", branch)
-    # Remove untracked files left behind (e.g. new device configs added by Ansible)
+    # Restore tracked files and remove untracked files left by Ansible
+    _git("checkout", "--", "group_vars/", "intended/", "documentation/")
     _git("clean", "-fd", "--", "group_vars/", "intended/")
 
 

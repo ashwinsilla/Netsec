@@ -1,0 +1,64 @@
+{
+  "assertions": [
+    {
+      "type": "config_contains",
+      "pattern": "vlan 20",
+      "description": "VLAN 20 definition exists in device config",
+      "nodes": [
+        "dc1-leaf1a",
+        "dc1-leaf1b",
+        "dc1-leaf1c",
+        "dc1-leaf2a",
+        "dc1-leaf2b",
+        "dc1-leaf2c",
+        "dc1-spine1",
+        "dc1-spine2"
+      ]
+    },
+    {
+      "type": "config_contains",
+      "pattern": "interface Vlan20",
+      "description": "SVI interface for VLAN 20 is configured",
+      "nodes": [
+        "dc1-leaf1a",
+        "dc1-leaf1b",
+        "dc1-leaf1c",
+        "dc1-leaf2a",
+        "dc1-leaf2b",
+        "dc1-leaf2c"
+      ]
+    },
+    {
+      "type": "config_contains",
+      "pattern": "ip address virtual.*VLAN20|ip address virtual",
+      "description": "VLAN 20 SVI has a virtual IP address configured under VRF10",
+      "nodes": [
+        "dc1-leaf1a",
+        "dc1-leaf1b",
+        "dc1-leaf1c",
+        "dc1-leaf2a",
+        "dc1-leaf2b",
+        "dc1-leaf2c"
+      ]
+    },
+    {
+      "type": "config_contains",
+      "pattern": "vrf.*VRF10",
+      "description": "VLAN 20 SVI is associated with VRF10",
+      "nodes": [
+        "dc1-leaf1a",
+        "dc1-leaf1b",
+        "dc1-leaf1c",
+        "dc1-leaf2a",
+        "dc1-leaf2b",
+        "dc1-leaf2c"
+      ]
+    },
+    {
+      "type": "batfish_vrf_exists",
+      "node_regex": "dc1-leaf1a|dc1-leaf1b|dc1-leaf1c|dc1-leaf2a|dc1-leaf2b|dc1-leaf2c",
+      "vrf_name": "VRF10",
+      "description": "VRF10 exists on all leaf nodes to host the new VLAN 20 SVI"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+<thinking>
+The user wants to add VLAN 20. This is a network services change. Looking at the current structure, TENANT1 has VRFs with SVIs and also l2vlans. VLAN 20 could be either an SVI (routed VLAN) or an L2 VLAN.
+
+Without more context, VLAN 20 could be added as an SVI under VRF10 or as an L2 VLAN. However, looking at the existing structure:
+- SVIs under VRF10 already exist (2 items)
+- L2 VLANs exist (3401)
+
+The existing SVIs appear to be VLANs 11, 12, 21, 22 based on the connected endpoints (vlans: '11-12,21-22'). VLAN 20 doesn't fit neatly into those ranges.
+
+Actually, looking more carefully - the user just says "add vlan 20" without specifying if it's an SVI or L2 VLAN. Given the ambiguity, but considering that VLANs 11, 12, 21, 22 are already SVIs (likely), VLAN 20 might be an SVI as well.
+
+But actually, the most common interpretation of "add vlan 20" in the context of network services would be to add it as an SVI under VRF10 (since that's where other SVIs are), or as an L2 VLAN.
+
+Given the existing SVIs are in VRF10 and the vlans in connected endpoints include 11-12, 21-22, VLAN 20 seems like it could be an SVI in VRF10. But without more context, I'll go with adding it as an SVI under VRF10 in TENANT1, since that's the most common pattern for adding a VLAN with routing capability.
+
+Actually, let me reconsider. The user just says "add vlan 20" - this is quite generic. In AVD context, this typically means adding it to the network services file. It could be:
+1. An SVI under a VRF (layer 3)
+2. An L2 VLAN
+
+Given the minimal information, I'll assume it's an SVI under VRF10 since that's where other VLANs (likely 11, 12, 21, 22) are defined. The insertion path would be ["tenants", 0, "vrfs", 0, "svis"].
+
+The confidence would be medium since we don't know if it should be an SVI or L2 VLAN.
+</thinking>
+
+{
+  "file_key":       "netsvcs",
+  "context_file":   "group_vars/NETWORK_SERVICES/network_services.yml",
+  "insertion_path": ["tenants", 0, "vrfs", 0, "svis"],
+  "task_text":      "Append a new SVI entry for VLAN 20 to the 'svis' list inside VRF10 of TENANT1. Add at minimum: id: 20, name: 'VLAN20'. Include placeholder fields consistent with the existing SVIs in that VRF (e.g. enabled: true, ip_address_virtual if applicable).",
+  "confidence":     "medium",
+  "reasoning":      "VLAN 20 most naturally belongs as a routed SVI alongside the other numbered VLANs already defined under VRF10 in TENANT1 within the network_services file; medium confidence because the request does not specify whether it should be an L2 VLAN or a routed SVI."
+}

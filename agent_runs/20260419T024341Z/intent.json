@@ -1,0 +1,14 @@
+{
+  "file_key": "netsvcs",
+  "context_file": "group_vars/NETWORK_SERVICES/network_services.yml",
+  "insertion_path": [
+    "tenants",
+    0,
+    "vrfs",
+    0,
+    "svis"
+  ],
+  "task_text": "Append a new SVI entry for VLAN 20 to the 'svis' list inside VRF10 of TENANT1. Add at minimum: id: 20, name: 'VLAN20'. Include placeholder fields consistent with the existing SVIs in that VRF (e.g. enabled: true, ip_address_virtual if applicable).",
+  "confidence": "medium",
+  "reasoning": "VLAN 20 most naturally belongs as a routed SVI alongside the other numbered VLANs already defined under VRF10 in TENANT1 within the network_services file; medium confidence because the request does not specify whether it should be an L2 VLAN or a routed SVI."
+}

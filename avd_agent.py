@@ -1006,8 +1006,9 @@ async def _generate_and_validate(
                             shutil.copy2(backup, target)
                         errors = val_result.as_error_lines()
                         continue
-                    # Last attempt: still failed validation — report it
-                    final_ok  = False
+                    # Last attempt: still failed validation — report it.
+                    # Use sentinel so web_app can treat this as "build_ok, val_failed".
+                    final_ok  = "validation_failed"
                     final_msg = (
                         f"Build passed but intent verification failed on all {MAX_RETRIES} attempts.\n"
                         + "\n".join(f"  {f}" for f in val_result.failures[:8])
@@ -1047,7 +1048,7 @@ async def _generate_and_validate(
 # Top-level agent runner
 # ──────────────────────────────────────────────────────────────────────────────
 
-async def _run_agent(user_request: str, args: argparse.Namespace) -> bool:
+async def _run_agent(user_request: str, args: argparse.Namespace) -> "bool | str":
     api_key = _load_api_key()
     if not api_key:
         print(
@@ -1122,10 +1123,13 @@ async def _run_agent(user_request: str, args: argparse.Namespace) -> bool:
 
     # ── Final result ──────────────────────────────────────────────────────
     _banner("Result")
-    if success:
+    if success is True:
         _print_ok(msg)
         if not dry_run:
             _print_ok(f"Your change is live in  {intent['context_file']}")
+    elif success == "validation_failed":
+        _print_warn(msg)
+        _print_warn("Configs were generated — review them in the change control panel.")
     else:
         _print_fail(msg)
 
@@ -1197,7 +1201,7 @@ def main() -> None:
             sys.exit(0)
 
     success = asyncio.run(_run_agent(user_request, args))
-    sys.exit(0 if success else 1)
+    sys.exit(0 if success else 1)  # validation_failed is truthy → exit 0
 
 
 if __name__ == "__main__":

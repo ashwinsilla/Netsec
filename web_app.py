@@ -194,26 +194,34 @@ async def start_run(body: RunRequest) -> dict:
             finally:
                 _agent._web_emit.reset(token)
 
-            # ── 3. On success: commit + capture diff ──────────────────────
-            if success:
+            # ── 3. On success (full or build-only): commit + capture diff ─
+            build_ok = success is True or success == "validation_failed"
+            val_warn = success == "validation_failed"
+
+            if build_ok:
                 ok_commit, _ = _commit_changes(body.request)
                 if ok_commit:
                     diff = _get_diff(branch)
-                    state.update({"status": "pending_approval", "diff": diff})
+                    state.update({
+                        "status": "pending_approval",
+                        "diff": diff,
+                        "validation_warning": val_warn,
+                    })
                     queue.put_nowait(_sse("pending_approval", {
                         "run_id": run_id,
                         "branch": branch,
                         "has_diff": bool(diff.strip()),
+                        "validation_warning": val_warn,
                     }))
                 else:
                     state["status"] = "failed"
-                    queue.put_nowait(_sse("warn", "Changes validated but could not be committed."))
+                    queue.put_nowait(_sse("warn", "Changes generated but could not be committed."))
             else:
-                # Clean up the branch on failure
+                # Build itself failed — discard branch
                 _discard_branch(branch)
                 state["status"] = "failed"
 
-            queue.put_nowait(_sse("done", {"success": success}))
+            queue.put_nowait(_sse("done", {"success": bool(build_ok)}))
 
     asyncio.create_task(run())
     return {"run_id": run_id}
@@ -250,9 +258,10 @@ async def get_diff(run_id: str) -> dict:
     if not state:
         raise HTTPException(404, "run_id not found")
     return {
-        "diff":   state.get("diff", ""),
-        "branch": state.get("branch", ""),
-        "status": state.get("status", ""),
+        "diff":               state.get("diff", ""),
+        "branch":             state.get("branch", ""),
+        "status":             state.get("status", ""),
+        "validation_warning": state.get("validation_warning", False),
     }
 
 
@@ -568,7 +577,7 @@ async function submitRun(){
       tag.textContent=msg;tag.style.display='';
     }
     else if(type==='pending_approval'){
-      loadDiff(runId,msg.branch);
+      loadDiff(runId,msg.branch,msg.validation_warning);
     }
     else if(type==='done'){
       const ok=msg&&msg.success;
@@ -587,11 +596,22 @@ async function submitRun(){
 }
 
 // ── Diff loader ───────────────────────────────────────────────────────────────
-async function loadDiff(runId, branch){
+async function loadDiff(runId, branch, validationWarning){
   document.getElementById('apr-branch').textContent=branch;
   document.getElementById('approval').classList.add('open');
   document.getElementById('btn-approve').disabled=false;
   document.getElementById('btn-reject').disabled=false;
+
+  // Show / hide validation warning banner
+  let wb=document.getElementById('val-warning');
+  if(!wb){
+    wb=document.createElement('div');
+    wb.id='val-warning';
+    wb.style.cssText='background:#7c2d12;color:#fef3c7;padding:8px 14px;font-size:.8rem;border-radius:5px;margin-bottom:10px;display:none';
+    wb.textContent='⚠ Automated validation checks did not pass. Review the config diff carefully before approving.';
+    document.getElementById('diff-container').before(wb);
+  }
+  wb.style.display=validationWarning?'block':'none';
 
   const res=await fetch(`/api/runs/${runId}/diff`);
   const data=await res.json();

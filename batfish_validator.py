@@ -468,12 +468,31 @@ def _load_bf_snapshot(host: str = "localhost") -> tuple[bool, str]:
 # not supported). Leaf BGP peer tables are available and contain spine Remote_AS,
 # so spine-targeted AS assertions work from the leaf's perspective.
 
+def _resolve_nodes_for_batfish(node_regex: str) -> str:
+    """
+    Batfish nodeSpec does not support standard regex character classes like [abc].
+    Resolve a Python regex against the known config filenames and return a
+    comma-separated list of exact node names that Batfish can always parse.
+    Falls back to the original pattern if no configs directory exists.
+    """
+    if not INTENDED_CONFIGS.is_dir():
+        return node_regex
+    known = [p.stem for p in INTENDED_CONFIGS.glob("*.cfg")]
+    if not known:
+        return node_regex
+    try:
+        rx = re.compile(node_regex, re.IGNORECASE)
+        matched = [n for n in known if rx.search(n)]
+        return ",".join(matched) if matched else node_regex
+    except re.error:
+        return node_regex
+
 def _run_batfish_bgp_as(assertion: dict, host: str) -> tuple[bool, str]:
     """
     Check BGP AS number.  Checks both Local_AS on directly-parsed nodes and
     Remote_AS seen by peer nodes — works even when spine configs fail to parse.
     """
-    node_regex   = assertion.get("node_regex", ".*")
+    node_regex   = _resolve_nodes_for_batfish(assertion.get("node_regex", ".*"))
     expected_asn = int(assertion.get("asn", 0))
     if not expected_asn:
         return False, "batfish_bgp_as: missing 'asn' field"
@@ -493,10 +512,9 @@ def _run_batfish_bgp_as(assertion: dict, host: str) -> tuple[bool, str]:
         local_match  = df[_to_int(df["Local_AS"])  == expected_asn]
         remote_match = df[_to_int(df["Remote_AS"]) == expected_asn]
 
-        # Apply node_regex filter to local matches
-        import re as _re
-        rx = _re.compile(node_regex, _re.IGNORECASE)
-        local_nodes = [n for n in local_match["Node"].unique() if rx.search(n)]
+        # node_regex is now a comma-separated list of exact names; filter by membership
+        node_set = set(node_regex.split(","))
+        local_nodes = [n for n in local_match["Node"].unique() if n in node_set or node_regex == ".*"]
         remote_nodes = [n for n in remote_match["Node"].unique()]
 
         if local_nodes:
@@ -512,7 +530,7 @@ def _run_batfish_bgp_as(assertion: dict, host: str) -> tuple[bool, str]:
 
 
 def _run_batfish_interface_mtu(assertion: dict, host: str) -> tuple[bool, str]:
-    node_regex  = assertion.get("node_regex", ".*")
+    node_regex  = _resolve_nodes_for_batfish(assertion.get("node_regex", ".*"))
     iface_regex = assertion.get("interface_regex", "Ethernet.*")
     expected    = assertion.get("mtu")
     if expected is None:
@@ -536,7 +554,7 @@ def _run_batfish_interface_mtu(assertion: dict, host: str) -> tuple[bool, str]:
 
 def _run_batfish_vrf_exists(assertion: dict, host: str) -> tuple[bool, str]:
     """Check VRF exists by looking for routes in that VRF (vrfProperties not available)."""
-    node_regex = assertion.get("node_regex", ".*")
+    node_regex = _resolve_nodes_for_batfish(assertion.get("node_regex", ".*"))
     vrf_name   = assertion.get("vrf_name", "")
     if not vrf_name:
         return False, "batfish_vrf_exists: missing 'vrf_name' field"
@@ -560,7 +578,7 @@ def _run_batfish_vrf_exists(assertion: dict, host: str) -> tuple[bool, str]:
 
 
 def _run_batfish_route_exists(assertion: dict, host: str) -> tuple[bool, str]:
-    node_regex = assertion.get("node_regex", ".*")
+    node_regex = _resolve_nodes_for_batfish(assertion.get("node_regex", ".*"))
     vrf        = assertion.get("vrf", "default")
     prefix     = assertion.get("prefix", "")
     if not prefix:
@@ -587,8 +605,8 @@ def _run_batfish_bgp_session(assertion: dict, host: str) -> tuple[bool, str]:
     If the primary node_regex returns no results (nodes not parsed), falls
     back to checking the remote side.
     """
-    node_regex        = assertion.get("node_regex", ".*")
-    remote_node_regex = assertion.get("remote_node_regex", ".*")
+    node_regex        = _resolve_nodes_for_batfish(assertion.get("node_regex", ".*"))
+    remote_node_regex = _resolve_nodes_for_batfish(assertion.get("remote_node_regex", ".*"))
     try:
         bf = _get_bf_session(host)
 

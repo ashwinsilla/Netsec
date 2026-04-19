@@ -1063,7 +1063,7 @@ async def _run_agent(user_request: str, args: argparse.Namespace) -> "bool | str
     schema  = _load_avd_schema()
 
     # Working directory for all artifacts of this run
-    ts       = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    ts       = getattr(args, "run_id", None) or datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     work_dir = RUNS_DIR / ts
     work_dir.mkdir(parents=True, exist_ok=True)
 

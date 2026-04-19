@@ -1,0 +1,107 @@
+<schema_reference>
+AVD schema for '':
+type: dict
+required_keys: ['fabric_name']
+optional_keys:  ['aaa_settings', 'address_locking_settings', 'application_classification', 'avd_6_behaviors', 'avd_data_validation_mode', 'avd_design_future', 'avd_digital_twin_mode', 'avd_eos_designs_debug', 'avd_eos_designs_enforce_duplication_checks_across_all_models', 'avd_eos_designs_structured_config', 'avd_eos_designs_unset_facts', 'avd_structured_config_file_format', 'eos_designs_validation_configuration', 'avd_vault_id', 'bfd_multihop', 'bgp_as', 'bgp_as_notation', 'bgp_default_ipv4_unicast', 'bgp_distance', 'bgp_ecmp', 'bgp_graceful_restart', 'bgp_maximum_paths', 'bgp_mesh_pes', 'bgp_peer_groups', 'bgp_update_wait_install', 'bgp_update_wait_for_convergence', 'campus', 'campus_access_pod', 'campus_pod', 'connected_endpoints', 'custom_connected_endpoints_keys', 'connected_endpoints_keys', 'core_interfaces', 'custom_structured_configuration_list_merge', 'custom_structured_configuration_prefix', 'cv_pathfinder_global_sites', 'cv_pathfinder_internet_exit_policies', 'cv_pathfinder_regions', 'cv_server', 'cv_settings', 'cv_tags_topology_type', 'cv_token', 'cv_topology', 'cv_topology_levels', 'cvp_ingestauth_key', 'cvp_instance_ips', 'cvp_token_file', 'dc_name', 'default_connected_endpoints_description', 'default_connected_endpoints_port_channel_description', 'default_igmp_snooping_enabled', 'default_interface_mtu', 'default_interfaces', 'default_mgmt_method', 'default_network_ports_description', 'default_network_ports_port_channel_description', 'default_node_types', 'default_underlay_p2p_ethernet_description', 'default_underlay_p2p_port_channel_description', 'default_vrf_diag_loopback_description', 'design', 'device_profile', 'device_profiles', 'devices', 'digital_twin', 'dns_settings', 'dot1x_settings', 'enable_trunk_groups', 'eos_designs_custom_templates', 'eos_designs_documentation', 'eos_designs_keep_tmp_files', 'eos_designs_return_structured_config', 'eos_designs_tmp_dir', 'eos_designs_validate_inputs_batch_size', 'event_handlers', 'event_monitor', 'evpn_ebgp_gateway_multihop', 'evpn_ebgp_multihop', 'evpn_hostflap_detection', 'evpn_import_pruning', 'evpn_multicast', 'evpn_overlay_bgp_rtc', 'evpn_prevent_readvertise_to_server', 'evpn_prevent_readvertise_to_server_mode', 'evpn_short_esi_prefix', 'evpn_vlan_aware_bundles', 'evpn_vlan_bundles', 'fabric_evpn_encapsulation', 'fabric_flow_tracking', 'fabric_ip_addressing', 'fabric_numbering', 'fabric_numbering_node_id_pool', 'fabric_sflow', 'flow_tracking_settings', 'general_settings', 'generate_cv_tags', 'hardware_counters', 'inband_ztp_bootstrap_file', 'internal_vlan_order', 'ipsec_settings', 'ipv4_acls', 'ipv4_prefix_list_catalog', 'ipv6_mgmt_destination_networks', 'ipv6_mgmt_gateway', 'is_deployed', 'isis_advertise_passive_only', 'isis_area_id', 'isis_default_circuit_type', 'isis_default_is_type', 'isis_default_metric', 'isis_maximum_paths', 'isis_system_id_format', 'isis_ti_lfa', 'l2vlan_profiles', 'l3_edge', 'l3_interface_profiles', 'load_interval', 'local_users', 'logging_settings', 'mac_address_table', 'management_eapi', 'mgmt_destination_networks', 'mgmt_gateway', 'mgmt_interface', 'mgmt_interface_description', 'mgmt_interface_vrf', 'mgmt_vrf_routing', 'mlag_bgp_peer_description', 'mlag_bgp_peer_group_description', 'mlag_ibgp_peering_vrfs', 'mlag_member_description', 'mlag_on_orphan_port_channel_downlink', 'mlag_peer_l3_svi_description', 'mlag_peer_l3_vlan_name', 'mlag_peer_l3_vrf_svi_description', 'mlag_peer_l3_vrf_vlan_name', 'mlag_peer_svi_description', 'mlag_peer_vlan_name', 'mlag_port_channel_description', 'name_servers', 'network_ports', 'network_services_keys', 'custom_node_type_keys', 'node_type_keys', 'ntp_settings', 'only_local_vlan_trunk_groups', 'overlay_bgp_peer_description', 'overlay_cvx_servers', 'overlay_her_flood_list_per_vni', 'overlay_her_flood_list_scope', 'overlay_loopback_description', 'overlay_mlag_rfc5549', 'overlay_rd_type', 'overlay_routing_protocol', 'overlay_routing_protocol_address_family', 'overlay_rt_type', 'p2p_uplinks_mtu', 'p2p_uplinks_qos_profile', 'custom_platform_settings', 'platform_settings', 'platform_speed_groups', 'pod_name', 'port_profiles', 'ptp_profiles', 'ptp_settings', 'queue_monitor_length', 'queue_monitor_streaming', 'redundancy', 'router_id_loopback_description', 'serial_number', 'sflow_settings', 'shutdown_bgp_towards_undeployed_peers', 'shutdown_interfaces_towards_undeployed_peers', 'snmp_settings', 'source_interfaces', 'ssh_settings', 'svi_profiles', 'system_mac_address', 'terminattr_disable_aaa', 'terminattr_ingestexclude', 'terminattr_ingestgrpcurl_port', 'terminattr_smashexcludes', 'timezone', 'trunk_groups', 'type', 'underlay_filter_peer_as', 'underlay_filter_redistribute_connected', 'underlay_ipv6', 'underlay_ipv6_numbered', 'underlay_isis_authentication_cleartext_key', 'underlay_isis_authentication_key', 'underlay_isis_authentication_mode', 'underlay_isis_bfd', 'underlay_isis_instance_name', 'underlay_l2_ethernet_description', 'underlay_l2_port_channel_description', 'underlay_multicast', 'underlay_multicast_anycast_rp', 'underlay_multicast_pim_sm', 'underlay_multicast_rps', 'underlay_multicast_static', 'underlay_ospf_area', 'underlay_ospf_authentication', 'underlay_ospf_bfd_enable', 'underlay_ospf_graceful_restart', 'underlay_ospf_max_lsa', 'underlay_ospf_maximum_paths', 'underlay_ospf_process_id', 'underlay_rfc5549', 'underlay_routing_protocol', 'unsupported_transceiver', 'uplink_ptp', 'use_cv_topology', 'use_router_general_for_router_id', 'validation_profiles', 'vtep_loopback_description', 'vtep_vvtep_ip', 'wan_carriers', 'wan_encapsulation', 'wan_ha', 'wan_ipsec_profiles', 'wan_mode', 'wan_path_groups', 'wan_route_servers', 'wan_stun_dtls_disable', 'wan_stun_dtls_profile_name', 'wan_use_agent_env_var_for_kernel_software_forwarding_ecmp', 'wan_virtual_topologies', 'zscaler_endpoints']
+Keys not listed above will cause Ansible to fail with 'Invalid key'.
+</schema_reference>
+
+<merge_target>
+context_file: group_vars/FABRIC/fabric_variables.yml
+insertion_path: []
+The tool walks the YAML root following insertion_path and replaces exactly one value with your JSON output.
+Shape rules:
+  (1) scalar field  → output the raw JSON scalar value.
+  (2) dict field    → output a JSON object `{...}`.
+  (3) list field    → output a JSON array `[...]` with ALL existing items plus your additions.
+Do NOT echo the top-level file key or content outside the replaced subtree.
+</merge_target>
+
+<configuration_context source="group_vars/FABRIC/fabric_variables.yml" section="root">
+---
+# Common AVD group variables
+fabric_name: FABRIC
+
+# Generate CSVs with fabric link info.
+eos_designs_documentation:
+  topology_csv: true
+  p2p_links_csv: true
+
+# Define underlay and overlay routing protocol to be used
+underlay_routing_protocol: ebgp
+overlay_routing_protocol: ebgp
+
+# Local users
+aaa_settings:
+  local_users:
+    # Username with no password configured
+  - name: admin
+    privilege: 15
+    role: network-admin
+    no_password: true
+    # Username with a password
+  - name: arista
+    privilege: 15
+    role: network-admin
+    sha512_password: "$6$Enl0WfE32FthwyiJ$yTyGaEJ2uPKLU.F7314YtB7J1jrzrMi7ogXIRTEHQfLdLgKWWmr1UvNlZLN6AyuxET7G5aH3AI9OYRzxVTkB1."
+
+# BGP peer groups passwords
+bgp_peer_groups:
+  # all passwords set to "arista"
+  evpn_overlay_peers:
+    password: Q4fqtbqcZ7oQuKfuWtNGRQ==
+  ipv4_underlay_peers:
+    password: 7x4B4rnJhZB438m9+BrBfQ==
+  mlag_ipv4_underlay_peer:
+    password: 4b21pAdCvWeAqpcKDFMdWw==
+
+# P2P interfaces MTU, includes VLANs 4093 and 4094 that are over peer-link
+# If you're running vEOS-lab or cEOS, you should use MTU of 1500 instead as shown in the following line
+# p2p_uplinks_mtu: 9214
+p2p_uplinks_mtu: 9214
+
+# Set default uplink, downlink, and MLAG interfaces based on node type
+default_interfaces:
+- types: [spine]
+  platforms: [default]
+  uplink_interfaces: [Ethernet1-2]
+  downlink_interfaces: [Ethernet1-8]
+- types: [l3leaf]
+  platforms: [default]
+  uplink_interfaces: [Ethernet1-2]
+  mlag_interfaces: [Ethernet3-4]
+  downlink_interfaces: [Ethernet8]
+- types: [l2leaf]
+  platforms: [default]
+  uplink_interfaces: [Ethernet1-2]
+
+# CloudVision Portal definitions
+cv_settings:
+  onprem_clusters:
+  - name: primary
+    servers:
+    - name: 192.168.1.12
+  terminattr:
+    disable_aaa: true
+
+# DNS Server
+dns_settings:
+  servers:
+  - ip_address: 192.168.1.1
+
+# NTP Servers IP or DNS name, first NTP server will be preferred, and sourced from Management VRF
+ntp_settings:
+  server_vrf: use_mgmt_interface_vrf
+  servers:
+  - name: 0.pool.ntp.org
+</configuration_context>
+
+<task>
+No actionable change could be determined from the request 'test'. Please provide a specific configuration change description.
+</task>
+
+Before generating the JSON, open a <thinking> block to map the request to exact schema field names, verify required nesting layers, and check all keys are valid. After closing your </thinking> block, output the JSON.
+
+Subtree rule: output ONLY the JSON subtree that replaces the merge target (for list targets, include the full merged list after your edits).
+
+Remember: Output ONLY the raw JSON immediately after </thinking>. Any non-JSON text causes a fatal parse error.

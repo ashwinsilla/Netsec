@@ -1,0 +1,14 @@
+<thinking>
+The user's request is simply "test" - this is not a real change request. I need to output a JSON object regardless, but the request doesn't specify any actual change. I'll make a best-effort guess with low confidence, noting that the request is unclear.
+
+Since "test" doesn't map to any specific change, I'll default to a low-confidence response pointing to a generic location.
+</thinking>
+
+{
+  "file_key":       "fabric",
+  "context_file":   "group_vars/FABRIC/fabric_variables.yml",
+  "insertion_path": [],
+  "task_text":      "No actionable change could be determined from the request 'test'. Please provide a specific configuration change description.",
+  "confidence":     "low",
+  "reasoning":      "The request 'test' contains no meaningful configuration intent, so no file or insertion path can be confidently identified."
+}

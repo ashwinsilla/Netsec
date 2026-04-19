@@ -28,6 +28,7 @@ import asyncio
 import json
 import subprocess
 import uuid
+from datetime import datetime, timezone
 from pathlib import Path
 
 import uvicorn
@@ -113,6 +114,50 @@ def _get_diff(branch: str) -> str:
     return out
 
 
+def _diff_from_git_log(run_id: str) -> str:
+    """
+    For runs that predate the patch-file mechanism, find the agent commit
+    in git log by the AVD Agent author and return its diff against its parent.
+    run_id is a timestamp like 20260418T020217Z — we find commits within
+    ±5 min of that timestamp.
+    """
+    try:
+        # Parse run_id timestamp
+        dt = datetime.strptime(run_id, "%Y%m%dT%H%M%SZ").replace(tzinfo=timezone.utc)
+        after  = (dt.replace(minute=max(0, dt.minute - 5))).strftime("%Y-%m-%dT%H:%M:%SZ")
+        before = (dt.replace(minute=min(59, dt.minute + 5))).strftime("%Y-%m-%dT%H:%M:%SZ")
+    except ValueError:
+        return ""
+
+    # Find AVD Agent commits in the time window
+    _, log_out, _ = _git(
+        "log", "--author=AVD Agent", "--format=%H",
+        f"--after={after}", f"--before={before}",
+        "--", "intended/configs/",
+    )
+    sha = log_out.strip().split("\n")[0].strip() if log_out.strip() else ""
+
+    # Also check merge commits (avd/change/... merge)
+    if not sha:
+        _, log_out2, _ = _git(
+            "log", "--merges", "--format=%H %s",
+            f"--after={after}", f"--before={before}",
+        )
+        for line in log_out2.strip().splitlines():
+            if "avd/change/" in line:
+                sha = line.split()[0]
+                break
+
+    if not sha:
+        return ""
+
+    _, diff_out, _ = _git(
+        "show", sha,
+        "--", "intended/configs/",
+    )
+    return diff_out
+
+
 def _merge_to_main(branch: str) -> tuple[bool, str]:
     rc, _, err = _git("checkout", BASE_BRANCH)
     if rc != 0:
@@ -126,13 +171,18 @@ def _merge_to_main(branch: str) -> tuple[bool, str]:
         _git("checkout", BASE_BRANCH)
         return False, f"merge failed: {err2}"
     _git("branch", "-d", branch)
+    # Ensure working tree matches the merged main exactly
+    _git("checkout", "--", "group_vars/", "intended/")
     return True, out2
 
 
 def _discard_branch(branch: str) -> None:
-    """Checkout BASE_BRANCH and delete the feature branch."""
+    """Checkout BASE_BRANCH, delete the feature branch, and clean any
+    untracked files that were only added in the discarded branch."""
     _git("checkout", BASE_BRANCH)
     _git("branch", "-D", branch)
+    # Remove untracked files left behind (e.g. new device configs added by Ansible)
+    _git("clean", "-fd", "--", "group_vars/", "intended/")
 
 
 # ── SSE helper ────────────────────────────────────────────────────────────────
@@ -152,7 +202,7 @@ async def start_run(body: RunRequest) -> dict:
     if _run_lock.locked():
         raise HTTPException(409, "Another run is in progress. Please wait.")
 
-    run_id = uuid.uuid4().hex[:10]
+    run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     queue: asyncio.Queue = asyncio.Queue()
     _queues[run_id] = queue
     _run_states[run_id] = {"status": "running", "branch": None, "task_text": body.request, "diff": ""}
@@ -163,6 +213,7 @@ async def start_run(body: RunRequest) -> dict:
         intent_only=False, verbose=False,
         skip_validation=body.skip_validation,
         batfish_host=body.batfish_host,
+        run_id=run_id,
     )
 
     async def run() -> None:
@@ -202,6 +253,12 @@ async def start_run(body: RunRequest) -> dict:
                 ok_commit, _ = _commit_changes(body.request)
                 if ok_commit:
                     diff = _get_diff(branch)
+                    # Persist diff to disk so it survives server restarts
+                    diff_path = _agent.RUNS_DIR / run_id / "config_diff.patch"
+                    try:
+                        diff_path.write_text(diff, encoding="utf-8")
+                    except Exception:
+                        pass
                     state.update({
                         "status": "pending_approval",
                         "diff": diff,
@@ -254,11 +311,24 @@ async def stream_run(run_id: str) -> StreamingResponse:
 
 @app.get("/api/runs/{run_id}/diff")
 async def get_diff(run_id: str) -> dict:
-    state = _run_states.get(run_id)
-    if not state:
-        raise HTTPException(404, "run_id not found")
+    state = _run_states.get(run_id, {})
+    diff = state.get("diff", "")
+
+    # Fall back to the persisted patch file (survives server restarts)
+    if not diff:
+        diff_path = _agent.RUNS_DIR / run_id / "config_diff.patch"
+        if diff_path.is_file():
+            try:
+                diff = diff_path.read_text(encoding="utf-8")
+            except Exception:
+                pass
+
+    # Last resort: reconstruct from git log for pre-patch-file runs
+    if not diff:
+        diff = _diff_from_git_log(run_id)
+
     return {
-        "diff":               state.get("diff", ""),
+        "diff":               diff,
         "branch":             state.get("branch", ""),
         "status":             state.get("status", ""),
         "validation_warning": state.get("validation_warning", False),
@@ -305,9 +375,22 @@ async def list_runs() -> list:
                     success = True
                 elif "failed=" in txt:
                     success = False
-            runs.append({"run_id": d.name, "ts": d.name,
-                         "request": intent.get("task_text", ""),
-                         "success": success})
+            live = _run_states.get(d.name, {})
+            has_diff = (
+                (d / "config_diff.patch").is_file()
+                or bool(live.get("diff"))
+                or live.get("status") in ("pending_approval", "approved")
+            )
+            runs.append({
+                "run_id":  d.name,
+                "ts":      d.name,
+                "request": intent.get("task_text", ""),
+                "success": success,
+                "status":  live.get("status"),
+                "branch":  live.get("branch"),
+                "has_diff": has_diff,
+                "validation_warning": live.get("validation_warning", False),
+            })
         except Exception:
             continue
     return runs
@@ -354,7 +437,8 @@ input[type=checkbox]{accent-color:#6366f1;width:13px;height:13px;cursor:pointer}
 .btn-run:disabled{opacity:.45;cursor:not-allowed}
 .lock-msg{font-size:.75rem;color:#f59e0b;text-align:center;display:none}
 .hist h3{font-size:.75rem;color:#475569;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
-.hist-item{padding:7px 9px;border-radius:5px;background:#0f1117;border:1px solid #2d3148;margin-bottom:5px;font-size:.75rem}
+.hist-item{padding:7px 9px;border-radius:5px;background:#0f1117;border:1px solid #2d3148;margin-bottom:5px;font-size:.75rem;cursor:pointer;transition:border-color .15s}
+.hist-item:hover{border-color:#6366f1}
 .hist-req{color:#cbd5e1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hist-meta{color:#475569;margin-top:2px}
 .badge{display:inline-block;border-radius:3px;padding:1px 5px;font-size:.68rem;font-weight:700;margin-right:3px}
@@ -447,11 +531,11 @@ input[type=checkbox]{accent-color:#6366f1;width:13px;height:13px;cursor:pointer}
 
     <div class="log-wrap" id="log-wrap">
       <div class="log-hdr">
-        <span>Agent log</span>
+        <span id="log-title">Agent log</span>
         <span id="branch-tag" class="branch-tag" style="display:none"></span>
       </div>
       <div id="log">
-        <div class="ph">
+        <div class="ph" id="placeholder">
           <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" opacity=".3">
             <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/>
           </svg>
@@ -491,21 +575,75 @@ fetch('/api/models').then(r=>r.json()).then(models=>{
 });
 
 // ── History ───────────────────────────────────────────────────────────────────
+// Keyed store so onclick handlers can look up run data without embedding JSON in HTML
+const _runsCache={};
+
 function loadHistory(){
   fetch('/api/runs').then(r=>r.json()).then(runs=>{
+    runs.forEach(r=>{ _runsCache[r.run_id]=r; });
     const el=document.getElementById('hist-list');
     if(!runs.length){el.innerHTML='<span style="color:#475569;font-size:.75rem">No runs yet</span>';return;}
-    el.innerHTML=runs.map(r=>`
-      <div class="hist-item">
-        <div class="hist-req">${esc(r.request||'(unknown)')}</div>
-        <div class="hist-meta">
-          ${r.success===true?'<span class="badge ok">PASS</span>':''}
-          ${r.success===false?'<span class="badge fail">FAIL</span>':''}
-          ${r.success===null?'<span class="badge pending">—</span>':''}
-          ${esc(r.ts)}
-        </div>
-      </div>`).join('');
+    // Build DOM nodes instead of innerHTML to avoid attribute-quoting issues
+    el.innerHTML='';
+    runs.forEach(r=>{
+      const isPending=r.status==='pending_approval';
+      const isApproved=r.status==='approved';
+      const isRejected=r.status==='rejected';
+      let statusBadge='';
+      if(isPending)    statusBadge='<span class="badge" style="background:#713f12;color:#fde68a">PENDING</span>';
+      else if(isApproved) statusBadge='<span class="badge ok">APPROVED</span>';
+      else if(isRejected) statusBadge='<span class="badge fail">REJECTED</span>';
+      else if(r.success===true)  statusBadge='<span class="badge ok">PASS</span>';
+      else if(r.success===false) statusBadge='<span class="badge fail">FAIL</span>';
+      else statusBadge='<span class="badge pending">—</span>';
+
+      const div=document.createElement('div');
+      div.className='hist-item';
+      div.innerHTML=`<div class="hist-req">${esc(r.request||'(unknown)')}</div>`
+                   +`<div class="hist-meta">${statusBadge} ${esc(r.ts)}</div>`;
+      div.addEventListener('click',()=>openRun(r.run_id));
+      el.appendChild(div);
+    });
   });
+}
+
+function openRun(runId){
+  const r=_runsCache[runId];
+  if(!r)return;
+  currentRunId=runId;
+  document.getElementById('log-title').textContent='Run: '+r.ts;
+  const bt=document.getElementById('branch-tag');
+  if(r.branch){bt.textContent=r.branch;bt.style.display='inline';}
+  else{bt.style.display='none';}
+
+  document.getElementById('log').innerHTML='<div class="l-info">'+esc(r.request)+'</div>';
+  if(evtSrc){evtSrc.close();evtSrc=null;}
+
+  if(r.status==='pending_approval'&&r.branch){
+    // Live run awaiting review — show approve/reject controls
+    document.getElementById('btn-approve').style.display='';
+    document.getElementById('btn-reject').style.display='';
+    loadDiff(runId,r.branch,r.validation_warning||false);
+  } else if(r.success===true||r.has_diff){
+    // Completed run — show diff read-only (may show "not available" for pre-change-control runs)
+    loadDiffReadOnly(runId,r.status);
+  } else {
+    document.getElementById('approval').classList.remove('open');
+  }
+}
+
+async function loadDiffReadOnly(runId,status){
+  const panel=document.getElementById('approval');
+  panel.classList.add('open');
+  document.getElementById('btn-approve').style.display='none';
+  document.getElementById('btn-reject').style.display='none';
+  const label=status==='approved'?'✓ Approved':status==='rejected'?'✗ Rejected':'Changes';
+  document.getElementById('apr-branch').textContent=label;
+  const wb=document.getElementById('val-warning');
+  if(wb)wb.style.display='none';
+  const res=await fetch(`/api/runs/${runId}/diff`);
+  const data=await res.json();
+  renderDiff(data.diff);
 }
 loadHistory();
 
@@ -599,6 +737,8 @@ async function submitRun(){
 async function loadDiff(runId, branch, validationWarning){
   document.getElementById('apr-branch').textContent=branch;
   document.getElementById('approval').classList.add('open');
+  document.getElementById('btn-approve').style.display='';
+  document.getElementById('btn-reject').style.display='';
   document.getElementById('btn-approve').disabled=false;
   document.getElementById('btn-reject').disabled=false;
 
@@ -621,7 +761,7 @@ async function loadDiff(runId, branch, validationWarning){
 function renderDiff(raw){
   const container=document.getElementById('diff-container');
   if(!raw||!raw.trim()){
-    container.innerHTML='<div class="no-diff">No file changes detected.</div>';
+    container.innerHTML='<div class="no-diff">No device config diff available for this run.<br><span style="font-size:.75rem;color:#334155">Runs created before change control was enabled do not have a saved diff.</span></div>';
     return;
   }
 

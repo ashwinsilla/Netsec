@@ -27,9 +27,7 @@ import argparse
 import asyncio
 import json
 import subprocess
-import uuid
 from datetime import datetime, timezone
-from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
@@ -76,14 +74,10 @@ def _git(*args: str) -> tuple[int, str, str]:
     return r.returncode, r.stdout.strip(), r.stderr.strip()
 
 
-def _current_branch() -> str:
-    _, out, _ = _git("rev-parse", "--abbrev-ref", "HEAD")
-    return out
-
 
 def _create_branch(run_id: str) -> tuple[bool, str]:
     branch = f"avd/change/{run_id}"
-    rc, _, err = _git("checkout", "-b", branch, BASE_BRANCH)
+    rc, _, _ = _git("checkout", "-b", branch, BASE_BRANCH)
     if rc != 0:
         # Fallback: branch from HEAD if BASE_BRANCH doesn't exist yet
         rc2, _, err2 = _git("checkout", "-b", branch)
@@ -103,6 +97,16 @@ def _commit_changes(task_text: str) -> tuple[bool, str]:
             return True, "nothing-to-commit"
         return False, err
     return True, out
+
+
+def _commit_run_artifacts(run_id: str) -> None:
+    """Commit agent_runs/<run_id>/ to main so logs are persisted in git."""
+    run_dir = _agent.RUNS_DIR / run_id
+    if not run_dir.is_dir():
+        return
+    _git("add", str(run_dir))
+    _git("commit", "--allow-empty-message", "-m",
+         f"agent_runs: save logs for run {run_id}")
 
 
 def _get_diff(branch: str) -> str:
@@ -279,6 +283,7 @@ async def start_run(body: RunRequest) -> dict:
                 state["status"] = "failed"
 
             queue.put_nowait(_sse("done", {"success": bool(build_ok)}))
+            _commit_run_artifacts(run_id)
 
     asyncio.create_task(run())
     return {"run_id": run_id}

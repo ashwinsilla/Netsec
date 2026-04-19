@@ -102,7 +102,7 @@ port_channel_interfaces:
     enabled: true
     mode: trunk
     trunk:
-      allowed_vlan: 10-12,20-22,40,3401-3402
+      allowed_vlan: 10-12,20-22,40,60,3401-3402
 service_routing_protocols_model: multi-agent
 spanning_tree:
   mode: mstp
@@ -137,6 +137,11 @@ vlans:
     - TENANT1
 - id: 20
   name: VLAN20
+  metadata:
+    tenants:
+    - TENANT1
+- id: 60
+  name: VRF10_VLAN60
   metadata:
     tenants:
     - TENANT1

@@ -1,0 +1,11 @@
+<thinking>
+The user wants to add a static route `192.168.0.0/24 192.168.10.1` on leafs. In AVD (Arista Validated Designs), static routes for leaf nodes are typically configured in the L3 leaves file under `l3leaf` settings. 
+
+In AVD eos_designs, static routes can be added at the `l3leaf.defaults` level using the `static_routes` key, which would apply to all leaf nodes.
+
+The file for L3 leaves is `group_vars/DC1_L3_LEAVES/l3_leaves.yml`.
+
+The insertion path would be `["l3leaf", "defaults", "static_routes"]` - this would add static routes to the defaults section of l3leaf, applying to all leaf nodes.
+</thinking>
+
+{"file_key":"l3leaves","context_file":"group_vars/DC1_L3_LEAVES/l3_leaves.yml","insertion_path":["l3leaf","defaults","static_routes"],"task_text":"Add a static route entry under l3leaf.defaults.static_routes with destination_address_prefix '192.168.0.0/24' and gateway '192.168.10.1', so that it applies to all leaf nodes by default. The entry should follow AVD eos_designs format: - destination_address_prefix: '192.168.0.0/24'  gateway: '192.168.10.1'","confidence":"high","reasoning":"Static routes for leaf nodes in AVD eos_designs are defined under l3leaf.defaults.static_routes in the L3 leaves group_vars file, which applies the route to all leaf nodes."}

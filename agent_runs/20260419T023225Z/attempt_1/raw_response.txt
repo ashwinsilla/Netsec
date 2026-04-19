@@ -1,0 +1,22 @@
+<thinking>
+The insertion_path targets `l3leaf.defaults.static_routes`, which is a list field. Currently, there are no static_routes defined in the defaults section, so this is a new list being created.
+
+The task requires adding a static route entry with:
+- destination_address_prefix: '192.168.0.0/24'
+- gateway: '192.168.10.1'
+
+Since the field is a list (shape rule 3), I need to output a JSON array with all existing items (none) plus the new addition.
+
+The AVD eos_designs format for static_routes is:
+```yaml
+- destination_address_prefix: '192.168.0.0/24'
+  gateway: '192.168.10.1'
+```
+
+So the JSON output should be:
+```json
+[{"destination_address_prefix": "192.168.0.0/24", "gateway": "192.168.10.1"}]
+```
+</thinking>
+
+[{"destination_address_prefix": "192.168.0.0/24", "gateway": "192.168.10.1"}]

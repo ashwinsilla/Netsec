@@ -1,0 +1,32 @@
+
+PLAY [Build Configurations and Documentation] **********************************
+
+TASK [arista.avd.eos_designs : Verify Requirements] ****************************
+AVD version 6.1.0
+ok: [dc1-spine1 -> localhost]
+
+TASK [arista.avd.eos_designs : Create required output directories if not present] ***
+ok: [dc1-spine1 -> localhost] => (item=/Users/ashwinsilla/Netsec/intended/structured_configs)
+ok: [dc1-spine1 -> localhost] => (item=/Users/ashwinsilla/Netsec/documentation/fabric)
+
+TASK [arista.avd.eos_designs : Validate eos_designs inputs] ********************
+[ERROR]: Task failed: Action failed: 4 errors found during schema validation of input variables.
+Origin: /Users/ashwinsilla/.ansible/collections/ansible_collections/arista/avd/roles/eos_designs/tasks/main.yml:30:7
+
+28 - name: Run eos_designs
+29   block:
+30     - name: Validate eos_designs inputs
+         ^ column 7
+
+fatal: [dc1-spine1 -> localhost]: FAILED! => {"changed": false, "msg": "4 errors found during schema validation of input variables."}
+
+TASK [arista.avd.eos_designs : Clean up AVD temporary directory] ***************
+ok: [dc1-spine1 -> localhost]
+
+PLAY RECAP *********************************************************************
+dc1-spine1                 : ok=3    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+
+[ERROR]: [dc1-leaf1a] Validation error for the input data model 'l3leaf.defaults.static_routes': Invalid key.
+[ERROR]: [dc1-leaf1b] Validation error for the input data model 'l3leaf.defaults.static_routes': Invalid key.
+[ERROR]: [dc1-leaf2a] Validation error for the input data model 'l3leaf.defaults.static_routes': Invalid key.
+[ERROR]: [dc1-leaf2b] Validation error for the input data model 'l3leaf.defaults.static_routes': Invalid key.

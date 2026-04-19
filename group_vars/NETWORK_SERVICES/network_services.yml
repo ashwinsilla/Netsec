@@ -33,6 +33,10 @@ tenants:
       name: VLAN20
       enabled: true
       ip_address_virtual: 10.10.20.1/24
+    - id: 60
+      name: VRF10_VLAN60
+      enabled: true
+      ip_address_virtual: 192.168.60.1/24
   - name: VRF11
     vrf_vni: 11
     vtep_diagnostic:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-AVD Agent — Web UI with CVP-style Change Control
+Argus — Web UI with CVP-style Change Control
 
 Workflow
 ────────
@@ -42,7 +42,7 @@ REPO_ROOT = _agent.REPO_ROOT
 RUNS_DIR  = _agent.RUNS_DIR
 BASE_BRANCH = "main"
 
-app = FastAPI(title="AVD Agent", docs_url=None, redoc_url=None)
+app = FastAPI(title="Argus", docs_url=None, redoc_url=None)
 
 # Serialises agent runs — only one at a time (shared working tree)
 _run_lock: asyncio.Lock = asyncio.Lock()
@@ -441,7 +441,7 @@ _HTML = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AVD Agent</title>
+<title>Argus</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0f1117;color:#e2e8f0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
@@ -522,7 +522,7 @@ input[type=checkbox]{accent-color:#6366f1;width:13px;height:13px;cursor:pointer}
 <body>
 
 <header>
-  <h1>AVD Agent</h1>
+  <h1>Argus</h1>
   <span>Arista Validated Designs — change control</span>
 </header>
 

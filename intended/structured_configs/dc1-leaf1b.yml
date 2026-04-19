@@ -170,7 +170,7 @@ port_channel_interfaces:
     enabled: true
     mode: trunk
     trunk:
-      allowed_vlan: 10-12,20-22,40,3401-3402
+      allowed_vlan: 10-12,20-22,40,60,3401-3402
 - name: Port-Channel5
   description: SERVER_dc1-leaf1-server1_Bond1
   shutdown: false
@@ -352,6 +352,16 @@ router_bgp:
       - 10020:10020
     redistribute_routes:
     - learned
+  - id: 60
+    metadata:
+      tenants:
+      - TENANT1
+    rd: 10.255.0.4:10060
+    route_targets:
+      both:
+      - 10060:10060
+    redistribute_routes:
+    - learned
   - id: 21
     metadata:
       tenants:
@@ -525,6 +535,14 @@ vlan_interfaces:
   metadata:
     tenants:
     - TENANT1
+- name: Vlan60
+  description: VRF10_VLAN60
+  shutdown: false
+  vrf: VRF10
+  ip_address_virtual: 192.168.60.1/24
+  metadata:
+    tenants:
+    - TENANT1
 - name: Vlan3009
   description: MLAG_L3_VRF_VRF10
   shutdown: false
@@ -601,6 +619,11 @@ vlans:
   metadata:
     tenants:
     - TENANT1
+- id: 60
+  name: VRF10_VLAN60
+  metadata:
+    tenants:
+    - TENANT1
 - id: 3009
   name: MLAG_L3_VRF_VRF10
   trunk_groups:
@@ -669,6 +692,8 @@ vxlan_interface:
         vni: 10012
       - id: 20
         vni: 10020
+      - id: 60
+        vni: 10060
       - id: 21
         vni: 10021
       - id: 22

@@ -1,0 +1,49 @@
+{
+  "assertions": [
+    {
+      "type": "config_contains",
+      "pattern": "vlan.*40",
+      "description": "VLAN 40 should be defined in the device configuration",
+      "nodes": [
+        "dc1-leaf1a",
+        "dc1-leaf1b",
+        "dc1-leaf1c",
+        "dc1-leaf2a",
+        "dc1-leaf2b",
+        "dc1-leaf2c",
+        "dc1-spine1",
+        "dc1-spine2"
+      ]
+    },
+    {
+      "type": "config_contains",
+      "pattern": "name.*L2_VLAN40",
+      "description": "VLAN 40 should have the name L2_VLAN40 in the device configuration",
+      "nodes": [
+        "dc1-leaf1a",
+        "dc1-leaf1b",
+        "dc1-leaf1c",
+        "dc1-leaf2a",
+        "dc1-leaf2b",
+        "dc1-leaf2c",
+        "dc1-spine1",
+        "dc1-spine2"
+      ]
+    },
+    {
+      "type": "config_contains",
+      "pattern": "vlan.*40\\b",
+      "description": "VLAN 40 entry should appear in the VLAN database section",
+      "nodes": [
+        "dc1-leaf1a",
+        "dc1-leaf1b",
+        "dc1-leaf1c",
+        "dc1-leaf2a",
+        "dc1-leaf2b",
+        "dc1-leaf2c",
+        "dc1-spine1",
+        "dc1-spine2"
+      ]
+    }
+  ]
+}

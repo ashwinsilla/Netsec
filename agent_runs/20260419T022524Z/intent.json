@@ -1,0 +1,12 @@
+{
+  "file_key": "netsvcs",
+  "context_file": "group_vars/NETWORK_SERVICES/network_services.yml",
+  "insertion_path": [
+    "tenants",
+    0,
+    "vrfs"
+  ],
+  "task_text": "Append a new VRF entry to TENANT1's 'vrfs' list representing the 'default' VRF. Inside it, add a single SVI for VLAN 10: id: 10, name: 'VLAN10', ip_address_virtual: '10.10.10.1/24'. This creates an anycast L3 gateway for VLAN 10 using an IP from the 10.10.10.0/24 subnet, reachable via the spines acting as the default-VRF gateway.",
+  "confidence": "medium",
+  "reasoning": "SVIs (L3 gateways) for VLANs are defined under tenants \u2192 vrfs \u2192 svis in network_services.yml; adding a 'default' VRF entry with VLAN 10 SVI is the correct AVD pattern for a spine-hosted gateway in the default routing domain."
+}

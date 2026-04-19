@@ -230,25 +230,20 @@ mlag configuration
 
 ### Spanning Tree Summary
 
-STP mode: **mstp**
-
-#### MSTP Instance and Priority
-
-| Instance(s) | Priority |
-| -------- | -------- |
-| 0 | 8192 |
+STP mode: **rstp**
 
 #### Global Spanning-Tree Settings
 
+- Global RSTP priority: 8192
 - Spanning Tree disabled for VLANs: **4093-4094**
 
 ### Spanning Tree Device Configuration
 
 ```eos
 !
-spanning-tree mode mstp
+spanning-tree mode rstp
 no spanning-tree vlan-id 4093-4094
-spanning-tree mst 0 priority 8192
+spanning-tree priority 8192
 ```
 
 ## Internal VLAN Allocation Policy
@@ -272,6 +267,7 @@ vlan internal order ascending range 1006 1199
 
 | VLAN ID | Name | Trunk Groups |
 | ------- | ---- | ------------ |
+| 10 | VLAN10 | - |
 | 11 | VRF10_VLAN11 | - |
 | 12 | VRF10_VLAN12 | - |
 | 21 | VRF11_VLAN21 | - |
@@ -286,6 +282,9 @@ vlan internal order ascending range 1006 1199
 ### VLANs Device Configuration
 
 ```eos
+!
+vlan 10
+   name VLAN10
 !
 vlan 11
    name VRF10_VLAN11
@@ -335,7 +334,7 @@ vlan 4094
 | Ethernet3 | MLAG_dc1-leaf2b_Ethernet3 | *trunk | *- | *- | *MLAG | 3 |
 | Ethernet4 | MLAG_dc1-leaf2b_Ethernet4 | *trunk | *- | *- | *MLAG | 3 |
 | Ethernet5 | SERVER_dc1-leaf2-server1_PCI1 | *trunk | *11-12,21-22 | *4092 | *- | 5 |
-| Ethernet8 | L2_dc1-leaf2c_Ethernet1 | *trunk | *11-12,21-22,3401-3402 | *- | *- | 8 |
+| Ethernet8 | L2_dc1-leaf2c_Ethernet1 | *trunk | *10-12,21-22,3401-3402 | *- | *- | 8 |
 
 *Inherited from Port-Channel Interface
 
@@ -395,7 +394,7 @@ interface Ethernet8
 | --------- | ----------- | ---- | ----- | ----------- | ----------- | --------------------- | ------------------ | ------- | -------- |
 | Port-Channel3 | MLAG_dc1-leaf2b_Port-Channel3 | trunk | - | - | MLAG | - | - | - | - |
 | Port-Channel5 | SERVER_dc1-leaf2-server1 | trunk | 11-12,21-22 | 4092 | - | - | - | 5 | - |
-| Port-Channel8 | L2_dc1-leaf2c_Port-Channel1 | trunk | 11-12,21-22,3401-3402 | - | - | - | - | 8 | - |
+| Port-Channel8 | L2_dc1-leaf2c_Port-Channel1 | trunk | 10-12,21-22,3401-3402 | - | - | - | - | 8 | - |
 
 #### Port-Channel Interfaces Device Configuration
 
@@ -421,7 +420,7 @@ interface Port-Channel5
 interface Port-Channel8
    description L2_dc1-leaf2c_Port-Channel1
    no shutdown
-   switchport trunk allowed vlan 11-12,21-22,3401-3402
+   switchport trunk allowed vlan 10-12,21-22,3401-3402
    switchport mode trunk
    switchport
    mlag 8
@@ -482,6 +481,7 @@ interface Loopback11
 
 | Interface | Description | VRF | MTU | Shutdown |
 | --------- | ----------- | --- | --- | -------- |
+| Vlan10 | VLAN10 | default | - | False |
 | Vlan11 | VRF10_VLAN11 | VRF10 | - | False |
 | Vlan12 | VRF10_VLAN12 | VRF10 | - | False |
 | Vlan21 | VRF11_VLAN21 | VRF11 | - | False |
@@ -495,6 +495,7 @@ interface Loopback11
 
 | Interface | VRF | IP Address | IP Address Virtual | IP Router Virtual Address | ACL In | ACL Out |
 | --------- | --- | ---------- | ------------------ | ------------------------- | ------ | ------- |
+| Vlan10 | default | - | 10.10.10.1/24 | - | - | - |
 | Vlan11 | VRF10 | - | 10.10.11.1/24 | - | - | - |
 | Vlan12 | VRF10 | - | 10.10.12.1/24 | - | - | - |
 | Vlan21 | VRF11 | - | 10.10.21.1/24 | - | - | - |
@@ -507,6 +508,11 @@ interface Loopback11
 #### VLAN Interfaces Device Configuration
 
 ```eos
+!
+interface Vlan10
+   description VLAN10
+   no shutdown
+   ip address virtual 10.10.10.1/24
 !
 interface Vlan11
    description VRF10_VLAN11
@@ -574,6 +580,7 @@ interface Vlan4094
 
 | VLAN | VNI | Flood List | Multicast Group |
 | ---- | --- | ---------- | --------------- |
+| 10 | 10010 | - | - |
 | 11 | 10011 | - | - |
 | 12 | 10012 | - | - |
 | 21 | 10021 | - | - |
@@ -585,6 +592,7 @@ interface Vlan4094
 
 | VRF | VNI | Overlay Multicast Group to Encap Mappings |
 | --- | --- | ----------------------------------------- |
+| default | 1 | - |
 | VRF10 | 10 | - |
 | VRF11 | 11 | - |
 
@@ -597,12 +605,14 @@ interface Vxlan1
    vxlan source-interface Loopback1
    vxlan virtual-router encapsulation mac-address mlag-system-id
    vxlan udp-port 4789
+   vxlan vlan 10 vni 10010
    vxlan vlan 11 vni 10011
    vxlan vlan 12 vni 10012
    vxlan vlan 21 vni 10021
    vxlan vlan 22 vni 10022
    vxlan vlan 3401 vni 13401
    vxlan vlan 3402 vni 13402
+   vxlan vrf default vni 1
    vxlan vrf VRF10 vni 10
    vxlan vrf VRF11 vni 11
 ```
@@ -748,6 +758,7 @@ ASN Notation: asplain
 
 | VLAN | Route-Distinguisher | Both Route-Target | Import Route Target | Export Route-Target | Redistribute |
 | ---- | ------------------- | ----------------- | ------------------- | ------------------- | ------------ |
+| 10 | 10.255.0.5:10010 | 10010:10010 | - | - | learned |
 | 11 | 10.255.0.5:10011 | 10011:10011 | - | - | learned |
 | 12 | 10.255.0.5:10012 | 10012:10012 | - | - | learned |
 | 21 | 10.255.0.5:10021 | 10021:10021 | - | - | learned |
@@ -759,6 +770,7 @@ ASN Notation: asplain
 
 | VRF | Route-Distinguisher | Redistribute | Graceful Restart |
 | --- | ------------------- | ------------ | ---------------- |
+| default | 10.255.0.5:1 | - | - |
 | VRF10 | 10.255.0.5:10 | connected | - |
 | VRF11 | 10.255.0.5:11 | connected | - |
 
@@ -778,6 +790,7 @@ router bgp 65102
    neighbor EVPN-OVERLAY-PEERS send-community
    neighbor EVPN-OVERLAY-PEERS maximum-routes 0
    neighbor IPv4-UNDERLAY-PEERS peer group
+   neighbor IPv4-UNDERLAY-PEERS route-map RM-BGP-UNDERLAY-PEERS-OUT out
    neighbor IPv4-UNDERLAY-PEERS password 7 <removed>
    neighbor IPv4-UNDERLAY-PEERS send-community
    neighbor IPv4-UNDERLAY-PEERS maximum-routes 256000
@@ -804,6 +817,11 @@ router bgp 65102
    neighbor 10.255.255.10 remote-as 65000
    neighbor 10.255.255.10 description dc1-spine2_Ethernet3
    redistribute connected route-map RM-CONN-2-BGP
+   !
+   vlan 10
+      rd 10.255.0.5:10010
+      route-target both 10010:10010
+      redistribute learned
    !
    vlan 11
       rd 10.255.0.5:10011
@@ -842,6 +860,12 @@ router bgp 65102
       no neighbor EVPN-OVERLAY-PEERS activate
       neighbor IPv4-UNDERLAY-PEERS activate
       neighbor MLAG-IPv4-UNDERLAY-PEER activate
+   !
+   vrf default
+      rd 10.255.0.5:1
+      route-target import evpn 1:1
+      route-target export evpn 1:1
+      route-target export evpn route-map RM-EVPN-EXPORT-VRF-DEFAULT
    !
    vrf VRF10
       rd 10.255.0.5:10
@@ -914,6 +938,12 @@ router bfd
 | -------- | ------ |
 | 10 | permit 10.255.1.100/31 |
 
+##### PL-SVI-VRF-DEFAULT
+
+| Sequence | Action |
+| -------- | ------ |
+| 10 | permit 10.10.10.0/24 |
+
 #### Prefix-lists Device Configuration
 
 ```eos
@@ -924,17 +954,28 @@ ip prefix-list PL-LOOPBACKS-EVPN-OVERLAY
 !
 ip prefix-list PL-MLAG-PEER-VRFS
    seq 10 permit 10.255.1.100/31
+!
+ip prefix-list PL-SVI-VRF-DEFAULT
+   seq 10 permit 10.10.10.0/24
 ```
 
 ### Route-maps
 
 #### Route-maps Summary
 
+##### RM-BGP-UNDERLAY-PEERS-OUT
+
+| Sequence | Type | Match | Set | Sub-Route-Map | Continue |
+| -------- | ---- | ----- | --- | ------------- | -------- |
+| 10 | deny | ip address prefix-list PL-SVI-VRF-DEFAULT | - | - | - |
+| 20 | permit | - | - | - | - |
+
 ##### RM-CONN-2-BGP
 
 | Sequence | Type | Match | Set | Sub-Route-Map | Continue |
 | -------- | ---- | ----- | --- | ------------- | -------- |
 | 10 | permit | ip address prefix-list PL-LOOPBACKS-EVPN-OVERLAY | - | - | - |
+| 30 | permit | ip address prefix-list PL-SVI-VRF-DEFAULT | - | - | - |
 
 ##### RM-CONN-2-BGP-VRFS
 
@@ -942,6 +983,12 @@ ip prefix-list PL-MLAG-PEER-VRFS
 | -------- | ---- | ----- | --- | ------------- | -------- |
 | 10 | deny | ip address prefix-list PL-MLAG-PEER-VRFS | - | - | - |
 | 20 | permit | - | - | - | - |
+
+##### RM-EVPN-EXPORT-VRF-DEFAULT
+
+| Sequence | Type | Match | Set | Sub-Route-Map | Continue |
+| -------- | ---- | ----- | --- | ------------- | -------- |
+| 10 | permit | ip address prefix-list PL-SVI-VRF-DEFAULT | - | - | - |
 
 ##### RM-MLAG-PEER-IN
 
@@ -953,13 +1000,24 @@ ip prefix-list PL-MLAG-PEER-VRFS
 
 ```eos
 !
+route-map RM-BGP-UNDERLAY-PEERS-OUT deny 10
+   match ip address prefix-list PL-SVI-VRF-DEFAULT
+!
+route-map RM-BGP-UNDERLAY-PEERS-OUT permit 20
+!
 route-map RM-CONN-2-BGP permit 10
    match ip address prefix-list PL-LOOPBACKS-EVPN-OVERLAY
+!
+route-map RM-CONN-2-BGP permit 30
+   match ip address prefix-list PL-SVI-VRF-DEFAULT
 !
 route-map RM-CONN-2-BGP-VRFS deny 10
    match ip address prefix-list PL-MLAG-PEER-VRFS
 !
 route-map RM-CONN-2-BGP-VRFS permit 20
+!
+route-map RM-EVPN-EXPORT-VRF-DEFAULT permit 10
+   match ip address prefix-list PL-SVI-VRF-DEFAULT
 !
 route-map RM-MLAG-PEER-IN permit 10
    description Make routes learned over MLAG Peer-link less preferred on spines to ensure optimal routing

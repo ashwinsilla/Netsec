@@ -1,0 +1,33 @@
+{
+  "results": [
+    {
+      "description": "VLAN 60 is defined on all leaf nodes",
+      "passed": true,
+      "detail": "Matched in 6/6 node(s): dc1-leaf1a, dc1-leaf1b, dc1-leaf1c, dc1-leaf2a, dc1-leaf2b"
+    },
+    {
+      "description": "SVI for VLAN 60 is configured on all leaf nodes",
+      "passed": true,
+      "detail": "Matched in 4/6 node(s): dc1-leaf1a, dc1-leaf1b, dc1-leaf2a, dc1-leaf2b"
+    },
+    {
+      "description": "Anycast gateway IP 192.168.60.1/24 is set on VLAN 60 SVI on all leaf nodes",
+      "passed": true,
+      "detail": "Matched in 4/6 node(s): dc1-leaf1a, dc1-leaf1b, dc1-leaf2a, dc1-leaf2b"
+    },
+    {
+      "description": "VLAN 60 has the correct name configured on all leaf nodes",
+      "passed": true,
+      "detail": "Matched in 6/6 node(s): dc1-leaf1a, dc1-leaf1b, dc1-leaf1c, dc1-leaf2a, dc1-leaf2b"
+    },
+    {
+      "description": "Route for 192.168.60.0/24 subnet exists on all leaf nodes via the VLAN 60 SVI",
+      "passed": false,
+      "detail": "Route '192.168.60.0/24' not found in VRF 'default' on nodes 'dc1-leaf2a,dc1-leaf2b,dc1-leaf2c,dc1-leaf1b,dc1-leaf1c,dc1-leaf1a'"
+    }
+  ],
+  "failures": [
+    "Route for 192.168.60.0/24 subnet exists on all leaf nodes via the VLAN 60 SVI \u2014 Route '192.168.60.0/24' not found in VRF 'default' on nodes 'dc1-leaf2a,dc1-leaf2b,dc1-leaf2c,dc1-leaf1b,dc1-leaf1c,dc1-leaf1a'"
+  ],
+  "warnings": []
+}

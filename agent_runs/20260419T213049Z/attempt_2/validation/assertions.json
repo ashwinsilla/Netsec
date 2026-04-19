@@ -1,0 +1,63 @@
+{
+  "assertions": [
+    {
+      "type": "config_contains",
+      "pattern": "vlan 60",
+      "description": "VLAN 60 is defined on all leaf nodes",
+      "nodes": [
+        "dc1-leaf1a",
+        "dc1-leaf1b",
+        "dc1-leaf1c",
+        "dc1-leaf2a",
+        "dc1-leaf2b",
+        "dc1-leaf2c"
+      ]
+    },
+    {
+      "type": "config_contains",
+      "pattern": "interface Vlan60",
+      "description": "SVI for VLAN 60 is configured on all leaf nodes",
+      "nodes": [
+        "dc1-leaf1a",
+        "dc1-leaf1b",
+        "dc1-leaf1c",
+        "dc1-leaf2a",
+        "dc1-leaf2b",
+        "dc1-leaf2c"
+      ]
+    },
+    {
+      "type": "config_contains",
+      "pattern": "ip address virtual.*192\\.168\\.60\\.1/24",
+      "description": "Anycast gateway IP 192.168.60.1/24 is set on VLAN 60 SVI on all leaf nodes",
+      "nodes": [
+        "dc1-leaf1a",
+        "dc1-leaf1b",
+        "dc1-leaf1c",
+        "dc1-leaf2a",
+        "dc1-leaf2b",
+        "dc1-leaf2c"
+      ]
+    },
+    {
+      "type": "config_contains",
+      "pattern": "name.*VLAN60",
+      "description": "VLAN 60 has the correct name configured on all leaf nodes",
+      "nodes": [
+        "dc1-leaf1a",
+        "dc1-leaf1b",
+        "dc1-leaf1c",
+        "dc1-leaf2a",
+        "dc1-leaf2b",
+        "dc1-leaf2c"
+      ]
+    },
+    {
+      "type": "batfish_route_exists",
+      "node_regex": "dc1-leaf(1a|1b|1c|2a|2b|2c)",
+      "vrf": "default",
+      "prefix": "192.168.60.0/24",
+      "description": "Route for 192.168.60.0/24 subnet exists on all leaf nodes via the VLAN 60 SVI"
+    }
+  ]
+}

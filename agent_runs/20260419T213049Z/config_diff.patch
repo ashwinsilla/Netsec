@@ -1,0 +1,270 @@
+diff --git a/intended/configs/dc1-leaf1a.cfg b/intended/configs/dc1-leaf1a.cfg
+index ba43495..efb0b23 100644
+--- a/intended/configs/dc1-leaf1a.cfg
++++ b/intended/configs/dc1-leaf1a.cfg
+@@ -44,6 +44,9 @@ vlan 22
+ vlan 40
+    name L2_VLAN40
+ !
++vlan 60
++   name VRF10_VLAN60
++!
+ vlan 3009
+    name MLAG_L3_VRF_VRF10
+    trunk group MLAG
+@@ -99,7 +102,7 @@ interface Port-Channel5
+ interface Port-Channel8
+    description L2_dc1-leaf1c_Port-Channel1
+    no shutdown
+-   switchport trunk allowed vlan 10-12,20-22,40,3401-3402
++   switchport trunk allowed vlan 10-12,20-22,40,60,3401-3402
+    switchport mode trunk
+    switchport
+    mlag 8
+@@ -201,6 +204,12 @@ interface Vlan22
+    vrf VRF11
+    ip address virtual 10.10.22.1/24
+ !
++interface Vlan60
++   description VRF10_VLAN60
++   no shutdown
++   vrf VRF10
++   ip address virtual 192.168.60.1/24
++!
+ interface Vlan3009
+    description MLAG_L3_VRF_VRF10
+    no shutdown
+@@ -240,6 +249,7 @@ interface Vxlan1
+    vxlan vlan 21 vni 10021
+    vxlan vlan 22 vni 10022
+    vxlan vlan 40 vni 10040
++   vxlan vlan 60 vni 10060
+    vxlan vlan 3401 vni 13401
+    vxlan vlan 3402 vni 13402
+    vxlan vrf default vni 1
+@@ -380,6 +390,11 @@ router bgp 65101
+       route-target both 10040:10040
+       redistribute learned
+    !
++   vlan 60
++      rd 10.255.0.3:10060
++      route-target both 10060:10060
++      redistribute learned
++   !
+    vlan 3401
+       rd 10.255.0.3:13401
+       route-target both 13401:13401
+diff --git a/intended/configs/dc1-leaf1b.cfg b/intended/configs/dc1-leaf1b.cfg
+index 7b04e4a..f6fe741 100644
+--- a/intended/configs/dc1-leaf1b.cfg
++++ b/intended/configs/dc1-leaf1b.cfg
+@@ -44,6 +44,9 @@ vlan 22
+ vlan 40
+    name L2_VLAN40
+ !
++vlan 60
++   name VRF10_VLAN60
++!
+ vlan 3009
+    name MLAG_L3_VRF_VRF10
+    trunk group MLAG
+@@ -99,7 +102,7 @@ interface Port-Channel5
+ interface Port-Channel8
+    description L2_dc1-leaf1c_Port-Channel1
+    no shutdown
+-   switchport trunk allowed vlan 10-12,20-22,40,3401-3402
++   switchport trunk allowed vlan 10-12,20-22,40,60,3401-3402
+    switchport mode trunk
+    switchport
+    mlag 8
+@@ -201,6 +204,12 @@ interface Vlan22
+    vrf VRF11
+    ip address virtual 10.10.22.1/24
+ !
++interface Vlan60
++   description VRF10_VLAN60
++   no shutdown
++   vrf VRF10
++   ip address virtual 192.168.60.1/24
++!
+ interface Vlan3009
+    description MLAG_L3_VRF_VRF10
+    no shutdown
+@@ -240,6 +249,7 @@ interface Vxlan1
+    vxlan vlan 21 vni 10021
+    vxlan vlan 22 vni 10022
+    vxlan vlan 40 vni 10040
++   vxlan vlan 60 vni 10060
+    vxlan vlan 3401 vni 13401
+    vxlan vlan 3402 vni 13402
+    vxlan vrf default vni 1
+@@ -380,6 +390,11 @@ router bgp 65101
+       route-target both 10040:10040
+       redistribute learned
+    !
++   vlan 60
++      rd 10.255.0.4:10060
++      route-target both 10060:10060
++      redistribute learned
++   !
+    vlan 3401
+       rd 10.255.0.4:13401
+       route-target both 13401:13401
+diff --git a/intended/configs/dc1-leaf1c.cfg b/intended/configs/dc1-leaf1c.cfg
+index a4ed50b..14b228c 100644
+--- a/intended/configs/dc1-leaf1c.cfg
++++ b/intended/configs/dc1-leaf1c.cfg
+@@ -43,6 +43,9 @@ vlan 22
+ vlan 40
+    name L2_VLAN40
+ !
++vlan 60
++   name VRF10_VLAN60
++!
+ vlan 3401
+    name L2_VLAN3401
+ !
+@@ -61,7 +64,7 @@ management api http-commands
+ interface Port-Channel1
+    description L2_DC1_L3_LEAF1_Port-Channel8
+    no shutdown
+-   switchport trunk allowed vlan 10-12,20-22,40,3401-3402
++   switchport trunk allowed vlan 10-12,20-22,40,60,3401-3402
+    switchport mode trunk
+    switchport
+ !
+diff --git a/intended/configs/dc1-leaf2a.cfg b/intended/configs/dc1-leaf2a.cfg
+index c80e5c8..7094f1a 100644
+--- a/intended/configs/dc1-leaf2a.cfg
++++ b/intended/configs/dc1-leaf2a.cfg
+@@ -44,6 +44,9 @@ vlan 22
+ vlan 40
+    name L2_VLAN40
+ !
++vlan 60
++   name VRF10_VLAN60
++!
+ vlan 3009
+    name MLAG_L3_VRF_VRF10
+    trunk group MLAG
+@@ -99,7 +102,7 @@ interface Port-Channel5
+ interface Port-Channel8
+    description L2_dc1-leaf2c_Port-Channel1
+    no shutdown
+-   switchport trunk allowed vlan 10-12,20-22,40,3401-3402
++   switchport trunk allowed vlan 10-12,20-22,40,60,3401-3402
+    switchport mode trunk
+    switchport
+    mlag 8
+@@ -201,6 +204,12 @@ interface Vlan22
+    vrf VRF11
+    ip address virtual 10.10.22.1/24
+ !
++interface Vlan60
++   description VRF10_VLAN60
++   no shutdown
++   vrf VRF10
++   ip address virtual 192.168.60.1/24
++!
+ interface Vlan3009
+    description MLAG_L3_VRF_VRF10
+    no shutdown
+@@ -240,6 +249,7 @@ interface Vxlan1
+    vxlan vlan 21 vni 10021
+    vxlan vlan 22 vni 10022
+    vxlan vlan 40 vni 10040
++   vxlan vlan 60 vni 10060
+    vxlan vlan 3401 vni 13401
+    vxlan vlan 3402 vni 13402
+    vxlan vrf default vni 1
+@@ -380,6 +390,11 @@ router bgp 65102
+       route-target both 10040:10040
+       redistribute learned
+    !
++   vlan 60
++      rd 10.255.0.5:10060
++      route-target both 10060:10060
++      redistribute learned
++   !
+    vlan 3401
+       rd 10.255.0.5:13401
+       route-target both 13401:13401
+diff --git a/intended/configs/dc1-leaf2b.cfg b/intended/configs/dc1-leaf2b.cfg
+index ff25a4b..f987e9e 100644
+--- a/intended/configs/dc1-leaf2b.cfg
++++ b/intended/configs/dc1-leaf2b.cfg
+@@ -44,6 +44,9 @@ vlan 22
+ vlan 40
+    name L2_VLAN40
+ !
++vlan 60
++   name VRF10_VLAN60
++!
+ vlan 3009
+    name MLAG_L3_VRF_VRF10
+    trunk group MLAG
+@@ -99,7 +102,7 @@ interface Port-Channel5
+ interface Port-Channel8
+    description L2_dc1-leaf2c_Port-Channel1
+    no shutdown
+-   switchport trunk allowed vlan 10-12,20-22,40,3401-3402
++   switchport trunk allowed vlan 10-12,20-22,40,60,3401-3402
+    switchport mode trunk
+    switchport
+    mlag 8
+@@ -201,6 +204,12 @@ interface Vlan22
+    vrf VRF11
+    ip address virtual 10.10.22.1/24
+ !
++interface Vlan60
++   description VRF10_VLAN60
++   no shutdown
++   vrf VRF10
++   ip address virtual 192.168.60.1/24
++!
+ interface Vlan3009
+    description MLAG_L3_VRF_VRF10
+    no shutdown
+@@ -240,6 +249,7 @@ interface Vxlan1
+    vxlan vlan 21 vni 10021
+    vxlan vlan 22 vni 10022
+    vxlan vlan 40 vni 10040
++   vxlan vlan 60 vni 10060
+    vxlan vlan 3401 vni 13401
+    vxlan vlan 3402 vni 13402
+    vxlan vrf default vni 1
+@@ -380,6 +390,11 @@ router bgp 65102
+       route-target both 10040:10040
+       redistribute learned
+    !
++   vlan 60
++      rd 10.255.0.6:10060
++      route-target both 10060:10060
++      redistribute learned
++   !
+    vlan 3401
+       rd 10.255.0.6:13401
+       route-target both 13401:13401
+diff --git a/intended/configs/dc1-leaf2c.cfg b/intended/configs/dc1-leaf2c.cfg
+index 235d0c1..240d04f 100644
+--- a/intended/configs/dc1-leaf2c.cfg
++++ b/intended/configs/dc1-leaf2c.cfg
+@@ -43,6 +43,9 @@ vlan 22
+ vlan 40
+    name L2_VLAN40
+ !
++vlan 60
++   name VRF10_VLAN60
++!
+ vlan 3401
+    name L2_VLAN3401
+ !
+@@ -61,7 +64,7 @@ management api http-commands
+ interface Port-Channel1
+    description L2_DC1_L3_LEAF2_Port-Channel8
+    no shutdown
+-   switchport trunk allowed vlan 10-12,20-22,40,3401-3402
++   switchport trunk allowed vlan 10-12,20-22,40,60,3401-3402
+    switchport mode trunk
+    switchport
+ !

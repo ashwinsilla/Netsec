@@ -1,0 +1,14 @@
+{
+  "file_key": "netsvcs",
+  "context_file": "group_vars/NETWORK_SERVICES/network_services.yml",
+  "insertion_path": [
+    "tenants",
+    0,
+    "vrfs",
+    0,
+    "svis"
+  ],
+  "task_text": "Append a new SVI entry for VLAN 60 to the first VRF of the first tenant. The SVI should have: id: 60, name: 'VLAN60' (or a suitable descriptive name), enabled: true, and ip_address_virtual: '192.168.60.1/24' so that all leaf nodes act as the anycast gateway for the 192.168.60.0/24 subnet. This creates both the VLAN and its L3 gateway (SVI) on the leaf nodes.",
+  "confidence": "high",
+  "reasoning": "VLANs and their SVI gateways (ip_address_virtual) are defined under tenants \u2192 vrfs \u2192 svis in network_services.yml, which is the correct AVD location for L3 gateway configuration on leaf nodes."
+}

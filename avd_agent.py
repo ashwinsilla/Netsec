@@ -78,7 +78,10 @@ FILE_PURPOSES: dict[str, str] = {
     ),
     "l3leaves": (
         "L3 leaf node groups (l3leaf.node_groups) and defaults (l3leaf.defaults): "
-        "virtual_router_mac_address, spanning_tree_mode/priority, uplink settings, MLAG."
+        "virtual_router_mac_address, spanning_tree_mode/priority, uplink settings, MLAG. "
+        "IMPORTANT: 'static_routes' is NOT a valid key directly under l3leaf.defaults. "
+        "To add static routes to all leaf nodes use l3leaf.defaults.structured_config.static_routes "
+        "(eos_cli_config_gen format: list of {destination_address_prefix, gateway})."
     ),
     "netsvcs": (
         "Network services: tenants list, VRFs, VLANs, SVIs, IP helpers, L2 VLANs."
@@ -685,11 +688,18 @@ insertion_path rules
 
 Examples
 ────────
-  "Add NTP server"              → ["ntp_settings", "servers"]
-  "Change spine BGP ASN"        → ["spine", "defaults", "bgp_as"]
-  "Change virtual router MAC"   → ["l3leaf", "defaults", "virtual_router_mac_address"]
-  "Add VRF to TENANT1"          → ["tenants", 0, "vrfs"]
-  "Add SVI to VRF10 in TENANT1" → ["tenants", 0, "vrfs", 0, "svis"]
+  "Add NTP server"                       → ["ntp_settings", "servers"]
+  "Change spine BGP ASN"                 → ["spine", "defaults", "bgp_as"]
+  "Change virtual router MAC"            → ["l3leaf", "defaults", "virtual_router_mac_address"]
+  "Add static route to all leaf nodes"   → ["l3leaf", "defaults", "structured_config", "static_routes"]
+  "Add VRF to TENANT1"                   → ["tenants", 0, "vrfs"]
+  "Add SVI to VRF10 in TENANT1"          → ["tenants", 0, "vrfs", 0, "svis"]
+
+AVD schema constraints (do NOT violate these)
+─────────────────────────────────────────────
+  - static_routes is NOT a valid key under l3leaf.defaults. Always use
+    l3leaf.defaults.structured_config.static_routes for node-level static routes.
+  - structured_config under node defaults accepts the full eos_cli_config_gen data model.
 """
 
 

@@ -100,13 +100,28 @@ def _commit_changes(task_text: str) -> tuple[bool, str]:
 
 
 def _commit_run_artifacts(run_id: str) -> None:
-    """Commit agent_runs/<run_id>/ to main so logs are persisted in git."""
+    """Commit agent_runs/<run_id>/ directly to main so logs are always persisted.
+
+    Switches to main, commits, then switches back — so artifacts are never lost
+    when a feature branch is rejected and deleted.
+    """
     run_dir = _agent.RUNS_DIR / run_id
     if not run_dir.is_dir():
         return
-    _git("add", str(run_dir))
-    _git("commit", "--allow-empty-message", "-m",
-         f"agent_runs: save logs for run {run_id}")
+    _, current_branch, _ = _git("rev-parse", "--abbrev-ref", "HEAD")
+    current_branch = current_branch.strip()
+    try:
+        if current_branch != BASE_BRANCH:
+            rc, _, _ = _git("checkout", BASE_BRANCH)
+            if rc != 0:
+                return
+        _git("add", str(run_dir))
+        rc2, _, err = _git("commit", "-m", f"agent_runs: save logs for run {run_id}")
+        if rc2 != 0 and "nothing to commit" not in err.lower():
+            log.warning("_commit_run_artifacts failed: %s", err)
+    finally:
+        if current_branch != BASE_BRANCH:
+            _git("checkout", current_branch)
 
 
 def _get_diff(branch: str) -> str:

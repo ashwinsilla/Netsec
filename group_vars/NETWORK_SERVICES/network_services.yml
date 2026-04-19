@@ -61,3 +61,5 @@ tenants:
     name: L2_VLAN3401
   - id: 3402
     name: L2_VLAN3402
+  - id: 40
+    name: L2_VLAN40

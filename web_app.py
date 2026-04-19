@@ -105,10 +105,10 @@ def _commit_changes(task_text: str) -> tuple[bool, str]:
 
 
 def _get_diff(branch: str) -> str:
-    """Unified diff between BASE_BRANCH and branch for YAML + device configs."""
+    """Unified diff between BASE_BRANCH and branch — device configs only."""
     _, out, _ = _git(
         "diff", f"{BASE_BRANCH}...{branch}",
-        "--", "group_vars/", "intended/configs/",
+        "--", "intended/configs/",
     )
     return out
 
@@ -454,7 +454,7 @@ input[type=checkbox]{accent-color:#6366f1;width:13px;height:13px;cursor:pointer}
     <!-- Approval / diff panel (hidden until run succeeds) -->
     <div class="approval" id="approval">
       <div class="apr-hdr">
-        <span>Review changes</span>
+        <span>Device Configuration Changes</span>
         <span class="sub" id="apr-branch"></span>
         <button class="btn-approve" id="btn-approve" onclick="approveRun()">✓ Approve &amp; Merge</button>
         <button class="btn-reject"  id="btn-reject"  onclick="rejectRun()">✗ Reject</button>
@@ -614,7 +614,9 @@ function renderDiff(raw){
     // Extract filename from "diff --git a/... b/..."
     const header=lines[0]||'';
     const fnMatch=header.match(/diff --git a\/.+? b\/(.+)/);
-    const fname=fnMatch?fnMatch[1]:header;
+    const fullPath=fnMatch?fnMatch[1]:header;
+    // Show just the filename (e.g. "dc1-leaf1a.cfg") without the path prefix
+    const fname=fullPath.split('/').pop()||fullPath;
 
     // Count additions/deletions for badge
     let adds=0,dels=0;

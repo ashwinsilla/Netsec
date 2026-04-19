@@ -102,7 +102,7 @@ port_channel_interfaces:
     enabled: true
     mode: trunk
     trunk:
-      allowed_vlan: 11-12,21-22,3401-3402
+      allowed_vlan: 10-12,21-22,3401-3402
 service_routing_protocols_model: multi-agent
 spanning_tree:
   mode: mstp
@@ -120,6 +120,11 @@ vlan_internal_order:
     beginning: 1006
     ending: 1199
 vlans:
+- id: 10
+  name: VLAN10
+  metadata:
+    tenants:
+    - TENANT1
 - id: 11
   name: VRF10_VLAN11
   metadata:

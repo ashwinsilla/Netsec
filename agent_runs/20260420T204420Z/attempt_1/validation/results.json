@@ -1,0 +1,21 @@
+{
+  "results": [
+    {
+      "description": "VLAN 10 is defined in the device configuration",
+      "passed": true,
+      "detail": "Matched in 8/8 node(s): dc1-leaf1a, dc1-leaf1b, dc1-leaf1c, dc1-leaf2a, dc1-leaf2b"
+    },
+    {
+      "description": "VLAN 10 is named VLAN10 in the device configuration",
+      "passed": true,
+      "detail": "Matched in 6/8 node(s): dc1-leaf1a, dc1-leaf1b, dc1-leaf1c, dc1-leaf2a, dc1-leaf2b"
+    },
+    {
+      "description": "VLAN 10 entry exists and does not bleed into other VLAN IDs",
+      "passed": true,
+      "detail": "Matched in 6/8 node(s): dc1-leaf1a, dc1-leaf1b, dc1-leaf1c, dc1-leaf2a, dc1-leaf2b"
+    }
+  ],
+  "failures": [],
+  "warnings": []
+}

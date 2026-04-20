@@ -1,0 +1,88 @@
+<available_files>
+  (RAG retrieved 2 most relevant file(s) for this request — full structure shown below; remaining files listed briefly.)
+
+
+  [l3leaves]  group_vars/DC1_L3_LEAVES/l3_leaves.yml  ← RAG match
+  Purpose: L3 leaf node groups (l3leaf.node_groups) and defaults (l3leaf.defaults): virtual_router_mac_address, spanning_tree_mode/priority, uplink settings, MLAG. IMPORTANT: 'static_routes' is NOT a valid key directly under l3leaf.defaults. To add static routes to all leaf nodes use l3leaf.defaults.structured_config.static_routes (eos_cli_config_gen format: list of {destination_address_prefix, gateway}).
+  Current structure:
+type: 'l3leaf'
+l3leaf:
+  defaults:
+    platform: 'cEOSLab'
+    loopback_ipv4_pool: '10.255.0.0/27'
+    loopback_ipv4_offset: 2
+    vtep_loopback_ipv4_pool: '10.255.1.0/27'
+    uplink_switches:
+      - 'dc1-spine1'
+        … [1 more item(s)]
+    uplink_ipv4_pool: '10.255.255.0/26'
+    mlag_peer_ipv4_pool: '10.255.1.64/27'
+    mlag_peer_l3_ipv4_pool: '10.255.1.96/27'
+    virtual_router_mac_address: '00:1c:73:00:00:99'
+    spanning_tree_priority: 8192
+    spanning_tree_mode: 'rstp'
+  node_groups:
+    -
+      group: 'DC1_L3_LEAF1'
+      bgp_as: 65101
+      nodes: [2 item(s)]
+      … [1 more item(s)]
+
+  [spines]  group_vars/DC1_SPINES/spines.yml  ← RAG match
+  Purpose: Spine nodes (spine.nodes) and spine defaults: BGP ASN (spine.defaults.bgp_as), platform, loopback pools.
+  Current structure:
+type: 'spine'
+spine:
+  defaults:
+    platform: 'cEOSLab'
+    loopback_ipv4_pool: '10.255.0.0/27'
+    bgp_as: 65000
+  nodes:
+    -
+      name: 'dc1-spine1'
+      id: 1
+      mgmt_ip: '172.16.1.11/24'
+      … [1 more item(s)]
+
+  Other files (not retrieved — no detailed structure sent):
+    [fabric] group_vars/FABRIC/fabric_variables.yml: Fabric-wide settings: NTP (ntp_settings), DNS (dns_settings), BGP peer groups (bgp_peer_groups), AAA (aaa_settings), p2p_uplinks_mtu, timezone.
+    [netsvcs] group_vars/NETWORK_SERVICES/network_services.yml: Network services: tenants list, VRFs, VLANs, SVIs, IP helpers, L2 VLANs.
+    [endpoints] group_vars/CONNECTED_ENDPOINTS/connected_endpoints.yml: Connected endpoints: servers list with adapter definitions.
+
+</available_files>
+
+<user_request>
+Add vlann 10 on leaf nodes
+</user_request>
+
+
+Output a JSON object with exactly these fields:
+{
+  "file_key":       "<one of: fabric | spines | l3leaves | netsvcs | endpoints>",
+  "context_file":   "<relative path, e.g. group_vars/FABRIC/fabric_variables.yml>",
+  "insertion_path": [<list of string keys and 0-based integer indices>],
+  "task_text":      "<precise, self-contained description of the change for the generation step>",
+  "confidence":     "<high | medium | low>",
+  "reasoning":      "<one sentence explaining the file/path choice>"
+}
+
+insertion_path rules
+────────────────────
+- String elements navigate dict keys.
+- Integer elements navigate list indices (0-based), based on the current file content.
+- The path points to the value being replaced or the list being appended to.
+
+Examples
+────────
+  "Add NTP server"                       → ["ntp_settings", "servers"]
+  "Change spine BGP ASN"                 → ["spine", "defaults", "bgp_as"]
+  "Change virtual router MAC"            → ["l3leaf", "defaults", "virtual_router_mac_address"]
+  "Add static route to all leaf nodes"   → ["l3leaf", "defaults", "structured_config", "static_routes"]
+  "Add VRF to TENANT1"                   → ["tenants", 0, "vrfs"]
+  "Add SVI to VRF10 in TENANT1"          → ["tenants", 0, "vrfs", 0, "svis"]
+
+AVD schema constraints (do NOT violate these)
+─────────────────────────────────────────────
+  - static_routes is NOT a valid key under l3leaf.defaults. Always use
+    l3leaf.defaults.structured_config.static_routes for node-level static routes.
+  - structured_config under node defaults accepts the full eos_cli_config_gen data model.

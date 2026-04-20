@@ -1,0 +1,12 @@
+{
+  "file_key": "netsvcs",
+  "context_file": "group_vars/NETWORK_SERVICES/network_services.yml",
+  "insertion_path": [
+    "tenants",
+    0,
+    "l2vlans"
+  ],
+  "task_text": "Append a new L2 VLAN entry with id 10 and name 'VLAN10' to the l2vlans list under the first tenant. If the l2vlans key does not yet exist under the tenant, create it as a new list. Example entry: {id: 10, name: 'VLAN10'}.",
+  "confidence": "medium",
+  "reasoning": "In AVD, VLANs for leaf nodes are defined in the network services file under tenants as l2vlans (or SVIs within a VRF); since no VRF or SVI details were specified, adding it as an L2 VLAN under the first tenant is the correct approach."
+}

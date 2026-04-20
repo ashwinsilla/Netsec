@@ -1,0 +1,49 @@
+{
+  "assertions": [
+    {
+      "type": "config_contains",
+      "pattern": "vlan.*10",
+      "description": "VLAN 10 is defined in the device configuration",
+      "nodes": [
+        "dc1-leaf1a",
+        "dc1-leaf1b",
+        "dc1-leaf1c",
+        "dc1-leaf2a",
+        "dc1-leaf2b",
+        "dc1-leaf2c",
+        "dc1-spine1",
+        "dc1-spine2"
+      ]
+    },
+    {
+      "type": "config_contains",
+      "pattern": "name.*VLAN10",
+      "description": "VLAN 10 is named VLAN10 in the device configuration",
+      "nodes": [
+        "dc1-leaf1a",
+        "dc1-leaf1b",
+        "dc1-leaf1c",
+        "dc1-leaf2a",
+        "dc1-leaf2b",
+        "dc1-leaf2c",
+        "dc1-spine1",
+        "dc1-spine2"
+      ]
+    },
+    {
+      "type": "config_contains",
+      "pattern": "vlan.*10\\b",
+      "description": "VLAN 10 entry exists and does not bleed into other VLAN IDs",
+      "nodes": [
+        "dc1-leaf1a",
+        "dc1-leaf1b",
+        "dc1-leaf1c",
+        "dc1-leaf2a",
+        "dc1-leaf2b",
+        "dc1-leaf2c",
+        "dc1-spine1",
+        "dc1-spine2"
+      ]
+    }
+  ]
+}

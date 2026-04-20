@@ -1,0 +1,77 @@
+<merge_target>
+context_file: group_vars/NETWORK_SERVICES/network_services.yml
+insertion_path: ["tenants",0,"l2vlans"]
+The tool walks the YAML root following insertion_path and replaces exactly one value with your JSON output.
+Shape rules:
+  (1) scalar field  → output the raw JSON scalar value.
+  (2) dict field    → output a JSON object `{...}`.
+  (3) list field    → output a JSON array `[...]` with ALL existing items plus your additions.
+Do NOT echo the top-level file key or content outside the replaced subtree.
+</merge_target>
+
+<configuration_context source="group_vars/NETWORK_SERVICES/network_services.yml" section="tenants">
+tenants:
+- name: TENANT1
+  mac_vrf_vni_base: 10000
+  vrfs:
+  - name: VRF10
+    vrf_vni: 10
+    vtep_diagnostic:
+      loopback: 10
+      loopback_ip_range: 10.255.10.0/27
+    svis:
+    - id: 11
+      name: VRF10_VLAN11
+      enabled: true
+      ip_address_virtual: 10.10.11.1/24
+    - id: 12
+      name: VRF10_VLAN12
+      enabled: true
+      ip_address_virtual: 10.10.12.1/24
+    - id: 20
+      name: VLAN20
+      enabled: true
+      ip_address_virtual: 10.10.20.1/24
+    - id: 60
+      name: VRF10_VLAN60
+      enabled: true
+      ip_address_virtual: 192.168.60.1/24
+  - name: VRF11
+    vrf_vni: 11
+    vtep_diagnostic:
+      loopback: 11
+      loopback_ip_range: 10.255.11.0/27
+    svis:
+    - id: 21
+      name: VRF11_VLAN21
+      enabled: true
+      ip_address_virtual: 10.10.21.1/24
+    - id: 22
+      name: VRF11_VLAN22
+      enabled: true
+      ip_address_virtual: 10.10.22.1/24
+  - name: default
+    vrf_vni: 1
+    svis:
+    - id: 10
+      name: VLAN10
+      enabled: true
+      ip_address_virtual: 10.10.10.1/24
+  l2vlans:
+  - id: 3401
+    name: L2_VLAN3401
+  - id: 3402
+    name: L2_VLAN3402
+  - id: 40
+    name: L2_VLAN40
+</configuration_context>
+
+<task>
+Append a new L2 VLAN entry with id 10 and name 'VLAN10' to the l2vlans list under the first tenant. If the l2vlans key does not yet exist under the tenant, create it as a new list. Example entry: {id: 10, name: 'VLAN10'}.
+</task>
+
+Before generating the JSON, open a <thinking> block to map the request to exact schema field names, verify required nesting layers, and check all keys are valid. After closing your </thinking> block, output the JSON.
+
+Subtree rule: output ONLY the JSON subtree that replaces the merge target (for list targets, include the full merged list after your edits).
+
+Remember: Output ONLY the raw JSON immediately after </thinking>. Any non-JSON text causes a fatal parse error.

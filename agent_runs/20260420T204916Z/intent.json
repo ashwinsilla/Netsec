@@ -1,0 +1,13 @@
+{
+  "file_key": "l3leaves",
+  "context_file": "group_vars/DC1_L3_LEAVES/l3_leaves.yml",
+  "insertion_path": [
+    "l3leaf",
+    "defaults",
+    "structured_config",
+    "static_routes"
+  ],
+  "task_text": "Under l3leaf.defaults.structured_config.static_routes, add a new static route entry with destination_address_prefix: '0.0.0.0/0' and gateway: '10.255.255.1'. Create the structured_config key and static_routes list if they do not already exist.",
+  "confidence": "high",
+  "reasoning": "Per AVD schema constraints, node-level static routes for all leaf nodes must be placed under l3leaf.defaults.structured_config.static_routes (eos_cli_config_gen format) in the L3 leaves group_vars file, not directly under l3leaf.defaults."
+}

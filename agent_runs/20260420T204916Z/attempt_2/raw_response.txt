@@ -1,0 +1,11 @@
+<thinking>
+The correction notes are clear: in AVD 6.0.0, the fields `destination_address_prefix` and `gateway` were removed. I need to use `prefix` and `next_hop` instead.
+
+So the static route entry should be:
+- `prefix`: '0.0.0.0/0'
+- `next_hop`: '10.255.255.1'
+
+The insertion_path targets `l3leaf.defaults.structured_config.static_routes` which is a list field, so I output a JSON array.
+</thinking>
+
+[{"prefix": "0.0.0.0/0", "next_hop": "10.255.255.1"}]

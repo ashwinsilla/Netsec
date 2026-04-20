@@ -1,0 +1,21 @@
+{
+  "results": [
+    {
+      "description": "Static default route 0.0.0.0/0 via gateway 10.255.255.1 should be present on all affected L3 leaf nodes",
+      "passed": true,
+      "detail": "Matched in 4/4 node(s): dc1-leaf1a, dc1-leaf1b, dc1-leaf2a, dc1-leaf2b"
+    },
+    {
+      "description": "Default route 0.0.0.0/0 should exist in the default VRF routing table on all affected L3 leaf nodes",
+      "passed": true,
+      "detail": "Route 0.0.0.0/0 in VRF 'default' found on: ['dc1-leaf1a']"
+    },
+    {
+      "description": "Static route entry for 0.0.0.0/0 prefix should appear in config on all affected L3 leaf nodes",
+      "passed": true,
+      "detail": "Matched in 4/4 node(s): dc1-leaf1a, dc1-leaf1b, dc1-leaf2a, dc1-leaf2b"
+    }
+  ],
+  "failures": [],
+  "warnings": []
+}

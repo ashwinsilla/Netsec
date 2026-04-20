@@ -1,0 +1,33 @@
+{
+  "assertions": [
+    {
+      "type": "config_contains",
+      "pattern": "ip route.*0\\.0\\.0\\.0/0.*10\\.255\\.255\\.1",
+      "description": "Static default route 0.0.0.0/0 via gateway 10.255.255.1 should be present on all affected L3 leaf nodes",
+      "nodes": [
+        "dc1-leaf1a",
+        "dc1-leaf1b",
+        "dc1-leaf2a",
+        "dc1-leaf2b"
+      ]
+    },
+    {
+      "type": "batfish_route_exists",
+      "node_regex": "dc1-leaf1a|dc1-leaf1b|dc1-leaf2a|dc1-leaf2b",
+      "vrf": "default",
+      "prefix": "0.0.0.0/0",
+      "description": "Default route 0.0.0.0/0 should exist in the default VRF routing table on all affected L3 leaf nodes"
+    },
+    {
+      "type": "config_contains",
+      "pattern": "ip route.*0\\.0\\.0\\.0\\/0",
+      "description": "Static route entry for 0.0.0.0/0 prefix should appear in config on all affected L3 leaf nodes",
+      "nodes": [
+        "dc1-leaf1a",
+        "dc1-leaf1b",
+        "dc1-leaf2a",
+        "dc1-leaf2b"
+      ]
+    }
+  ]
+}

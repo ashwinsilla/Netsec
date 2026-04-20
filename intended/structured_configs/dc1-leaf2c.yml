@@ -102,7 +102,7 @@ port_channel_interfaces:
     enabled: true
     mode: trunk
     trunk:
-      allowed_vlan: 10-12,20-22,40,60,3401-3402
+      allowed_vlan: 10-12,20-22,40,60,90,3401-3402
 service_routing_protocols_model: multi-agent
 spanning_tree:
   mode: mstp
@@ -157,6 +157,11 @@ vlans:
     - TENANT1
 - id: 40
   name: L2_VLAN40
+  metadata:
+    tenants:
+    - TENANT1
+- id: 90
+  name: VLAN90
   metadata:
     tenants:
     - TENANT1

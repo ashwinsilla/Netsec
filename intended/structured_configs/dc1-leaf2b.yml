@@ -170,7 +170,7 @@ port_channel_interfaces:
     enabled: true
     mode: trunk
     trunk:
-      allowed_vlan: 10-12,20-22,40,60,3401-3402
+      allowed_vlan: 10-12,20-22,40,60,90,3401-3402
 - name: Port-Channel5
   description: SERVER_dc1-leaf2-server1
   shutdown: false
@@ -410,6 +410,16 @@ router_bgp:
     route_targets:
       both:
       - 10040:10040
+    redistribute_routes:
+    - learned
+  - id: 90
+    metadata:
+      tenants:
+      - TENANT1
+    rd: 10.255.0.6:10090
+    route_targets:
+      both:
+      - 10090:10090
     redistribute_routes:
     - learned
   address_family_evpn:
@@ -653,6 +663,11 @@ vlans:
   metadata:
     tenants:
     - TENANT1
+- id: 90
+  name: VLAN90
+  metadata:
+    tenants:
+    - TENANT1
 - id: 3401
   name: L2_VLAN3401
   metadata:
@@ -700,6 +715,8 @@ vxlan_interface:
         vni: 10022
       - id: 40
         vni: 10040
+      - id: 90
+        vni: 10090
       - id: 3401
         vni: 13401
       - id: 3402

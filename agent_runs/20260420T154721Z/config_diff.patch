@@ -1,0 +1,48 @@
+diff --git a/intended/configs/dc1-leaf1a.cfg b/intended/configs/dc1-leaf1a.cfg
+index efb0b23..6a07bc2 100644
+--- a/intended/configs/dc1-leaf1a.cfg
++++ b/intended/configs/dc1-leaf1a.cfg
+@@ -284,6 +284,7 @@ mlag configuration
+    reload-delay mlag 300
+    reload-delay non-mlag 330
+ !
++ip route 0.0.0.0/0 10.255.255.1
+ ip route vrf MGMT 0.0.0.0/0 172.16.1.1
+ !
+ ntp local-interface vrf MGMT Management1
+diff --git a/intended/configs/dc1-leaf1b.cfg b/intended/configs/dc1-leaf1b.cfg
+index f6fe741..8ecafbf 100644
+--- a/intended/configs/dc1-leaf1b.cfg
++++ b/intended/configs/dc1-leaf1b.cfg
+@@ -284,6 +284,7 @@ mlag configuration
+    reload-delay mlag 300
+    reload-delay non-mlag 330
+ !
++ip route 0.0.0.0/0 10.255.255.1
+ ip route vrf MGMT 0.0.0.0/0 172.16.1.1
+ !
+ ntp local-interface vrf MGMT Management1
+diff --git a/intended/configs/dc1-leaf2a.cfg b/intended/configs/dc1-leaf2a.cfg
+index 7094f1a..2364c94 100644
+--- a/intended/configs/dc1-leaf2a.cfg
++++ b/intended/configs/dc1-leaf2a.cfg
+@@ -284,6 +284,7 @@ mlag configuration
+    reload-delay mlag 300
+    reload-delay non-mlag 330
+ !
++ip route 0.0.0.0/0 10.255.255.1
+ ip route vrf MGMT 0.0.0.0/0 172.16.1.1
+ !
+ ntp local-interface vrf MGMT Management1
+diff --git a/intended/configs/dc1-leaf2b.cfg b/intended/configs/dc1-leaf2b.cfg
+index f987e9e..918cf75 100644
+--- a/intended/configs/dc1-leaf2b.cfg
++++ b/intended/configs/dc1-leaf2b.cfg
+@@ -284,6 +284,7 @@ mlag configuration
+    reload-delay mlag 300
+    reload-delay non-mlag 330
+ !
++ip route 0.0.0.0/0 10.255.255.1
+ ip route vrf MGMT 0.0.0.0/0 172.16.1.1
+ !
+ ntp local-interface vrf MGMT Management1

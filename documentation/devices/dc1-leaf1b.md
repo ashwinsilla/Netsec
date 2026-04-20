@@ -719,12 +719,14 @@ ip routing vrf VRF11
 
 | VRF | Destination Prefix | Next Hop IP | Exit interface | Administrative Distance | Tag | Route Name | Metric |
 | --- | ------------------ | ----------- | -------------- | ----------------------- | --- | ---------- | ------ |
+| default | 0.0.0.0/0 | 10.255.255.1 | - | 1 | - | - | - |
 | MGMT | 0.0.0.0/0 | 172.16.1.1 | - | 1 | - | - | - |
 
 #### Static Routes Device Configuration
 
 ```eos
 !
+ip route 0.0.0.0/0 10.255.255.1
 ip route vrf MGMT 0.0.0.0/0 172.16.1.1
 ```
 

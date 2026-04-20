@@ -275,6 +275,7 @@ vlan internal order ascending range 1006 1199
 | 22 | VRF11_VLAN22 | - |
 | 40 | L2_VLAN40 | - |
 | 60 | VRF10_VLAN60 | - |
+| 90 | VLAN90 | - |
 | 3009 | MLAG_L3_VRF_VRF10 | MLAG |
 | 3010 | MLAG_L3_VRF_VRF11 | MLAG |
 | 3401 | L2_VLAN3401 | - |
@@ -309,6 +310,9 @@ vlan 40
 !
 vlan 60
    name VRF10_VLAN60
+!
+vlan 90
+   name VLAN90
 !
 vlan 3009
    name MLAG_L3_VRF_VRF10
@@ -346,7 +350,7 @@ vlan 4094
 | Ethernet3 | MLAG_dc1-leaf2b_Ethernet3 | *trunk | *- | *- | *MLAG | 3 |
 | Ethernet4 | MLAG_dc1-leaf2b_Ethernet4 | *trunk | *- | *- | *MLAG | 3 |
 | Ethernet5 | SERVER_dc1-leaf2-server1_PCI1 | *trunk | *11-12,21-22 | *4092 | *- | 5 |
-| Ethernet8 | L2_dc1-leaf2c_Ethernet1 | *trunk | *10-12,20-22,40,60,3401-3402 | *- | *- | 8 |
+| Ethernet8 | L2_dc1-leaf2c_Ethernet1 | *trunk | *10-12,20-22,40,60,90,3401-3402 | *- | *- | 8 |
 
 *Inherited from Port-Channel Interface
 
@@ -406,7 +410,7 @@ interface Ethernet8
 | --------- | ----------- | ---- | ----- | ----------- | ----------- | --------------------- | ------------------ | ------- | -------- |
 | Port-Channel3 | MLAG_dc1-leaf2b_Port-Channel3 | trunk | - | - | MLAG | - | - | - | - |
 | Port-Channel5 | SERVER_dc1-leaf2-server1 | trunk | 11-12,21-22 | 4092 | - | - | - | 5 | - |
-| Port-Channel8 | L2_dc1-leaf2c_Port-Channel1 | trunk | 10-12,20-22,40,60,3401-3402 | - | - | - | - | 8 | - |
+| Port-Channel8 | L2_dc1-leaf2c_Port-Channel1 | trunk | 10-12,20-22,40,60,90,3401-3402 | - | - | - | - | 8 | - |
 
 #### Port-Channel Interfaces Device Configuration
 
@@ -432,7 +436,7 @@ interface Port-Channel5
 interface Port-Channel8
    description L2_dc1-leaf2c_Port-Channel1
    no shutdown
-   switchport trunk allowed vlan 10-12,20-22,40,60,3401-3402
+   switchport trunk allowed vlan 10-12,20-22,40,60,90,3401-3402
    switchport mode trunk
    switchport
    mlag 8
@@ -616,6 +620,7 @@ interface Vlan4094
 | 22 | 10022 | - | - |
 | 40 | 10040 | - | - |
 | 60 | 10060 | - | - |
+| 90 | 10090 | - | - |
 | 3401 | 13401 | - | - |
 | 3402 | 13402 | - | - |
 
@@ -644,6 +649,7 @@ interface Vxlan1
    vxlan vlan 22 vni 10022
    vxlan vlan 40 vni 10040
    vxlan vlan 60 vni 10060
+   vxlan vlan 90 vni 10090
    vxlan vlan 3401 vni 13401
    vxlan vlan 3402 vni 13402
    vxlan vrf default vni 1
@@ -800,6 +806,7 @@ ASN Notation: asplain
 | 22 | 10.255.0.5:10022 | 10022:10022 | - | - | learned |
 | 40 | 10.255.0.5:10040 | 10040:10040 | - | - | learned |
 | 60 | 10.255.0.5:10060 | 10060:10060 | - | - | learned |
+| 90 | 10.255.0.5:10090 | 10090:10090 | - | - | learned |
 | 3401 | 10.255.0.5:13401 | 13401:13401 | - | - | learned |
 | 3402 | 10.255.0.5:13402 | 13402:13402 | - | - | learned |
 
@@ -893,6 +900,11 @@ router bgp 65102
    vlan 60
       rd 10.255.0.5:10060
       route-target both 10060:10060
+      redistribute learned
+   !
+   vlan 90
+      rd 10.255.0.5:10090
+      route-target both 10090:10090
       redistribute learned
    !
    vlan 3401

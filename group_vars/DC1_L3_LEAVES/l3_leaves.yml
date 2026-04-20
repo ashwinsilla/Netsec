@@ -14,6 +14,10 @@ l3leaf:
     virtual_router_mac_address: 00:1c:73:00:00:99
     spanning_tree_priority: 8192
     spanning_tree_mode: rstp
+    structured_config:
+      static_routes:
+      - prefix: 0.0.0.0/0
+        next_hop: 10.255.255.1
   node_groups:
   - group: DC1_L3_LEAF1
     bgp_as: 65101

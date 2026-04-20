@@ -1,0 +1,52 @@
+{
+  "assertions": [
+    {
+      "type": "config_contains",
+      "pattern": "vlan.*90",
+      "description": "VLAN 90 is defined on all leaf nodes",
+      "nodes": [
+        "dc1-leaf1a",
+        "dc1-leaf1b",
+        "dc1-leaf1c",
+        "dc1-leaf2a",
+        "dc1-leaf2b",
+        "dc1-leaf2c"
+      ]
+    },
+    {
+      "type": "config_contains",
+      "pattern": "name.*VLAN90",
+      "description": "VLAN 90 is named VLAN90 on all leaf nodes",
+      "nodes": [
+        "dc1-leaf1a",
+        "dc1-leaf1b",
+        "dc1-leaf1c",
+        "dc1-leaf2a",
+        "dc1-leaf2b",
+        "dc1-leaf2c"
+      ]
+    },
+    {
+      "type": "config_absent",
+      "pattern": "vlan.*90",
+      "description": "Spine nodes should not have VLAN 90 defined as they are not tenant members",
+      "nodes": [
+        "dc1-spine1",
+        "dc1-spine2"
+      ]
+    },
+    {
+      "type": "config_contains",
+      "pattern": "vlan internal order.*1006",
+      "description": "VLAN internal order range is intact on leaf nodes after adding VLAN 90",
+      "nodes": [
+        "dc1-leaf1a",
+        "dc1-leaf1b",
+        "dc1-leaf1c",
+        "dc1-leaf2a",
+        "dc1-leaf2b",
+        "dc1-leaf2c"
+      ]
+    }
+  ]
+}

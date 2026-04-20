@@ -1,0 +1,218 @@
+diff --git a/intended/configs/dc1-leaf1a.cfg b/intended/configs/dc1-leaf1a.cfg
+index efb0b23..f573a1a 100644
+--- a/intended/configs/dc1-leaf1a.cfg
++++ b/intended/configs/dc1-leaf1a.cfg
+@@ -47,6 +47,9 @@ vlan 40
+ vlan 60
+    name VRF10_VLAN60
+ !
++vlan 90
++   name VLAN90
++!
+ vlan 3009
+    name MLAG_L3_VRF_VRF10
+    trunk group MLAG
+@@ -102,7 +105,7 @@ interface Port-Channel5
+ interface Port-Channel8
+    description L2_dc1-leaf1c_Port-Channel1
+    no shutdown
+-   switchport trunk allowed vlan 10-12,20-22,40,60,3401-3402
++   switchport trunk allowed vlan 10-12,20-22,40,60,90,3401-3402
+    switchport mode trunk
+    switchport
+    mlag 8
+@@ -250,6 +253,7 @@ interface Vxlan1
+    vxlan vlan 22 vni 10022
+    vxlan vlan 40 vni 10040
+    vxlan vlan 60 vni 10060
++   vxlan vlan 90 vni 10090
+    vxlan vlan 3401 vni 13401
+    vxlan vlan 3402 vni 13402
+    vxlan vrf default vni 1
+@@ -395,6 +399,11 @@ router bgp 65101
+       route-target both 10060:10060
+       redistribute learned
+    !
++   vlan 90
++      rd 10.255.0.3:10090
++      route-target both 10090:10090
++      redistribute learned
++   !
+    vlan 3401
+       rd 10.255.0.3:13401
+       route-target both 13401:13401
+diff --git a/intended/configs/dc1-leaf1b.cfg b/intended/configs/dc1-leaf1b.cfg
+index f6fe741..3f75492 100644
+--- a/intended/configs/dc1-leaf1b.cfg
++++ b/intended/configs/dc1-leaf1b.cfg
+@@ -47,6 +47,9 @@ vlan 40
+ vlan 60
+    name VRF10_VLAN60
+ !
++vlan 90
++   name VLAN90
++!
+ vlan 3009
+    name MLAG_L3_VRF_VRF10
+    trunk group MLAG
+@@ -102,7 +105,7 @@ interface Port-Channel5
+ interface Port-Channel8
+    description L2_dc1-leaf1c_Port-Channel1
+    no shutdown
+-   switchport trunk allowed vlan 10-12,20-22,40,60,3401-3402
++   switchport trunk allowed vlan 10-12,20-22,40,60,90,3401-3402
+    switchport mode trunk
+    switchport
+    mlag 8
+@@ -250,6 +253,7 @@ interface Vxlan1
+    vxlan vlan 22 vni 10022
+    vxlan vlan 40 vni 10040
+    vxlan vlan 60 vni 10060
++   vxlan vlan 90 vni 10090
+    vxlan vlan 3401 vni 13401
+    vxlan vlan 3402 vni 13402
+    vxlan vrf default vni 1
+@@ -395,6 +399,11 @@ router bgp 65101
+       route-target both 10060:10060
+       redistribute learned
+    !
++   vlan 90
++      rd 10.255.0.4:10090
++      route-target both 10090:10090
++      redistribute learned
++   !
+    vlan 3401
+       rd 10.255.0.4:13401
+       route-target both 13401:13401
+diff --git a/intended/configs/dc1-leaf1c.cfg b/intended/configs/dc1-leaf1c.cfg
+index 14b228c..c97b32d 100644
+--- a/intended/configs/dc1-leaf1c.cfg
++++ b/intended/configs/dc1-leaf1c.cfg
+@@ -46,6 +46,9 @@ vlan 40
+ vlan 60
+    name VRF10_VLAN60
+ !
++vlan 90
++   name VLAN90
++!
+ vlan 3401
+    name L2_VLAN3401
+ !
+@@ -64,7 +67,7 @@ management api http-commands
+ interface Port-Channel1
+    description L2_DC1_L3_LEAF1_Port-Channel8
+    no shutdown
+-   switchport trunk allowed vlan 10-12,20-22,40,60,3401-3402
++   switchport trunk allowed vlan 10-12,20-22,40,60,90,3401-3402
+    switchport mode trunk
+    switchport
+ !
+diff --git a/intended/configs/dc1-leaf2a.cfg b/intended/configs/dc1-leaf2a.cfg
+index 7094f1a..b0f3108 100644
+--- a/intended/configs/dc1-leaf2a.cfg
++++ b/intended/configs/dc1-leaf2a.cfg
+@@ -47,6 +47,9 @@ vlan 40
+ vlan 60
+    name VRF10_VLAN60
+ !
++vlan 90
++   name VLAN90
++!
+ vlan 3009
+    name MLAG_L3_VRF_VRF10
+    trunk group MLAG
+@@ -102,7 +105,7 @@ interface Port-Channel5
+ interface Port-Channel8
+    description L2_dc1-leaf2c_Port-Channel1
+    no shutdown
+-   switchport trunk allowed vlan 10-12,20-22,40,60,3401-3402
++   switchport trunk allowed vlan 10-12,20-22,40,60,90,3401-3402
+    switchport mode trunk
+    switchport
+    mlag 8
+@@ -250,6 +253,7 @@ interface Vxlan1
+    vxlan vlan 22 vni 10022
+    vxlan vlan 40 vni 10040
+    vxlan vlan 60 vni 10060
++   vxlan vlan 90 vni 10090
+    vxlan vlan 3401 vni 13401
+    vxlan vlan 3402 vni 13402
+    vxlan vrf default vni 1
+@@ -395,6 +399,11 @@ router bgp 65102
+       route-target both 10060:10060
+       redistribute learned
+    !
++   vlan 90
++      rd 10.255.0.5:10090
++      route-target both 10090:10090
++      redistribute learned
++   !
+    vlan 3401
+       rd 10.255.0.5:13401
+       route-target both 13401:13401
+diff --git a/intended/configs/dc1-leaf2b.cfg b/intended/configs/dc1-leaf2b.cfg
+index f987e9e..88ef4fd 100644
+--- a/intended/configs/dc1-leaf2b.cfg
++++ b/intended/configs/dc1-leaf2b.cfg
+@@ -47,6 +47,9 @@ vlan 40
+ vlan 60
+    name VRF10_VLAN60
+ !
++vlan 90
++   name VLAN90
++!
+ vlan 3009
+    name MLAG_L3_VRF_VRF10
+    trunk group MLAG
+@@ -102,7 +105,7 @@ interface Port-Channel5
+ interface Port-Channel8
+    description L2_dc1-leaf2c_Port-Channel1
+    no shutdown
+-   switchport trunk allowed vlan 10-12,20-22,40,60,3401-3402
++   switchport trunk allowed vlan 10-12,20-22,40,60,90,3401-3402
+    switchport mode trunk
+    switchport
+    mlag 8
+@@ -250,6 +253,7 @@ interface Vxlan1
+    vxlan vlan 22 vni 10022
+    vxlan vlan 40 vni 10040
+    vxlan vlan 60 vni 10060
++   vxlan vlan 90 vni 10090
+    vxlan vlan 3401 vni 13401
+    vxlan vlan 3402 vni 13402
+    vxlan vrf default vni 1
+@@ -395,6 +399,11 @@ router bgp 65102
+       route-target both 10060:10060
+       redistribute learned
+    !
++   vlan 90
++      rd 10.255.0.6:10090
++      route-target both 10090:10090
++      redistribute learned
++   !
+    vlan 3401
+       rd 10.255.0.6:13401
+       route-target both 13401:13401
+diff --git a/intended/configs/dc1-leaf2c.cfg b/intended/configs/dc1-leaf2c.cfg
+index 240d04f..d5150ae 100644
+--- a/intended/configs/dc1-leaf2c.cfg
++++ b/intended/configs/dc1-leaf2c.cfg
+@@ -46,6 +46,9 @@ vlan 40
+ vlan 60
+    name VRF10_VLAN60
+ !
++vlan 90
++   name VLAN90
++!
+ vlan 3401
+    name L2_VLAN3401
+ !
+@@ -64,7 +67,7 @@ management api http-commands
+ interface Port-Channel1
+    description L2_DC1_L3_LEAF2_Port-Channel8
+    no shutdown
+-   switchport trunk allowed vlan 10-12,20-22,40,60,3401-3402
++   switchport trunk allowed vlan 10-12,20-22,40,60,90,3401-3402
+    switchport mode trunk
+    switchport
+ !

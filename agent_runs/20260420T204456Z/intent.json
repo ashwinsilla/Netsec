@@ -1,0 +1,12 @@
+{
+  "file_key": "netsvcs",
+  "context_file": "group_vars/NETWORK_SERVICES/network_services.yml",
+  "insertion_path": [
+    "tenants",
+    0,
+    "l2vlans"
+  ],
+  "task_text": "Append a new L2 VLAN entry with id 90 and name 'VLAN90' to the l2vlans list of the first tenant. Use AVD l2vlans schema: {id: 90, name: 'VLAN90'}. This will provision VLAN 90 on all leaf nodes that are members of this tenant.",
+  "confidence": "medium",
+  "reasoning": "VLANs for leaf nodes are defined in network_services.yml under tenants; a plain VLAN with no SVI/routing requirement belongs in the tenant's l2vlans list."
+}

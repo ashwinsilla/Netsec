@@ -1,0 +1,23 @@
+{
+  "results": [
+    {
+      "description": "Default static route 0.0.0.0/0 via 10.255.255.1 is present on all L3 leaf nodes",
+      "passed": true,
+      "detail": "Matched in 4/4 node(s): dc1-leaf1a, dc1-leaf1b, dc1-leaf2a, dc1-leaf2b"
+    },
+    {
+      "description": "Default route 0.0.0.0/0 exists in the default VRF routing table on all L3 leaf nodes",
+      "passed": true,
+      "detail": "Route 0.0.0.0/0 in VRF 'default' found on: ['dc1-leaf1a']"
+    },
+    {
+      "description": "No default static route pointing to a gateway other than 10.255.255.1 exists on affected L3 leaf nodes",
+      "passed": false,
+      "detail": "Old pattern still present in: dc1-leaf1a, dc1-leaf1b, dc1-leaf2a, dc1-leaf2b: 'ip route.*0\\\\.0\\\\.0\\\\.0/0(?!.*10\\\\.255\\\\.255\\\\.1)'"
+    }
+  ],
+  "failures": [
+    "No default static route pointing to a gateway other than 10.255.255.1 exists on affected L3 leaf nodes \u2014 Old pattern still present in: dc1-leaf1a, dc1-leaf1b, dc1-leaf2a, dc1-leaf2b: 'ip route.*0\\\\.0\\\\.0\\\\.0/0(?!.*10\\\\.255\\\\.255\\\\.1)'"
+  ],
+  "warnings": []
+}

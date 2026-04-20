@@ -1,0 +1,9 @@
+<thinking>
+The validation errors clearly indicate that in AVD version 6.0.0+, the field names changed:
+- `destination_address_prefix` → `prefix`
+- `gateway` → `next_hop`
+
+So I need to output a JSON array with one entry using the correct field names: `prefix` and `next_hop`.
+</thinking>
+
+[{"prefix": "0.0.0.0/0", "next_hop": "10.255.255.1"}]

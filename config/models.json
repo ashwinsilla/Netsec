@@ -1,0 +1,8 @@
+{
+    "models": [
+        "llama",
+        "qwen",
+        "glm",
+        "kimi"
+    ]
+}

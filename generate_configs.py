@@ -5,11 +5,11 @@ prompting, JSON parse + sub-tree merge, artifact layout under results/.
 API-level response_format is NOT used (prompt-enforced JSON only).
 
 Text artifacts (exactly two .txt files when the HTTP call succeeds):
-  raw_response.txt    — verbatim API message.content (unchanged from the provider).
-  json_candidate.txt  — exact substring passed to json.loads on success; on parse failure, a short debug dump.
-  parsed.json         — parsed JSON value (syntax success only).
-  config.yaml         — merged full group_vars file (merge success only).
-  manifest.json       — metadata including artifacts[] and json_parse_source.
+  raw_response.txt    Ã¢â‚¬â€ verbatim API message.content (unchanged from the provider).
+  json_candidate.txt  Ã¢â‚¬â€ exact substring passed to json.loads on success; on parse failure, a short debug dump.
+  parsed.json         Ã¢â‚¬â€ parsed JSON value (syntax success only).
+  config.yaml         Ã¢â‚¬â€ merged full group_vars file (merge success only).
+  manifest.json       Ã¢â‚¬â€ metadata including artifacts[] and json_parse_source.
 
 If the HTTP call fails, only raw_response.txt is written (no json_candidate).
 
@@ -22,7 +22,11 @@ Usage:
   Omit ``--report-dir`` to use ``experiments/auto_<UTC>/`` automatically.
 """
 
+
+
 from __future__ import annotations
+
+from providers.provider_factory import ProviderFactory  #added for provider factory
 
 import argparse
 import asyncio
@@ -104,12 +108,12 @@ def load_openrouter_api_key() -> str:
 
 
 def model_dirname(model: str) -> str:
-    return model.replace("/", "-")
+    return model.replace("/", "-").replace(":", "-")
 
 
 def load_schema_text() -> str:
     if not SCHEMA_PATH.exists():
-        log.warning("Schema file missing at %s — user prompt will omit schema block.", SCHEMA_PATH)
+        log.warning("Schema file missing at %s Ã¢â‚¬â€ user prompt will omit schema block.", SCHEMA_PATH)
         return ""
     return SCHEMA_PATH.read_text(encoding="utf-8", errors="replace")
 
@@ -132,7 +136,7 @@ def build_user_message(
         "The tool will walk the YAML root following insertion_path (string keys = dict keys, "
         "integers = list indices) and replace exactly one value with your JSON.\n"
         "Shape rules: (1) If insertion_path is a single string key [\"K\"], your JSON root must NOT "
-        "repeat \"K\" — e.g. [\"l3leaf\"] means an object with keys like defaults and node_groups only; "
+        "repeat \"K\" Ã¢â‚¬â€ e.g. [\"l3leaf\"] means an object with keys like defaults and node_groups only; "
         "[\"tenants\"] or [\"servers\"] means a JSON array at the root; [\"ntp_settings\"] means the "
         "ntp_settings object alone. "
         "(2) Do not echo the file-level key `type:` or other keys outside the replaced subtree.\n"
@@ -294,7 +298,7 @@ async def call_openrouter(
                     if resp.status == 401:
                         msg += (
                             " | OpenRouter auth failed: key invalid/revoked, or masked by a bad shell export. "
-                            "Regenerate at https://openrouter.ai/settings/keys — root .env overrides shell (override=True)."
+                            "Regenerate at https://openrouter.ai/settings/keys Ã¢â‚¬â€ root .env overrides shell (override=True)."
                         )
                     return None, msg
                 data = await resp.json()
@@ -314,7 +318,7 @@ def write_text(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8")
 
 
-async def run_one_job(
+async def run_one_job(provider_name,
     session: aiohttp.ClientSession,
     api_key: str,
     schema_text: str,
@@ -358,9 +362,19 @@ async def run_one_job(
         "timestamp_utc": datetime.utcnow().isoformat() + "Z",
     }
     artifacts: list[str] = []
-
+    #added context for provider factory
+    provider = ProviderFactory.create(
+    provider_name=provider_name,
+    api_key=api_key,
+    base_url=("http://localhost:11434/v1/chat/completions" if provider_name == "ollama" else OPENROUTER_URL),
+)
     async with semaphore:
-        raw, err = await call_openrouter(session, api_key, model, user_msg)
+        raw, err = await provider.generate(
+    session=session,
+    model=model,
+    user_message=user_msg,
+    system_prompt=SYSTEM_PROMPT,
+)
 
     text = raw or ""
     write_text(out_dir / "raw_response.txt", text)
@@ -372,7 +386,7 @@ async def run_one_job(
         manifest["api_error"] = err
         manifest["artifacts"] = artifacts
         (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
-        log.warning("%s %s — API error: %s", task["id"], model, err[:400])
+        log.warning("%s %s Ã¢â‚¬â€ API error: %s", task["id"], model, err[:400])
         return
 
     post_tail = strip_thinking_blocks(text)
@@ -394,7 +408,7 @@ async def run_one_job(
         artifacts.append("json_candidate.txt")
         manifest["artifacts"] = artifacts
         (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
-        log.info("%s %s — syntax fail: %s", task["id"], model, e)
+        log.info("%s %s Ã¢â‚¬â€ syntax fail: %s", task["id"], model, e)
         return
 
     try:
@@ -404,16 +418,17 @@ async def run_one_job(
         artifacts.append("config.yaml")
     except Exception as e:
         manifest["merge_error"] = str(e)[:800]
-        log.info("%s %s — merge fail: %s", task["id"], model, e)
+        log.info("%s %s Ã¢â‚¬â€ merge fail: %s", task["id"], model, e)
 
     manifest["artifacts"] = artifacts
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
-    log.info("%s %s — done syntax=%s merge=%s", task["id"], model, manifest["syntax_ok"], manifest["merge_ok"])
+    log.info("%s %s Ã¢â‚¬â€ done syntax=%s merge=%s", task["id"], model, manifest["syntax_ok"], manifest["merge_ok"])
 
 
 async def async_main(args: argparse.Namespace) -> None:
-    api_key = load_openrouter_api_key()
-    if not api_key:
+    provider_name = os.environ.get("AVD_AGENT_PROVIDER", "openrouter").lower()
+    api_key = load_openrouter_api_key() if provider_name == "openrouter" else ""
+    if provider_name == "openrouter" and not api_key:
         sys.exit(
             "OPENROUTER_API_KEY is not set or empty after loading .env at repo root. "
             "Add OPENROUTER_API_KEY=sk-or-v1-... to .env (see env.txt). "
@@ -424,7 +439,7 @@ async def async_main(args: argparse.Namespace) -> None:
     if env_path.is_file():
         log.info("Loaded API key from %s (shell value overridden if present).", env_path)
     else:
-        log.warning("No %s — using OPENROUTER_API_KEY from environment only.", env_path)
+        log.warning("No %s Ã¢â‚¬â€ using OPENROUTER_API_KEY from environment only.", env_path)
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
     schema_text = load_schema_text()
@@ -444,7 +459,7 @@ async def async_main(args: argparse.Namespace) -> None:
     async with aiohttp.ClientSession(connector=connector) as session:
         await asyncio.gather(
             *[
-                run_one_job(session, api_key, schema_text, task, model, REPO_ROOT, sem)
+                run_one_job(provider_name, session, api_key, schema_text, task, model, REPO_ROOT, sem)
                 for task, model in jobs
             ]
         )

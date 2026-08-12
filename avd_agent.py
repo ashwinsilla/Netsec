@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-avd_agent.py — Natural-language AVD configuration agent.
+avd_agent.py â€” Natural-language AVD configuration agent.
 
 Describe a change in plain English. The agent resolves which file and path to
 modify, generates the JSON subtree via LLM, validates it with ansible-playbook
-build.yml, and retries automatically on failure — feeding exact error messages
+build.yml, and retries automatically on failure â€” feeding exact error messages
 back to the model each time.
 
 Usage
-─────
+â”€â”€â”€â”€â”€
   python3 avd_agent.py                             # interactive prompt
   python3 avd_agent.py "Add NTP server 2.pool.ntp.org"
   python3 avd_agent.py --dry-run "Change BGP ASN for spines to 65200"
@@ -17,7 +17,7 @@ Usage
   python3 avd_agent.py -y "Add a second DNS server 8.8.8.8"
 
 Flags
-─────
+â”€â”€â”€â”€â”€
   --dry-run           Generate and validate, but do NOT permanently apply the change.
   --intent-only       Preview which file/path the agent maps to, then stop.
   --model MODEL       OpenRouter model ID (default: anthropic/claude-sonnet-4.6).
@@ -29,7 +29,7 @@ Flags
 """
 
 from __future__ import annotations
-
+from providers.provider_factory import ProviderFactory
 import argparse
 import asyncio
 import contextvars
@@ -52,9 +52,9 @@ from dotenv import load_dotenv
 from subtree_merge import merge_yaml_file
 from batfish_validator import validate_intent
 
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Paths and constants
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 REPO_ROOT = Path(__file__).resolve().parent
 
@@ -92,10 +92,9 @@ FILE_PURPOSES: dict[str, str] = {
 }
 
 OPENROUTER_URL  = "https://openrouter.ai/api/v1/chat/completions"
+PROVIDER_NAME   = os.environ.get("AVD_AGENT_PROVIDER", "openrouter")  # provider abstraction â€” no longer hardcoded to OpenRouter internals
 DEFAULT_MODEL   = "anthropic/claude-sonnet-4.6"
 MAX_RETRIES     = 3      # generation + validation attempts per job
-API_TIMEOUT     = 180    # seconds per LLM call
-HTTP_RETRIES    = 3      # retries on transient HTTP errors
 RUNS_DIR        = REPO_ROOT / "agent_runs"
 
 AVD_SCHEMA_PICKLE = (
@@ -110,10 +109,10 @@ _MD_FENCE    = re.compile(r"```(?:json)?\s*\n?(.*?)\n?```", re.DOTALL)
 log = logging.getLogger(__name__)
 
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Web-emit hook — set per async task so the web UI can receive structured events
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# Web-emit hook â€” set per async task so the web UI can receive structured events
 # without any coupling to stdout.  CLI code paths leave this as None.
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 # Callable[[event_type: str, message: str], None]
 _web_emit: contextvars.ContextVar = contextvars.ContextVar("web_emit", default=None)
@@ -125,9 +124,9 @@ def _emit(event_type: str, msg: str) -> None:
         fn(event_type, msg)
 
 
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Terminal helpers
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 _IS_TTY = sys.stdout.isatty()
 
@@ -147,17 +146,17 @@ RESET  = _c("\033[0m")
 
 def _print_step(label: str, detail: str = "") -> None:
     d = f"  {DIM}{detail}{RESET}" if detail else ""
-    print(f"  {CYAN}▶{RESET} {label}{d}")
+    print(f"  {CYAN}â–¶{RESET} {label}{d}")
     _emit("step", f"{label}  {detail}".strip())
 
 
 def _print_ok(msg: str) -> None:
-    print(f"  {GREEN}✓{RESET} {msg}")
+    print(f"  {GREEN}âœ“{RESET} {msg}")
     _emit("ok", msg)
 
 
 def _print_fail(msg: str) -> None:
-    print(f"  {RED}✗{RESET} {msg}")
+    print(f"  {RED}âœ—{RESET} {msg}")
     _emit("fail", msg)
 
 
@@ -172,19 +171,50 @@ def _print_info(msg: str) -> None:
 
 
 def _banner(title: str) -> None:
-    print(f"\n{CYAN}{BOLD}{'─' * 52}{RESET}")
+    print(f"\n{CYAN}{BOLD}{'â”€' * 52}{RESET}")
     print(f"{CYAN}{BOLD}  {title}{RESET}")
-    print(f"{CYAN}{BOLD}{'─' * 52}{RESET}")
+    print(f"{CYAN}{BOLD}{'â”€' * 52}{RESET}")
     _emit("banner", title)
 
 
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # API key
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-def _load_api_key() -> str:
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# API key â€” provider-driven, not OpenRouter-driven
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+# Candidate env vars per hosted provider. Providers not listed here fall back
+# to a generic <PROVIDER_NAME>_API_KEY lookup. Local/self-hosted providers
+# (e.g. Ollama) never require a key at all â€” see _provider_requires_api_key().
+_PROVIDER_API_KEY_VARS = {
+    "openrouter": ("OPENROUTER_API_KEY", "OPEN_ROUTER_API_KEY"),
+}
+
+# Providers that call a hosted API and therefore need a key. Local/self-hosted
+# providers (e.g. Ollama, talking to a local server) do not.
+_PROVIDERS_WITHOUT_API_KEY = {"ollama"}
+
+# Base URLs that are specific to a given hosted provider. Providers not listed
+# here (e.g. a local Ollama server) use whatever default their own
+# implementation supplies, so we deliberately pass base_url=None for them.
+_PROVIDER_BASE_URLS = {
+    "openrouter": OPENROUTER_URL,
+}
+
+
+def _provider_requires_api_key(provider_name: str) -> bool:
+    return provider_name.strip().lower() not in _PROVIDERS_WITHOUT_API_KEY
+
+
+def _load_api_key(provider_name: str) -> str:
     load_dotenv(REPO_ROOT / ".env", override=True)
-    for var in ("OPENROUTER_API_KEY", "OPEN_ROUTER_API_KEY"):
+    candidates = _PROVIDER_API_KEY_VARS.get(
+        provider_name.strip().lower(),
+        (f"{provider_name.strip().upper()}_API_KEY",),
+    )
+    for var in candidates:
         raw = os.environ.get(var, "").strip().strip("\ufeff")
         if raw:
             if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in "\"'":
@@ -196,9 +226,9 @@ def _load_api_key() -> str:
     return ""
 
 
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Schema helpers
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def _load_avd_schema() -> dict:
     if AVD_SCHEMA_PICKLE.exists():
@@ -221,7 +251,7 @@ def _walk_schema(schema: dict, path: list) -> dict | None:
 def _schema_hint(schema: dict, insertion_path: list) -> str:
     """
     Return a short schema constraint block for the given insertion_path.
-    Shows valid keys, types, and required fields — enough for the model to
+    Shows valid keys, types, and required fields â€” enough for the model to
     avoid hallucinating invalid keys.
     """
     node = _walk_schema(schema, insertion_path)
@@ -261,7 +291,7 @@ def _schema_hint(schema: dict, insertion_path: list) -> str:
 
 def _yaml_compact(path: Path, max_depth: int = 3, max_list_items: int = 1) -> str:
     """
-    Return a compact structural summary of a YAML file — roughly 10-20x fewer
+    Return a compact structural summary of a YAML file â€” roughly 10-20x fewer
     tokens than the raw file.  Shows key names, scalar values (truncated), list
     sizes, and the first list item so the model can understand navigable paths.
 
@@ -284,7 +314,7 @@ def _yaml_compact(path: Path, max_depth: int = 3, max_list_items: int = 1) -> st
                 if isinstance(v, (dict, list)):
                     if depth >= max_depth:
                         if isinstance(v, dict):
-                            lines.append(f"{pad}{k}: {{{', '.join(str(kk) for kk in list(v)[:5])}{'…' if len(v)>5 else ''}}}")
+                            lines.append(f"{pad}{k}: {{{', '.join(str(kk) for kk in list(v)[:5])}{'â€¦' if len(v)>5 else ''}}}")
                         else:
                             lines.append(f"{pad}{k}: [{len(v)} item(s)]")
                     else:
@@ -292,7 +322,7 @@ def _yaml_compact(path: Path, max_depth: int = 3, max_list_items: int = 1) -> st
                         walk(v, depth + 1)
                 else:
                     val = repr(v)
-                    lines.append(f"{pad}{k}: {val[:60]}{'…' if len(val)>60 else ''}")
+                    lines.append(f"{pad}{k}: {val[:60]}{'â€¦' if len(val)>60 else ''}")
         elif isinstance(node, list):
             if not node:
                 lines.append(f"{pad}(empty list)")
@@ -306,7 +336,7 @@ def _yaml_compact(path: Path, max_depth: int = 3, max_list_items: int = 1) -> st
                     lines.append(f"{pad}- {repr(item)[:60]}")
             remaining = len(node) - len(shown)
             if remaining > 0:
-                lines.append(f"{pad}  … [{remaining} more item(s)]")
+                lines.append(f"{pad}  â€¦ [{remaining} more item(s)]")
 
     walk(data, 0)
     return "\n".join(lines)
@@ -341,9 +371,9 @@ def _extract_target_section(context_yaml: str, top_key: str) -> str:
     return context_yaml  # fallback: send full file
 
 
-# ──────────────────────────────────────────────────────────────────────────────
-# RAG — TF-IDF retriever
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# RAG â€” TF-IDF retriever
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 # Domain-specific keyword expansions per file.
 # These supplement the live YAML content so that user phrasings that don't
@@ -390,7 +420,7 @@ def _build_rag_corpus() -> dict[str, str]:
 
     Each document is the concatenation of:
       1. The human-readable FILE_PURPOSES description.
-      2. Domain-specific keyword expansions (_FILE_KEYWORDS) — covers phrasings
+      2. Domain-specific keyword expansions (_FILE_KEYWORDS) â€” covers phrasings
          that users commonly say but that don't appear verbatim in the YAML keys.
       3. Every YAML key path found in the live file (e.g. "ntp_settings servers
          name iburst"), so the corpus stays current as the repo evolves.
@@ -437,10 +467,10 @@ def _build_rag_corpus() -> dict[str, str]:
 def _rag_retrieve(query: str, top_k: int = 2) -> list[str]:
     """
     Return the top_k most relevant file keys for *query* using TF-IDF cosine
-    similarity — no external embedding API, no network calls, runs locally.
+    similarity â€” no external embedding API, no network calls, runs locally.
 
     Pipeline
-    ────────
+    â”€â”€â”€â”€â”€â”€â”€â”€
     1. Build corpus (one doc per file) via _build_rag_corpus().
     2. Fit a TfidfVectorizer on the corpus (unigrams + bigrams, English stop-words).
     3. Transform both the corpus and the query into TF-IDF vectors.
@@ -448,7 +478,7 @@ def _rag_retrieve(query: str, top_k: int = 2) -> list[str]:
     5. Return the top_k file keys sorted by descending similarity.
 
     Falls back to returning ALL file keys if scikit-learn is unavailable or
-    an unexpected error occurs — the agent degrades gracefully.
+    an unexpected error occurs â€” the agent degrades gracefully.
     """
     try:
         from sklearn.feature_extraction.text import TfidfVectorizer  # type: ignore
@@ -473,73 +503,20 @@ def _rag_retrieve(query: str, top_k: int = 2) -> list[str]:
         result = [keys[i] for i in ranked]
 
         log.debug(
-            "RAG retrieve %r → %s  (scores: %s)",
+            "RAG retrieve %r â†’ %s  (scores: %s)",
             query, result,
             [f"{scores[i]:.3f}" for i in ranked],
         )
         return result
 
     except Exception as exc:
-        log.warning("RAG retrieval failed (%s) — sending all files to intent resolver", exc)
+        log.warning("RAG retrieval failed (%s) â€” sending all files to intent resolver", exc)
         return list(FILE_MAP.keys())   # safe fallback: send everything
 
 
-# ──────────────────────────────────────────────────────────────────────────────
-# OpenRouter API
-# ──────────────────────────────────────────────────────────────────────────────
-
-async def _call_llm(
-    session: aiohttp.ClientSession,
-    api_key: str,
-    model: str,
-    system: str,
-    user: str,
-) -> tuple[str | None, str | None]:
-    """Returns (content, error_msg) — exactly one is None."""
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://cmu.edu/avd-agent",
-        "X-Title": "AVD-Agent",
-    }
-    payload = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": system},
-            {"role": "user",   "content": user},
-        ],
-        "temperature": 0.0,
-        "max_tokens": 8000,
-    }
-    for attempt in range(1, HTTP_RETRIES + 1):
-        try:
-            async with session.post(
-                OPENROUTER_URL, headers=headers, json=payload,
-                timeout=aiohttp.ClientTimeout(total=API_TIMEOUT),
-            ) as resp:
-                if resp.status == 429:
-                    await asyncio.sleep(5 * attempt)
-                    continue
-                if resp.status != 200:
-                    body = await resp.text()
-                    return None, f"HTTP {resp.status}: {body[:300]}"
-                data    = await resp.json()
-                content = data["choices"][0]["message"]["content"]
-                if content is None:
-                    tok = data.get("usage", {}).get("completion_tokens", 0)
-                    return None, f"Model returned null content (completion_tokens={tok})"
-                return content, None
-        except asyncio.TimeoutError:
-            if attempt < HTTP_RETRIES:
-                await asyncio.sleep(5)
-        except Exception as exc:
-            return None, str(exc)
-    return None, "API call failed after all retries"
-
-
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # JSON extraction
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def _parse_json(text: str) -> tuple[object, str]:
     """
@@ -598,9 +575,9 @@ def _parse_json(text: str) -> tuple[object, str]:
     raise ValueError("no valid JSON found in model response")
 
 
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Ansible
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 _ENV_DROP = ("ANSIBLE_INVENTORY", "ANSIBLE_INVENTORY_FILE")
 
@@ -624,9 +601,8 @@ def _ansible_env() -> dict:
 
 def _run_ansible() -> tuple[bool, str]:
     cmd = [
-        "ansible-playbook",
-        str(REPO_ROOT / "build.yml"),
-        "-i", str(REPO_ROOT / "inventory.yml"),
+        "wsl", "bash", "-lc",
+        "cd /mnt/c/Users/abhis/Downloads/Research/NetSec; .venv-wsl/bin/ansible-playbook -i inventory.yml build.yml",
     ]
     t0 = time.perf_counter()
     try:
@@ -640,7 +616,7 @@ def _run_ansible() -> tuple[bool, str]:
     except subprocess.TimeoutExpired:
         return False, "ansible-playbook timed out (300 s)"
     except FileNotFoundError:
-        return False, "ansible-playbook not found — activate .venv"
+        return False, "ansible-playbook not found â€” activate .venv"
     except Exception as exc:
         return False, str(exc)
 
@@ -650,22 +626,35 @@ def _extract_errors(output: str, limit: int = 30) -> list[str]:
     out: list[str] = []
     for line in output.splitlines():
         s = line.strip()
-        if ("[ERROR]:" in s or s.startswith("fatal:")) and s not in seen:
+        if not s:
+            continue
+        if (
+            "[ERROR]:" in s
+            or s.startswith("ERROR!")
+            or "fatal:" in s.lower()
+            or "FAILED!" in s
+        ) and s not in seen:
             seen.add(s); out.append(s)
             if len(out) >= limit:
                 break
+    if not out:
+        # Build failed but nothing matched a known marker (e.g. a YAML
+        # load-time error with unexpected wording) â€” never silently report
+        # "0 error(s)"; surface the raw tail instead.
+        tail = [l.strip() for l in output.strip().splitlines() if l.strip()]
+        out = tail[-limit:]
     return out
 
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Phase 1 — Intent resolution
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# Phase 1 â€” Intent resolution
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 _INTENT_SYSTEM = (
     "You are an expert Arista AVD configuration assistant. "
     "Given a user's natural-language change request and the current state of all "
     "group_vars files, identify exactly which file and insertion_path the change targets. "
-    "Use a <thinking> block for your reasoning, then output ONLY a single raw JSON object — "
+    "Use a <thinking> block for your reasoning, then output ONLY a single raw JSON object â€” "
     "no markdown fences, no prose outside the thinking block."
 )
 
@@ -681,22 +670,22 @@ Output a JSON object with exactly these fields:
 }
 
 insertion_path rules
-────────────────────
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 - String elements navigate dict keys.
 - Integer elements navigate list indices (0-based), based on the current file content.
 - The path points to the value being replaced or the list being appended to.
 
 Examples
-────────
-  "Add NTP server"                       → ["ntp_settings", "servers"]
-  "Change spine BGP ASN"                 → ["spine", "defaults", "bgp_as"]
-  "Change virtual router MAC"            → ["l3leaf", "defaults", "virtual_router_mac_address"]
-  "Add static route to all leaf nodes"   → ["l3leaf", "defaults", "structured_config", "static_routes"]
-  "Add VRF to TENANT1"                   → ["tenants", 0, "vrfs"]
-  "Add SVI to VRF10 in TENANT1"          → ["tenants", 0, "vrfs", 0, "svis"]
+â”€â”€â”€â”€â”€â”€â”€â”€
+  "Add NTP server"                       â†’ ["ntp_settings", "servers"]
+  "Change spine BGP ASN"                 â†’ ["spine", "defaults", "bgp_as"]
+  "Change virtual router MAC"            â†’ ["l3leaf", "defaults", "virtual_router_mac_address"]
+  "Add static route to all leaf nodes"   â†’ ["l3leaf", "defaults", "structured_config", "static_routes"]
+  "Add VRF to TENANT1"                   â†’ ["tenants", 0, "vrfs"]
+  "Add SVI to VRF10 in TENANT1"          â†’ ["tenants", 0, "vrfs", 0, "svis"]
 
 AVD schema constraints (do NOT violate these)
-─────────────────────────────────────────────
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   - static_routes is NOT a valid key under l3leaf.defaults. Always use
     l3leaf.defaults.structured_config.static_routes for node-level static routes.
   - structured_config under node defaults accepts the full eos_cli_config_gen data model.
@@ -708,7 +697,7 @@ def _build_intent_prompt(user_request: str) -> str:
     Build the Phase 1 intent-resolution prompt.
 
     RAG step
-    ────────
+    â”€â”€â”€â”€â”€â”€â”€â”€
     Before assembling the prompt, _rag_retrieve() uses TF-IDF cosine similarity
     to rank all 5 group_vars files against the user request and returns the top 2.
     Only those files' compact structural summaries are included in full.
@@ -719,28 +708,28 @@ def _build_intent_prompt(user_request: str) -> str:
     """
     parts: list[str] = []
 
-    # ── RAG retrieval ────────────────────────────────────────────────────────
+    # â”€â”€ RAG retrieval â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     retrieved = _rag_retrieve(user_request, top_k=2)
     not_retrieved = [k for k in FILE_MAP if k not in retrieved]
 
-    # ── Full detail for retrieved files ─────────────────────────────────────
+    # â”€â”€ Full detail for retrieved files â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     parts.append("<available_files>")
     parts.append(
         f"  (RAG retrieved {len(retrieved)} most relevant file(s) for this request "
-        f"— full structure shown below; remaining files listed briefly.)\n"
+        f"â€” full structure shown below; remaining files listed briefly.)\n"
     )
     for key in retrieved:
         rel = FILE_MAP[key]
-        parts.append(f"\n  [{key}]  {rel}  ← RAG match")
+        parts.append(f"\n  [{key}]  {rel}  â† RAG match")
         parts.append(f"  Purpose: {FILE_PURPOSES[key]}")
         path = REPO_ROOT / rel
         if path.is_file():
             compact = _yaml_compact(path)
             parts.append(f"  Current structure:\n{compact}")
 
-    # ── Brief listing for non-retrieved files ────────────────────────────────
+    # â”€â”€ Brief listing for non-retrieved files â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if not_retrieved:
-        parts.append("\n  Other files (not retrieved — no detailed structure sent):")
+        parts.append("\n  Other files (not retrieved â€” no detailed structure sent):")
         for key in not_retrieved:
             parts.append(f"    [{key}] {FILE_MAP[key]}: {FILE_PURPOSES[key]}")
 
@@ -754,14 +743,19 @@ def _build_intent_prompt(user_request: str) -> str:
 async def _resolve_intent(
     user_request: str,
     session: aiohttp.ClientSession,
-    api_key: str,
+    provider,
     model: str,
     work_dir: Path,
 ) -> dict | None:
     user_msg = _build_intent_prompt(user_request)
     (work_dir / "intent_prompt.txt").write_text(user_msg, encoding="utf-8")
 
-    raw, err = await _call_llm(session, api_key, model, _INTENT_SYSTEM, user_msg)
+    raw, err = await provider.generate(
+        session=session,
+        model=model,
+        user_message=user_msg,
+        system_prompt=_INTENT_SYSTEM,
+    )
     (work_dir / "intent_raw.txt").write_text(raw or "", encoding="utf-8")
 
     if err:
@@ -786,9 +780,9 @@ async def _resolve_intent(
         return None
 
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Phase 2 — Generation prompt builder
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# Phase 2 â€” Generation prompt builder
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 _GEN_SYSTEM = (
     "You are a headless network configuration engine. Your sole output modality is raw, parseable JSON. "
@@ -797,7 +791,7 @@ _GEN_SYSTEM = (
     "Do NOT wrap the output in markdown fences. Do NOT include conversational text. "
     "The very first character of your JSON output MUST be `{` or `[` and the last character MUST be `}` or `]`. "
     "SCALAR EXCEPTION: when the insertion_path targets a scalar field (string/int/bool), "
-    "output the raw JSON scalar directly — e.g. `\"rstp\"` — without wrapping in `{...}`."
+    "output the raw JSON scalar directly â€” e.g. `\"rstp\"` â€” without wrapping in `{...}`."
 )
 
 
@@ -812,7 +806,7 @@ def _build_gen_prompt(
     Build the generation prompt for Phase 2.
 
     Efficiency changes vs. original design:
-      - No full schema_text (53 KB) — replaced by targeted schema_hint (~0.5 KB).
+      - No full schema_text (53 KB) â€” replaced by targeted schema_hint (~0.5 KB).
       - context_yaml is already the extracted target section, not the whole file.
     """
     path_s        = json.dumps(intent["insertion_path"], separators=(",", ":"))
@@ -825,7 +819,7 @@ def _build_gen_prompt(
     if schema_hint:
         parts.append(f"<schema_reference>\n{schema_hint}\n</schema_reference>\n")
 
-    # Merge target — tells the model exactly where and how to insert
+    # Merge target â€” tells the model exactly where and how to insert
     parts.append(
         "<merge_target>\n"
         f"context_file: {context_file}\n"
@@ -833,9 +827,9 @@ def _build_gen_prompt(
         "The tool walks the YAML root following insertion_path and replaces exactly one value "
         "with your JSON output.\n"
         "Shape rules:\n"
-        "  (1) scalar field  → output the raw JSON scalar value.\n"
-        "  (2) dict field    → output a JSON object `{...}`.\n"
-        "  (3) list field    → output a JSON array `[...]` with ALL existing items plus your additions.\n"
+        "  (1) scalar field  â†’ output the raw JSON scalar value.\n"
+        "  (2) dict field    â†’ output a JSON object `{...}`.\n"
+        "  (3) list field    â†’ output a JSON array `[...]` with ALL existing items plus your additions.\n"
         "Do NOT echo the top-level file key or content outside the replaced subtree.\n"
         "</merge_target>\n"
     )
@@ -853,14 +847,14 @@ def _build_gen_prompt(
     # Task
     parts.append(f"<task>\n{intent['task_text']}\n</task>\n")
 
-    # Correction block — injected on retry attempts with Ansible error lines
+    # Correction block â€” injected on retry attempts with Ansible error lines
     if errors or (schema_hint and attempt > 1):
         correction: list[str] = []
         if errors:
             deduped   = list(dict.fromkeys(errors))
             err_lines = "\n".join(f"  {e}" for e in deduped[:20])
             correction.append(
-                f"VALIDATION FAILED (attempt {attempt}) — your previous output caused these "
+                f"VALIDATION FAILED (attempt {attempt}) â€” your previous output caused these "
                 f"Ansible AVD errors. You MUST fix every one of them:\n{err_lines}"
             )
         if schema_hint and attempt > 1:
@@ -884,14 +878,14 @@ def _build_gen_prompt(
     return "\n".join(parts)
 
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Phase 2 — Generation + validation loop
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# Phase 2 â€” Generation + validation loop
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 async def _generate_and_validate(
     intent: dict,
     session: aiohttp.ClientSession,
-    api_key: str,
+    provider,
     model: str,
     schema: dict,
     dry_run: bool,
@@ -900,12 +894,12 @@ async def _generate_and_validate(
     batfish_host: str = "localhost",
 ) -> tuple[bool, str]:
     """
-    Runs the generate → validate → feedback loop.
+    Runs the generate â†’ validate â†’ feedback loop.
 
     Returns (success, summary_message).
-    On success with dry_run=False  → target group_vars file is updated in-place.
-    On success with dry_run=True   → baseline is restored; nothing is permanently changed.
-    On failure                     → baseline is always restored.
+    On success with dry_run=False  â†’ target group_vars file is updated in-place.
+    On success with dry_run=True   â†’ baseline is restored; nothing is permanently changed.
+    On failure                     â†’ baseline is always restored.
     """
     context_file  = intent["context_file"]
     insertion_path = intent["insertion_path"]
@@ -914,7 +908,7 @@ async def _generate_and_validate(
     if not target.is_file():
         return False, f"Target file not found: {context_file}"
 
-    # Extract only the top-level section being edited — e.g. just the
+    # Extract only the top-level section being edited â€” e.g. just the
     # `ntp_settings:` block rather than the whole fabric_variables.yml.
     full_yaml    = target.read_text(encoding="utf-8")
     top_key      = str(insertion_path[0]) if insertion_path else ""
@@ -932,18 +926,23 @@ async def _generate_and_validate(
         attempt_dir.mkdir(parents=True, exist_ok=True)
 
         _print_step(
-            f"Attempt {attempt}/{MAX_RETRIES}  — generating with {model.split('/')[-1]} …",
+            f"Attempt {attempt}/{MAX_RETRIES}  â€” generating with {model.split('/')[-1]} â€¦",
             intent["task_text"][:72],
         )
 
-        # Build prompt (targeted section + schema_hint only — no 53 KB full schema)
+        # Build prompt (targeted section + schema_hint only â€” no 53 KB full schema)
         prompt = _build_gen_prompt(
             intent, context_yaml, hint, errors, attempt
         )
         (attempt_dir / "prompt.txt").write_text(prompt, encoding="utf-8")
 
         # Call LLM
-        raw, api_err = await _call_llm(session, api_key, model, _GEN_SYSTEM, prompt)
+        raw, api_err = await provider.generate(
+            session=session,
+            model=model,
+            user_message=prompt,
+            system_prompt=_GEN_SYSTEM,
+        )
         (attempt_dir / "raw_response.txt").write_text(raw or "", encoding="utf-8")
 
         if api_err:
@@ -969,7 +968,7 @@ async def _generate_and_validate(
             continue
 
         # Patch target file and run ansible
-        _print_step(f"Attempt {attempt}/{MAX_RETRIES}  — running ansible-playbook build.yml …")
+        _print_step(f"Attempt {attempt}/{MAX_RETRIES}  â€” running ansible-playbook build.yml â€¦")
         ok_build = False
         output   = ""
         try:
@@ -987,13 +986,13 @@ async def _generate_and_validate(
         if ok_build:
             _print_ok(f"Build passed on attempt {attempt}.")
 
-            # ── Phase 3: intent verification ──────────────────────────────
+            # â”€â”€ Phase 3: intent verification â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             val_ok = True
             if not skip_validation:
-                _print_step("Running Phase 3 intent-verification assertions …")
+                _print_step("Running Phase 3 intent-verification assertions â€¦")
                 val_result = await validate_intent(
                     intent["task_text"], intent,
-                    session, api_key, model,
+                    session, provider, model,
                     attempt_dir,
                     batfish_host=batfish_host,
                 )
@@ -1005,18 +1004,18 @@ async def _generate_and_validate(
                 if val_result.passed:
                     _print_ok("Intent verification passed.")
                 else:
-                    _print_fail(f"Intent verification failed — {len(val_result.failures)} assertion(s):")
+                    _print_fail(f"Intent verification failed â€” {len(val_result.failures)} assertion(s):")
                     for line in val_result.failures[:5]:
                         _print_info(line)
                     val_ok = False
                     if attempt < MAX_RETRIES:
-                        _print_info("Feeding intent-check failures into the next attempt …")
+                        _print_info("Feeding intent-check failures into the next attempt â€¦")
                         # Restore baseline so next attempt starts clean
                         if backup.is_file():
                             shutil.copy2(backup, target)
                         errors = val_result.as_error_lines()
                         continue
-                    # Last attempt: still failed validation — report it.
+                    # Last attempt: still failed validation â€” report it.
                     # Use sentinel so web_app can treat this as "build_ok, val_failed".
                     final_ok  = "validation_failed"
                     final_msg = (
@@ -1028,18 +1027,18 @@ async def _generate_and_validate(
                 if dry_run:
                     if backup.is_file():
                         shutil.copy2(backup, target)
-                    _print_info("Dry-run mode: baseline restored — change NOT permanently applied.")
+                    _print_info("Dry-run mode: baseline restored â€” change NOT permanently applied.")
                 else:
                     _print_info(f"Change written to {context_file}")
                 final_ok  = True
                 final_msg = f"Build passed on attempt {attempt}."
             break
         else:
-            _print_fail(f"Build failed — {len(new_errors)} error(s):")
+            _print_fail(f"Build failed â€” {len(new_errors)} error(s):")
             for line in new_errors[:5]:
                 _print_info(line)
             if attempt < MAX_RETRIES:
-                _print_info(f"Feeding {len(new_errors)} error(s) back into the next attempt …")
+                _print_info(f"Feeding {len(new_errors)} error(s) back into the next attempt â€¦")
             errors = new_errors  # carry errors forward for the next correction prompt
 
     # Clean up backup
@@ -1054,45 +1053,59 @@ async def _generate_and_validate(
     return final_ok, final_msg or ""
 
 
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Top-level agent runner
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 async def _run_agent(user_request: str, args: argparse.Namespace) -> "bool | str":
-    api_key = _load_api_key()
-    if not api_key:
+    api_key = _load_api_key(PROVIDER_NAME)
+    if _provider_requires_api_key(PROVIDER_NAME) and not api_key:
+        env_var = _PROVIDER_API_KEY_VARS.get(
+            PROVIDER_NAME.strip().lower(),
+            (f"{PROVIDER_NAME.strip().upper()}_API_KEY",),
+        )[0]
         print(
-            f"{RED}Error:{RESET} OPENROUTER_API_KEY not set.\n"
-            "Create a .env file at the repo root:  OPENROUTER_API_KEY=sk-or-v1-…",
+            f"{RED}Error:{RESET} No API key found for provider '{PROVIDER_NAME}'.\n"
+            f"Create a .env file at the repo root:  {env_var}=â€¦\n"
+            "(Set AVD_AGENT_PROVIDER to a local/self-hosted provider such as "
+            "'ollama' if no API key is available.)",
             file=sys.stderr,
         )
         return False
 
-    model   = args.model
+    model = args.model
     dry_run = args.dry_run
-    schema  = _load_avd_schema()
+    schema = _load_avd_schema()
+
+    # Provider initialized exactly once for the whole run and threaded through
+    # every phase below (intent resolution, generation, intent verification).
+    provider = ProviderFactory.create(
+        provider_name=PROVIDER_NAME,
+        api_key=api_key or None,
+        base_url=_PROVIDER_BASE_URLS.get(PROVIDER_NAME.strip().lower()),
+    )
 
     # Working directory for all artifacts of this run
     ts       = getattr(args, "run_id", None) or datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     work_dir = RUNS_DIR / ts
     work_dir.mkdir(parents=True, exist_ok=True)
 
-    # ── Header ────────────────────────────────────────────────────────────
+    # â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     print(f"\n{CYAN}{BOLD}  AVD Configuration Agent{RESET}")
     print(f"  {BOLD}Request :{RESET} {user_request}")
     print(f"  {BOLD}Model   :{RESET} {model}")
     if dry_run:
-        print(f"  {YELLOW}{BOLD}Mode    : DRY RUN — changes will NOT be permanently applied{RESET}")
+        print(f"  {YELLOW}{BOLD}Mode    : DRY RUN â€” changes will NOT be permanently applied{RESET}")
     print(f"  {DIM}Run dir : {work_dir}{RESET}")
 
     connector = aiohttp.TCPConnector(limit=4)
     async with aiohttp.ClientSession(connector=connector) as session:
 
-        # ── Phase 1: Intent resolution ─────────────────────────────────────
-        _banner("Phase 1 — Understanding your request")
-        _print_step("Mapping request to file and insertion path …")
+        # â”€â”€ Phase 1: Intent resolution â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        _banner("Phase 1 â€” Understanding your request")
+        _print_step("Mapping request to file and insertion path â€¦")
 
-        intent = await _resolve_intent(user_request, session, api_key, model, work_dir)
+        intent = await _resolve_intent(user_request, session, provider, model, work_dir)
 
         if intent is None:
             _print_fail("Could not resolve intent. Try rephrasing or use --intent-only to debug.")
@@ -1121,17 +1134,17 @@ async def _run_agent(user_request: str, args: argparse.Namespace) -> "bool | str
             print(f"\n  {DIM}(--intent-only: stopping here){RESET}\n")
             return True
 
-        # ── Phase 2 + 3: Generate, validate YAML schema, verify intent ───────
-        _banner("Phase 2 — Generating and validating")
+        # â”€â”€ Phase 2 + 3: Generate, validate YAML schema, verify intent â”€â”€â”€â”€â”€â”€â”€
+        _banner("Phase 2 â€” Generating and validating")
 
         success, msg = await _generate_and_validate(
-            intent, session, api_key, model,
+            intent, session, provider, model,
             schema, dry_run, work_dir,
             skip_validation=args.skip_validation,
             batfish_host=args.batfish_host,
         )
 
-    # ── Final result ──────────────────────────────────────────────────────
+    # â”€â”€ Final result â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     _banner("Result")
     if success is True:
         _print_ok(msg)
@@ -1139,7 +1152,7 @@ async def _run_agent(user_request: str, args: argparse.Namespace) -> "bool | str
             _print_ok(f"Your change is live in  {intent['context_file']}")
     elif success == "validation_failed":
         _print_warn(msg)
-        _print_warn("Configs were generated — review them in the change control panel.")
+        _print_warn("Configs were generated â€” review them in the change control panel.")
     else:
         _print_fail(msg)
 
@@ -1147,9 +1160,9 @@ async def _run_agent(user_request: str, args: argparse.Namespace) -> "bool | str
     return success
 
 
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # CLI
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def main() -> None:
     p = argparse.ArgumentParser(
@@ -1171,7 +1184,7 @@ def main() -> None:
     )
     p.add_argument(
         "--intent-only", action="store_true",
-        help="Stop after intent resolution — preview file/path mapping.",
+        help="Stop after intent resolution â€” preview file/path mapping.",
     )
     p.add_argument(
         "-y", "--yes", action="store_true",
@@ -1211,7 +1224,7 @@ def main() -> None:
             sys.exit(0)
 
     success = asyncio.run(_run_agent(user_request, args))
-    sys.exit(0 if success else 1)  # validation_failed is truthy → exit 0
+    sys.exit(0 if success else 1)  # validation_failed is truthy â†’ exit 0
 
 
 if __name__ == "__main__":

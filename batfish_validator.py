@@ -18,7 +18,7 @@ The LLM generates a structured assertion spec (JSON) from the task_text.  Our
 code executes the spec — no arbitrary code execution.
 
 Public API:
-    result = await validate_intent(task_text, intent, session, api_key, model, work_dir)
+    result = await validate_intent(task_text, intent, session, provider, model, work_dir)
     # Returns ValidationResult(passed, failures, warnings, skipped)
 """
 
@@ -38,9 +38,6 @@ log = logging.getLogger(__name__)
 
 REPO_ROOT         = Path(__file__).resolve().parent
 INTENDED_CONFIGS  = REPO_ROOT / "intended" / "configs"
-
-OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-API_TIMEOUT    = 60   # seconds — assertions are a short call
 
 
 # ── Result container ──────────────────────────────────────────────────────────
@@ -226,45 +223,6 @@ def _build_assertion_prompt(task_text: str, intent: dict, node_names: list[str])
     )
 
 
-# ── LLM call (reuses same openrouter endpoint as avd_agent) ───────────────────
-
-async def _call_llm(
-    session: aiohttp.ClientSession,
-    api_key: str,
-    model: str,
-    system: str,
-    user: str,
-) -> tuple[str | None, str | None]:
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://cmu.edu/avd-agent",
-        "X-Title": "AVD-Agent",
-    }
-    payload = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": system},
-            {"role": "user",   "content": user},
-        ],
-        "temperature": 0.0,
-        "max_tokens": 1024,
-    }
-    try:
-        async with session.post(
-            OPENROUTER_URL, headers=headers, json=payload,
-            timeout=aiohttp.ClientTimeout(total=API_TIMEOUT),
-        ) as resp:
-            if resp.status != 200:
-                body = await resp.text()
-                return None, f"HTTP {resp.status}: {body[:200]}"
-            data    = await resp.json()
-            content = data["choices"][0]["message"]["content"]
-            return content, None
-    except Exception as exc:
-        return None, str(exc)
-
-
 def _parse_assertions(raw: str) -> list[dict]:
     """Extract the assertions list from LLM output."""
     # Strip markdown fences
@@ -284,12 +242,17 @@ async def _generate_assertions(
     task_text: str,
     intent: dict,
     session: aiohttp.ClientSession,
-    api_key: str,
+    provider,
     model: str,
     node_names: list[str],
 ) -> list[dict]:
     prompt = _build_assertion_prompt(task_text, intent, node_names)
-    raw, err = await _call_llm(session, api_key, model, _ASSERT_GEN_SYSTEM, prompt)
+    raw, err = await provider.generate(
+        session=session,
+        model=model,
+        user_message=prompt,
+        system_prompt=_ASSERT_GEN_SYSTEM,
+    )
     if err:
         log.warning("Assertion generation failed: %s", err)
         return []
@@ -687,7 +650,7 @@ async def validate_intent(
     task_text: str,
     intent: dict,
     session: aiohttp.ClientSession,
-    api_key: str,
+    provider,
     model: str,
     work_dir: Path,
     batfish_host: str = "localhost",
@@ -707,7 +670,7 @@ async def validate_intent(
 
     # Step 1: generate assertions via LLM
     assertions = await _generate_assertions(
-        task_text, intent, session, api_key, model, node_names
+        task_text, intent, session, provider, model, node_names
     )
     (val_dir / "assertions.json").write_text(
         json.dumps({"assertions": assertions}, indent=2) + "\n", encoding="utf-8"

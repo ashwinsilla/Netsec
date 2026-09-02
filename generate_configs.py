@@ -61,15 +61,24 @@ MODELS = [
 
 MAX_RETRIES = 3
 RETRY_DELAY = 5
-REQUEST_TIMEOUT = 120
-CONCURRENCY = 4
+REQUEST_TIMEOUT = 300
+CONCURRENCY = 1
 
 SYSTEM_PROMPT = (
-    "You are a headless network configuration engine. Your sole output modality is raw, parseable JSON. "
-    "You will receive an AVD schema and specific configuration requirements. "
-    "CRITICAL CONSTRAINT: Your entire final output must be strictly parseable by Python `json.loads()`. "
-    "Do NOT wrap the output in markdown fences. Do NOT include conversational text. "
-    "The very first character of your JSON output MUST be `{` or `[` and the last character MUST be `}` or `]`."
+    "You are a headless network configuration editing engine. "
+    "Produce only the exact JSON value required at the specified insertion_path. "
+    "Treat the supplied context YAML as authoritative. "
+    "Make only the requested change and preserve all existing structure and values. "
+    "Do not reconstruct or regenerate the configuration. "
+    "Return only the value for insertion_path, never surrounding YAML keys. "
+    "Match the existing type exactly: lists are JSON arrays, objects are JSON objects, "
+    "strings are JSON strings, and integers are JSON integers. "
+    "Never convert a scalar into an object or a list into an object. "
+    "Never invent unsupported keys. "
+    "For additions to lists, preserve existing elements and add only the requested element. "
+    "For edits, preserve existing fields unless explicitly changed. "
+    "Return only valid JSON parseable by Python json.loads(). "
+    "No markdown or explanations."
 )
 
 THINKING_BLOCK = re.compile(r"<thinking>.*?</thinking>", re.IGNORECASE | re.DOTALL)
@@ -135,13 +144,13 @@ def build_user_message(
         f"insertion_path: {path_s}\n"
         "The tool will walk the YAML root following insertion_path (string keys = dict keys, "
         "integers = list indices) and replace exactly one value with your JSON.\n"
-        "Shape rules: (1) If insertion_path is a single string key [\"K\"], your JSON root must NOT "
-        "repeat \"K\" Ã¢â‚¬â€ e.g. [\"l3leaf\"] means an object with keys like defaults and node_groups only; "
-        "[\"tenants\"] or [\"servers\"] means a JSON array at the root; [\"ntp_settings\"] means the "
-        "ntp_settings object alone. "
-        "(2) Do not echo the file-level key `type:` or other keys outside the replaced subtree.\n"
-        "Root JSON must be a single object `{...}` or array `[...]` (first non-whitespace character `{` or `[`), "
-        "matching the system constraint.\n"
+        "Shape rules: The JSON root MUST be exactly the value that replaces the FINAL "
+        "element of insertion_path. NEVER wrap that value in the final key name. "
+        "For list-valued targets, preserve the exact item schema and nesting shown by the "
+        "existing configuration context. If existing list items are objects, every generated "
+        "list item MUST use the same object structure and field names. Do not flatten objects "
+        "into strings or change their types. Do not echo any parent or final key names in the "
+        "JSON root. Do not echo the file-level key `type:` or other keys outside the replaced subtree.\n"
         "</merge_target>\n\n"
     )
     context_block = (
@@ -184,6 +193,20 @@ def extract_json_value_with_source(text: str) -> tuple[object, str]:
     s = text.strip()
     if not s:
         raise ValueError("empty string")
+
+    # Handle markdown-fenced JSON, including scalar roots such as 9214.
+    fenced = re.fullmatch(
+        r"```(?:json)?\s*(.*?)\s*```",
+        s,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    if fenced:
+        candidate = fenced.group(1).strip()
+        try:
+            return json.loads(candidate), candidate
+        except json.JSONDecodeError:
+            pass
+
     try:
         return json.loads(s), s
     except json.JSONDecodeError:
@@ -216,14 +239,11 @@ def extract_json_value_with_source(text: str) -> tuple[object, str]:
 
 
 def resolve_parsed_json(raw: str) -> tuple[object, str, str]:
-    """
-    Prefer JSON in the post-</thinking> tail; if that fails or is empty, try the
-    interior of the first <thinking> block (models often misplace JSON there).
+    s = raw.strip()
 
-    Returns (parsed_obj, json_substring_used, source) where source is
-    'post_thinking' or 'thinking_interior'.
-    """
-    post = strip_thinking_blocks(raw)
+    s = re.sub(r"^\s*</thinking>\s*", "", s, flags=re.IGNORECASE)
+
+    post = strip_thinking_blocks(s)
     if post:
         try:
             obj, src = extract_json_value_with_source(post)
@@ -231,15 +251,23 @@ def resolve_parsed_json(raw: str) -> tuple[object, str, str]:
         except (json.JSONDecodeError, ValueError):
             pass
 
+    try:
+        obj, src = extract_json_value_with_source(s)
+        return obj, src, "response"
+    except (json.JSONDecodeError, ValueError):
+        pass
+
     inner = extract_thinking_inner(raw)
     if inner:
         try:
             obj, src = extract_json_value_with_source(inner)
             return obj, src, "thinking_interior"
         except (json.JSONDecodeError, ValueError) as e:
-            raise ValueError(f"post_thinking and thinking_interior parse failed: {e}") from e
-    raise ValueError("no JSON found (empty after stripping thinking, and no <thinking> inner text)")
+            raise ValueError(
+                f"post_thinking, response, and thinking_interior parse failed: {e}"
+            ) from e
 
+    raise ValueError("no JSON found in model response")
 
 def format_json_candidate_debug(post_tail: str, thinking_inner: str | None, err: str) -> str:
     """When parse fails, explain what was tried (trimmed)."""
@@ -370,11 +398,11 @@ async def run_one_job(provider_name,
 )
     async with semaphore:
         raw, err = await provider.generate(
-    session=session,
-    model=model,
-    user_message=user_msg,
-    system_prompt=SYSTEM_PROMPT,
-)
+            session=session,
+            model=model,
+            user_message=user_msg,
+            system_prompt=SYSTEM_PROMPT,
+        )
 
     text = raw or ""
     write_text(out_dir / "raw_response.txt", text)

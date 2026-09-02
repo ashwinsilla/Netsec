@@ -7,11 +7,28 @@
 
 | Model | Syntax OK | Merge OK | Semantic PASS | Pass Rate |
 |---|:---:|:---:|:---:|:---:|
+| **Qwen2.5-Coder 7B** (Ollama) | 30 / 30 | 30 / 30 | **15 / 30** | **50%** |
 | **GPT-5.4** (OpenAI) | 30 / 30 | 30 / 30 | **25 / 30** | **83%** |
 | **Claude Sonnet 4.6** (Anthropic) | 30 / 30 | 30 / 30 | **21 / 30** | **70%** |
 | **Gemini 2.5 Pro** (Google) | 29 / 30 | 29 / 30 | **13 / 29** | **45%** |
 
 > **Semantic PASS** = `ansible-playbook build.yml` exits 0 with the merged YAML. All other results represent valid JSON that merged cleanly but produced invalid AVD config.
+
+---
+
+## Qwen2.5-Coder 7B — Semantic Validation
+
+The existing Qwen2.5-Coder 7B artifact set was evaluated against the same 30-task AVD benchmark using the semantic validator. **15 of 30 tasks passed semantic validation (50%).**
+
+Passing tasks:
+
+`P01, P02, P03, P04, P06, P07, P08, P09, P10, P12, P13, P20, P21, P26, P28`
+
+Failing tasks:
+
+`P05, P11, P14, P15, P16, P17, P18, P19, P22, P23, P24, P25, P27, P29, P30`
+
+This result represents the evaluated current artifact set; it should not be described as a freshly regenerated 30-task run after the latest prompt changes.
 
 ---
 

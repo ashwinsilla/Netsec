@@ -79,7 +79,7 @@ class OpenAICompatibleProvider(BaseProvider):
             "model": model,
             "messages": messages,
             "temperature": kwargs.get("temperature", 0.0),
-            "max_tokens": kwargs.get("max_tokens", 8000),
+            "max_tokens": kwargs.get("max_tokens", 2000),
         }
 
         for attempt in range(1, self.max_retries + 1):

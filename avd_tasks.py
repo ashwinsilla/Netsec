@@ -30,7 +30,7 @@ TASKS: list[dict] = [
         "quadrant": 1,
         "file_key": "fabric",
         "task_slug": "p01_ntp_second_server",
-        "task_text": "Add a second NTP server '1.pool.ntp.org' to the existing ntp_settings.servers list.",
+        "task_text": "Add a second NTP server object with name '1.pool.ntp.org' to the existing ntp_settings.servers list. Each servers entry must be an object with a name field.",
         "insertion_path": ["ntp_settings", "servers"],
     },
     {
